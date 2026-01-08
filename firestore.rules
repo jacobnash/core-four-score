@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function - check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Helper function - check if user is the owner
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Users collection - users can read all, but only write their own
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && isOwner(userId);
+    }
+    
+    // Tournaments - all authenticated users can read and write
+    match /tournaments/{tournamentId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+    
+    // Games - all authenticated users can read and write
+    match /games/{gameId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+    
+    // Renegs - all authenticated users can read and write
+    match /renegs/{renegId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+    
+    // Rules (optional) - read-only for all authenticated users
+    match /rules/{ruleId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+  }
+}
