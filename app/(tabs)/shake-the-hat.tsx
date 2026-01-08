@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { Button } from '../../components/Button';
@@ -93,29 +94,33 @@ export default function TeamGeneratorScreen() {
     }
 
     return (
-        <View className="flex-1 bg-forest-green">
-            <ScrollView className="flex-1" contentContainerClassName="p-4">
+        <View className="flex-1 section-bg">
+            <View className="absolute -left-10 -top-16 w-52 h-52 rounded-full bg-brand-orange/15" />
+            <View className="absolute right-0 bottom-12 w-64 h-64 rounded-full bg-cream/10" />
+
+            <ScrollView className="flex-1" contentContainerStyle={{ padding: 16, paddingBottom: 56, gap: 20 }}>
                 {/* Header */}
-                <View className="mb-6">
-                    <Text className="text-3xl font-bold text-cream mb-2">
-                        🎩 Shake the Hat
-                    </Text>
-                    <Text className="text-base text-cream opacity-80">
-                        Select who's present, then shuffle for random teams
+                <View className="card-strong p-5 shadow-card-strong">
+                    <Text className="eyebrow mb-1">Team Maker</Text>
+                    <Text className="title-lg mb-2">🎩 Shake the Hat</Text>
+                    <Text className="body-dim">
+                        Select who's present, then shuffle for random teams.
                     </Text>
                 </View>
 
                 {/* Player Selection */}
-                <View className="mb-6">
-                    <Text className="text-xl font-bold text-cream mb-4">
-                        Who's at the cabin?
-                    </Text>
-                    <Text className="text-sm text-cream opacity-80 mb-4">
-                        Selected: {selectedPlayers.size} players
-                    </Text>
+                <View className="card p-4">
+                    <View className="flex-row items-center justify-between mb-3">
+                        <Text className="title-md">
+                            Who's at the cabin?
+                        </Text>
+                        <Text className="text-sm text-gold font-semibold">
+                            {selectedPlayers.size} selected
+                        </Text>
+                    </View>
 
                     {members.length === 0 ? (
-                        <View className="bg-forest-green border-2 border-cream rounded-lg p-6 items-center">
+                        <View className="card-plain p-6 items-center">
                             <Text className="text-cream text-center">
                                 No tournament members found
                             </Text>
@@ -130,27 +135,30 @@ export default function TeamGeneratorScreen() {
                             />
                         ))
                     )}
-                </View>
 
-                {/* Generate Button */}
-                <Button
-                    title="🎲 Shake the Hat"
-                    onPress={generateTeams}
-                    size="lg"
-                    variant="primary"
-                    disabled={selectedPlayers.size < 4}
-                    className="mb-6"
-                />
+                    <View className="mt-3">
+                        <Button
+                            title="🎲 Shake the Hat"
+                            onPress={generateTeams}
+                            size="lg"
+                            variant="primary"
+                            disabled={selectedPlayers.size < 4}
+                        />
+                        <Text className="text-xs text-cream/70 mt-2 text-center">
+                            Need at least 4 and an even number of players.
+                        </Text>
+                    </View>
+                </View>
 
                 {/* Team Matchup Display */}
                 {matchup && (
-                    <View className="mb-6">
+                    <View className="card p-4">
                         <Text className="text-2xl font-bold text-cream mb-4 text-center">
                             🏆 Today's Matchup
                         </Text>
 
                         {/* Team 1 */}
-                        <View className="bg-brand-orange rounded-lg p-4 mb-4 border-2 border-cream">
+                        <View className="bg-brand-orange rounded-2xl p-4 mb-4 border-2 border-cream shadow-md shadow-black/25">
                             <Text className="text-xl font-bold text-cream mb-3 text-center">
                                 Team 1
                             </Text>
@@ -164,12 +172,12 @@ export default function TeamGeneratorScreen() {
                         </View>
 
                         {/* VS */}
-                        <Text className="text-2xl font-bold text-cream text-center mb-4">
+                        <Text className="text-2xl font-bold text-gold text-center mb-4">
                             VS
                         </Text>
 
                         {/* Team 2 */}
-                        <View className="bg-forest-green rounded-lg p-4 mb-4 border-4 border-brand-orange">
+                        <View className="bg-forest-green rounded-2xl p-4 mb-4 border-4 border-brand-orange shadow-md shadow-black/25">
                             <Text className="text-xl font-bold text-cream mb-3 text-center">
                                 Team 2
                             </Text>
@@ -196,8 +204,16 @@ export default function TeamGeneratorScreen() {
                                 <Button
                                     title="Start Game"
                                     onPress={() => {
-                                        // TODO: Navigate to score keeping screen
-                                        console.log('Start game with teams:', matchup);
+                                        const playerNames: Record<string, string> = {};
+                                        members.forEach(m => playerNames[m.uid] = m.displayName);
+                                        router.push({
+                                            pathname: '/game',
+                                            params: {
+                                                team1: JSON.stringify(matchup.team1),
+                                                team2: JSON.stringify(matchup.team2),
+                                                playerNames: JSON.stringify(playerNames)
+                                            }
+                                        });
                                     }}
                                     variant="primary"
                                     size="md"

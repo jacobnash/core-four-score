@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .card {
+        @apply rounded-card border border-cream/25 bg-pine/90 shadow-card;
+    }
+
+    .card-strong {
+        @apply rounded-card border border-gold/35 bg-pine/95 shadow-card-strong;
+    }
+
+    .card-plain {
+        @apply rounded-card border border-cream/20 bg-forest-green/80 shadow-card;
+    }
+
+    .section-bg {
+        @apply bg-gradient-to-b from-charcoal via-forest-green to-pine;
+    }
+
+    .title-lg {
+        @apply text-3xl font-black text-cream;
+    }
+
+    .title-md {
+        @apply text-2xl font-bold text-cream;
+    }
+
+    .eyebrow {
+        @apply text-sm font-semibold tracking-wide text-gold uppercase;
+    }
+
+    .body {
+        @apply text-base text-cream;
+    }
+
+    .body-dim {
+        @apply text-base text-cream/80;
+    }
+
+    .chip {
+        @apply px-2 py-1 rounded-pill bg-forest-green/70 border border-cream/30 text-xs font-semibold text-cream;
+    }
+
+    .chip-ghost {
+        @apply px-2 py-1 rounded-pill border border-cream/30 text-xs font-semibold text-cream/80;
+    }
+}
+
+@layer utilities {
+    .glass-overlay {
+        @apply bg-forest-green/60 border border-cream/20;
+    }
+}

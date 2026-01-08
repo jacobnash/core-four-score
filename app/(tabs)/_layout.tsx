@@ -1,15 +1,12 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { Text } from 'react-native';
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+// Simple emoji icon component for tabs
+function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
+  return <Text style={{ fontSize: 24, color }}>{emoji}</Text>;
 }
 
 export default function TabLayout() {
@@ -33,14 +30,14 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'The Lodge',
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon emoji="🏠" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="shake-the-hat"
         options={{
           title: 'Shake the Hat',
-          tabBarIcon: ({ color }) => <TabBarIcon name="random" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon emoji="🎩" color={color} />,
         }}
       />
     </Tabs>

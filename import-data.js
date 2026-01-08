@@ -5,20 +5,21 @@
  * Run with: node import-data.js
  */
 
-const { initializeApp } = require('firebase/app');
-const { getFirestore, collection, doc, setDoc, Timestamp } = require('firebase/firestore');
+const fs = require('fs');
+const admin = require('firebase-admin');
+const { Timestamp } = require('firebase-admin/firestore');
 
-const firebaseConfig = {
-    apiKey: "AIzaSyA2hN4pECNQfFEkXXjMHBSd1vwZ1ZCxvlY",
-    authDomain: "core-four-score.firebaseapp.com",
-    projectId: "core-four-score",
-    storageBucket: "core-four-score.firebasestorage.app",
-    messagingSenderId: "605611128312",
-    appId: "1:605611128312:web:3a723fa2f74aa9cc18920d"
-};
+const serviceAccountPath = process.env.SERVICE_ACCOUNT || './serviceAccountKey.json';
+if (!fs.existsSync(serviceAccountPath)) {
+    console.error(`Service account file not found at ${serviceAccountPath}. Set SERVICE_ACCOUNT or place serviceAccountKey.json at project root.`);
+    process.exit(1);
+}
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+admin.initializeApp({
+    credential: admin.credential.cert(require(serviceAccountPath)),
+});
+
+const db = admin.firestore();
 
 // Historical game data
 const games = [
@@ -40,10 +41,10 @@ const games = [
 
 // Player mappings (you'll need to replace these with actual Firebase UIDs after first sign-in)
 const players = {
-    cait: { name: 'Cait', uid: 'cait-placeholder', email: 'cait@example.com' },
+    cait: { name: 'Cait', uid: 'SvmJSd43QveWNKw8w1qEh0zulTm1', email: 'caitlynn.nash@gmail.com' },
     dylan: { name: 'Dylan', uid: 'dylan-placeholder', email: 'dylan@example.com' },
-    grace: { name: 'Grace', uid: 'grace-placeholder', email: 'grace@example.com' },
-    jacob: { name: 'Jacob', uid: 'lkW4ipmG1FM8MYtWI0JlUpqutzv1', email: 'jacob@example.com' },
+    grace: { name: 'Grace', uid: 'WDzkjttsK9g4Uobrywwe8o2nbtN2', email: 'grace.studden@gmail.com' },
+    jacob: { name: 'Jacob', uid: 'lkW4ipmG1FM8MYtWI0JlUpqutzv1', email: 'jacobloydnash@gmail.com' },
 };
 
 // Calculate totals from your spreadsheet
@@ -79,10 +80,10 @@ async function importData() {
     try {
         // Step 1: Create tournament
         console.log('Creating tournament...');
-        const tournamentRef = doc(db, 'tournaments', 'default-tournament');
-        await setDoc(tournamentRef, {
+        const tournamentRef = db.collection('tournaments').doc('default-tournament');
+        await tournamentRef.set({
             name: 'The Core Four',
-            memberIds: ['cait-placeholder', 'dylan-placeholder', 'grace-placeholder', 'jacob-placeholder'],
+            memberIds: Object.values(players).map(p => p.uid),
             createdAt: Timestamp.now(),
             updatedAt: Timestamp.now()
         });
@@ -91,8 +92,8 @@ async function importData() {
         // Step 2: Create user profiles with stats
         console.log('Creating user profiles...');
         for (const [key, player] of Object.entries(players)) {
-            const userRef = doc(db, 'users', player.uid);
-            await setDoc(userRef, {
+            const userRef = db.collection('users').doc(player.uid);
+            await userRef.set({
                 displayName: player.name,
                 email: player.email,
                 photoURL: null,
@@ -112,7 +113,7 @@ async function importData() {
         console.log('Importing sample games...');
         let importCount = 0;
         for (const game of games.slice(0, 10)) { // Import first 10 for demo
-            const gameRef = doc(collection(db, 'games'));
+            const gameRef = db.collection('games').doc();
 
             // Parse date
             const [month, day, year] = game.date.split('/');
@@ -120,17 +121,17 @@ async function importData() {
             const gameDate = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
 
             // Create game document (simplified - one per entry)
-            await setDoc(gameRef, {
+            await gameRef.set({
                 timestamp: Timestamp.fromDate(gameDate),
                 location: game.location,
                 teams: [
                     {
-                        playerIds: ['cait-placeholder', 'dylan-placeholder'],
+                        playerIds: [players.cait.uid, players.dylan.uid],
                         score: Math.max(game.cait, game.dylan),
                         isWinner: (game.cait + game.dylan) > (game.grace + game.jacob)
                     },
                     {
-                        playerIds: ['grace-placeholder', 'jacob-placeholder'],
+                        playerIds: [players.grace.uid, players.jacob.uid],
                         score: Math.max(game.grace, game.jacob),
                         isWinner: (game.grace + game.jacob) > (game.cait + game.dylan)
                     }
@@ -147,14 +148,14 @@ async function importData() {
         // Step 4: Import renegs (The Wall of Shame!)
         console.log('Importing renegs (Wall of Shame)...');
         for (const reneg of renegs) {
-            const renegRef = doc(collection(db, 'renegs'));
+            const renegRef = db.collection('renegs').doc();
 
             // Parse date
             const [month, day, year] = reneg.date.split('/');
             const fullYear = year.length === 2 ? `20${year}` : year;
             const renegDate = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
 
-            await setDoc(renegRef, {
+            await renegRef.set({
                 playerId: players[reneg.player].uid,
                 gameId: 'historical',
                 excuse: reneg.excuse,

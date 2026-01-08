@@ -20,18 +20,18 @@ export const Button: React.FC<ButtonProps> = ({
     loading = false,
     className = '',
 }) => {
-    const baseStyles = 'rounded-lg items-center justify-center';
+    const baseStyles = 'rounded-pill flex-row items-center justify-center shadow-button transition-transform duration-100';
 
     const variantStyles = {
-        primary: 'bg-brand-orange',
-        secondary: 'bg-forest-green',
-        danger: 'bg-red-600',
-    };
+        primary: 'bg-brand-orange border border-gold/40',
+        secondary: 'bg-forest-green border border-cream/35',
+        danger: 'bg-red-600 border border-red-300/60',
+    } as const;
 
     const sizeStyles = {
-        sm: 'px-4 py-2',
-        md: 'px-6 py-3',
-        lg: 'px-8 py-4',
+        sm: 'h-10 px-4',
+        md: 'h-12 px-5',
+        lg: 'h-14 px-6',
     };
 
     const textSizeStyles = {
@@ -40,7 +40,13 @@ export const Button: React.FC<ButtonProps> = ({
         lg: 'text-lg',
     };
 
-    const disabledStyles = disabled || loading ? 'opacity-50' : '';
+    const disabledStyles = disabled || loading ? 'opacity-60' : 'active:scale-[0.985]';
+
+    const textColorStyles = {
+        primary: 'text-cream',
+        secondary: 'text-gold',
+        danger: 'text-cream',
+    } as const;
 
     return (
         <TouchableOpacity
@@ -51,7 +57,7 @@ export const Button: React.FC<ButtonProps> = ({
             {loading ? (
                 <ActivityIndicator color="#F5F5DC" />
             ) : (
-                <Text className={`${textSizeStyles[size]} font-bold text-cream`}>
+                <Text className={`${textSizeStyles[size]} font-semibold tracking-wide ${textColorStyles[variant]}`}>
                     {title}
                 </Text>
             )}

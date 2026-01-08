@@ -1,11 +1,17 @@
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import {
+    browserLocalPersistence,
+    browserSessionPersistence,
     signOut as firebaseSignOut,
     User as FirebaseUser,
+    getRedirectResult,
     GoogleAuthProvider,
+    inMemoryPersistence,
     onAuthStateChanged,
-    signInWithPopup
+    setPersistence,
+    signInWithPopup,
+    signInWithRedirect
 } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
@@ -66,6 +72,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return unsubscribe;
     }, []);
 
+    // Handle possible redirect results on web to avoid "missing initial state" noise
+    useEffect(() => {
+        if (Platform.OS === 'web') {
+            (async () => {
+                try {
+                    const cred = await getRedirectResult(auth);
+                    if (cred?.user) {
+                        await handleFirebaseUser(cred.user);
+                    }
+                } catch (e) {
+                    // Ignore redirect-related errors when no state exists
+                    console.debug('No redirect result to process:', e);
+                }
+            })();
+        }
+    }, []);
+
     const handleFirebaseUser = async (firebaseUser: FirebaseUser) => {
         // Check if user exists in Firestore
         let userData = await userService.getUser(firebaseUser.uid);
@@ -92,10 +115,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const signInWithGoogle = async () => {
         try {
             if (Platform.OS === 'web') {
-                // Web: Use Firebase popup
+                // Web: configure persistence, then try popup with graceful fallbacks
+                try {
+                    await setPersistence(auth, browserLocalPersistence);
+                } catch {
+                    try {
+                        await setPersistence(auth, browserSessionPersistence);
+                    } catch {
+                        await setPersistence(auth, inMemoryPersistence);
+                    }
+                }
                 const provider = new GoogleAuthProvider();
-                const result = await signInWithPopup(auth, provider);
-                await handleFirebaseUser(result.user);
+                provider.setCustomParameters({ prompt: 'select_account' });
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    await handleFirebaseUser(result.user);
+                } catch (err: any) {
+                    // If popup is blocked or storage unsupported, fallback to redirect
+                    const code = err?.code as string | undefined;
+                    if (code === 'auth/popup-blocked' || code === 'auth/web-storage-unsupported' || code === 'auth/operation-not-supported-in-this-environment') {
+                        await signInWithRedirect(auth, provider);
+                        return;
+                    }
+                    throw err;
+                }
             } else {
                 // Mobile: Use Expo Auth Session
                 promptAsync();
