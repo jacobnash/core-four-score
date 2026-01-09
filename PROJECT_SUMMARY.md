@@ -42,7 +42,6 @@
 - ✅ Quick action buttons
 - ✅ Pull-to-refresh functionality
 
-**Shake the Hat (Team Generator)**
 - ✅ Tournament member listing
 - ✅ Player selection with checkboxes
 - ✅ Random team generation algorithm
@@ -85,7 +84,6 @@ core-score/
 │   ├── (tabs)/
 │   │   ├── _layout.tsx          # Tab navigation with theme
 │   │   ├── index.tsx            # The Lodge (Home)
-│   │   └── two.tsx              # Shake the Hat (Team Generator)
 │   └── _layout.tsx              # Root with AuthProvider
 ├── components/
 │   ├── Button.tsx               # Themed button component

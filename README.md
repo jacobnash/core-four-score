@@ -5,7 +5,6 @@ A Euchre tournament companion app built with React Native (Expo) featuring a rus
 ## 🎯 Features
 
 - **The Lodge (Home Dashboard)**: Leaderboard with wins, win percentage, and reneg counts
-- **Shake the Hat (Team Generator)**: Randomly generate teams from present players
 - **Google Authentication**: Secure sign-in with Google accounts
 - **Real-time Stats**: Firebase Firestore backend for live data sync
 - **Cross-Platform**: Works on iOS, Android (Expo Go), and Web (PWA)
@@ -167,7 +166,6 @@ core-score/
 ├── app/                    # Expo Router screens
 │   ├── (tabs)/            # Tab navigation
 │   │   ├── index.tsx      # Home (The Lodge)
-│   │   └── two.tsx        # Team Generator (Shake the Hat)
 │   └── _layout.tsx        # Root layout with AuthProvider
 ├── components/            # Reusable UI components
 │   ├── Button.tsx
@@ -196,11 +194,8 @@ core-score/
 
 ### Playing Games
 
-1. Go to "Shake the Hat" tab
-2. Select which players are present
-3. Tap "Shake the Hat" to generate random teams
-4. Start the game and track scores
-5. Log renegs with the "Game Warden Citation" modal
+1. Start the game and track scores
+2. Log renegs with the "Game Warden Citation" modal
 
 ### Viewing Stats
 

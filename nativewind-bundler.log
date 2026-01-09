@@ -1,0 +1,1227 @@
+
+> core-score@1.0.0 start
+> expo start --reset-cache
+
+2026-01-09T00:28:11.287Z expo:telemetry Switching strategy from detached to instant
+2026-01-09T00:28:11.336Z expo:telemetry Recording 1 event(s)
+2026-01-09T00:28:11.345Z expo:env Loaded environment variables from: /Users/jnash/Source/core-score/.env
+2026-01-09T00:28:11.345Z expo:env /Users/jnash/Source/core-score/.env.development does not exist, skipping this env file
+2026-01-09T00:28:11.345Z expo:env /Users/jnash/Source/core-score/.env.local does not exist, skipping this env file
+2026-01-09T00:28:11.345Z expo:env /Users/jnash/Source/core-score/.env.development.local does not exist, skipping this env file
+env: load .env
+env: export FIREBASE_API_KEY FIREBASE_AUTH_DOMAIN FIREBASE_PROJECT_ID FIREBASE_STORAGE_BUCKET FIREBASE_MESSAGING_SENDER_ID FIREBASE_APP_ID GOOGLE_WEB_CLIENT_ID GOOGLE_IOS_CLIENT_ID GOOGLE_ANDROID_CLIENT_ID DEFAULT_TOURNAMENT_ID EAS_PROJECT_ID
+Starting project at /Users/jnash/Source/core-score
+2026-01-09T00:28:11.472Z expo:utils:fileNotifier Observing /Users/jnash/Source/core-score/babel.config.js
+2026-01-09T00:28:11.558Z expo:start:server:devServer Stopping dev server (bundler: metro)
+2026-01-09T00:28:11.558Z expo:start:server:devServer Stopped dev server (bundler: metro)
+2026-01-09T00:28:11.574Z expo:start:server:metro:router Using app as the root directory for Expo Router.
+2026-01-09T00:28:11.807Z expo:metro:config react-native-reanimated package.json: /Users/jnash/Source/core-score/node_modules/react-native-reanimated/package.json
+2026-01-09T00:28:11.807Z expo:metro:config react-native-worklets package.json: /Users/jnash/Source/core-score/node_modules/react-native-worklets/package.json
+
+2026-01-09T00:28:11.857Z expo:metro:config react-native-reanimated package.json: /Users/jnash/Source/core-score/node_modules/react-native-reanimated/package.json
+2026-01-09T00:28:11.858Z expo:metro:config react-native-worklets package.json: /Users/jnash/Source/core-score/node_modules/react-native-worklets/package.json
+Expo Metro config:
+- Version: 54.0.13
+- Extensions: ts, tsx, mjs, js, jsx, json, cjs, scss, sass, css
+- React Native: /Users/jnash/Source/core-score/node_modules/react-native
+- Watch Folders: 
+- Node Module Paths: 
+- Sass: null
+- Reanimated: 4.1.6
+- Worklets: 0.5.1
+- Babel Runtime: null
+
+
+Expo Metro config:
+- Version: 54.0.13
+- Extensions: ts, tsx, mjs, js, jsx, json, cjs, scss, sass, css
+- React Native: /Users/jnash/Source/core-score/node_modules/react-native
+- Watch Folders: 
+- Node Module Paths: 
+- Sass: null
+- Reanimated: 4.1.6
+- Worklets: 0.5.1
+- Babel Runtime: null
+
+2026-01-09T00:28:12.047Z expo:metro:withMetroResolvers Appending 8 custom resolvers to Metro config. (has custom resolver: true)
+2026-01-09T00:28:12.047Z expo:metro:withMetroSupervisingTransformWorker Detected customized "transformerPath"
+2026-01-09T00:28:12.047Z expo:metro:withMetroSupervisingTransformWorker Applying transform worker supervisor to "transformerPath"
+2026-01-09T00:28:12.100Z expo:start:server:urlCreator URL: http://127.0.0.1:8081
+Starting Metro Bundler
+2026-01-09T00:28:12.569Z expo:start:server:middleware:serveStatic Serving static files from: /Users/jnash/Source/core-score/public
+2026-01-09T00:28:12.623Z expo:start:server:urlCreator URL: exp://192.168.17.38:8081
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+2026-01-09T00:28:12.649Z expo:doctor:apple:simulatorApp Simulator app id: com.apple.iphonesimulator
+2026-01-09T00:28:12.655Z expo:start:server:developmentSession Development session will not ping because the user is not authenticated and there are no devices.
+2026-01-09T00:28:12.656Z expo:utils:fileNotifier Observing /Users/jnash/Source/core-score/metro.config.js
+2026-01-09T00:28:12.656Z expo:start:server:metro:waitForTypescript Watching file changes: [
+  '/Users/jnash/Source/core-score/.env.development.local',
+  '/Users/jnash/Source/core-score/.env.local',
+  '/Users/jnash/Source/core-score/.env.development',
+  '/Users/jnash/Source/core-score/.env'
+]
+2026-01-09T00:28:12.657Z expo:doctor:typescriptSupport Ensuring TypeScript support is setup
+2026-01-09T00:28:12.660Z expo:doctor:dependencies:getMissingPackages Required package "typescript" found (no version constraint specified).
+2026-01-09T00:28:12.660Z expo:doctor:dependencies:getMissingPackages Required package "@types/react" found (no version constraint specified).
+2026-01-09T00:28:12.663Z expo:typed-routes Ensuring typed routes side-effects are setup (experiments.typedRoutes: true, typesDirectory: /Users/jnash/Source/core-score/.expo/types)
+2026-01-09T00:28:12.665Z expo:start:server:metro:router Using app as the root directory for Expo Router.
+2026-01-09T00:28:12.669Z expo:start:server:metro:metroWatchTypeScriptFiles Waiting for TypeScript files to be added to the project...
+2026-01-09T00:28:12.670Z expo:doctor:dependencies:bundledNativeModules Fetching bundled native modules from the server...
+2026-01-09T00:28:12.947Z expo:doctor:dependencies:validate Checking dependencies for 54.0.0: {
+  '@expo/vector-icons': '^15.0.3',
+  '@react-native-async-storage/async-storage': '^2.2.0',
+  '@react-native-google-signin/google-signin': '^16.1.1',
+  '@react-navigation/native': '^7.1.8',
+  expo: '~54.0.31',
+  'expo-auth-session': '^7.0.10',
+  'expo-constants': '~18.0.13',
+  'expo-crypto': '^15.0.8',
+  'expo-font': '~14.0.10',
+  'expo-linking': '~8.0.11',
+  'expo-router': '~6.0.21',
+  'expo-splash-screen': '~31.0.13',
+  'expo-status-bar': '~3.0.9',
+  'expo-web-browser': '~15.0.10',
+  firebase: '^12.7.0',
+  'firebase-admin': '^13.6.0',
+  nativewind: '^4.2.1',
+  react: '19.1.0',
+  'react-dom': '19.1.0',
+  'react-native': '0.81.5',
+  'react-native-reanimated': '~4.1.1',
+  'react-native-safe-area-context': '~5.6.0',
+  'react-native-screens': '~4.16.0',
+  'react-native-web': '~0.21.0',
+  'react-native-worklets': '0.5.1',
+  tailwindcss: '^3.3.2',
+  '@types/jest': '^29.5.14',
+  '@types/react': '~19.1.0',
+  jest: '~29.7.0',
+  'jest-expo': '^54.0.16',
+  'react-test-renderer': '19.1.0',
+  typescript: '~5.9.2'
+}
+2026-01-09T00:28:12.948Z expo:doctor:dependencies:validate Comparing known versions: [
+  '@expo/vector-icons',
+  '@react-native-async-storage/async-storage',
+  'expo',
+  'expo-auth-session',
+  'expo-constants',
+  'expo-crypto',
+  'expo-font',
+  'expo-linking',
+  'expo-router',
+  'expo-splash-screen',
+  'expo-status-bar',
+  'expo-web-browser',
+  'react',
+  'react-dom',
+  'react-native',
+  'react-native-reanimated',
+  'react-native-safe-area-context',
+  'react-native-screens',
+  'react-native-web',
+  'react-native-worklets',
+  '@types/jest',
+  '@types/react',
+  'jest',
+  'jest-expo',
+  'typescript'
+]
+2026-01-09T00:28:12.948Z expo:doctor:dependencies:validate Skipping packages that cannot be versioned automatically: [
+  '@react-native-google-signin/google-signin',
+  '@react-navigation/native',
+  'firebase',
+  'firebase-admin',
+  'nativewind',
+  'tailwindcss',
+  'react-test-renderer'
+]
+2026-01-09T00:28:12.953Z expo:doctor:dependencies:validate Package versions: {
+  '@expo/vector-icons': '15.0.3',
+  '@react-native-async-storage/async-storage': '2.2.0',
+  expo: '54.0.31',
+  'expo-auth-session': '7.0.10',
+  'expo-constants': '18.0.13',
+  'expo-crypto': '15.0.8',
+  'expo-font': '14.0.10',
+  'expo-linking': '8.0.11',
+  'expo-router': '6.0.21',
+  'expo-splash-screen': '31.0.13',
+  'expo-status-bar': '3.0.9',
+  'expo-web-browser': '15.0.10',
+  react: '19.1.0',
+  'react-dom': '19.1.0',
+  'react-native': '0.81.5',
+  'react-native-reanimated': '4.1.6',
+  'react-native-safe-area-context': '5.6.2',
+  'react-native-screens': '4.16.0',
+  'react-native-web': '0.21.2',
+  'react-native-worklets': '0.5.1',
+  '@types/jest': '29.5.14',
+  '@types/react': '19.1.17',
+  jest: '29.7.0',
+  'jest-expo': '54.0.16',
+  typescript: '5.9.3'
+}
+2026-01-09T00:28:12.957Z expo:doctor:dependencies:validate Incorrect dependencies: []
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+2026-01-09T00:28:41.805Z expo:start:server:middleware:serveStatic Maybe serve static: /
+2026-01-09T00:28:41.818Z expo:start:server:metro manifest {
+  apiRoutes: [],
+  htmlRoutes: [
+    {
+      file: './(tabs)/index.tsx',
+      page: '/(tabs)/index',
+      namedRegex: /^(?:\/\(tabs\))?(?:\/)?$/,
+      routeKeys: {}
+    },
+    {
+      file: './game.tsx',
+      page: '/game',
+      namedRegex: /^\/game(?:\/)?$/,
+      routeKeys: {}
+    },
+    {
+      file: './modal.tsx',
+      page: '/modal',
+      namedRegex: /^\/modal(?:\/)?$/,
+      routeKeys: {}
+    },
+    {
+      file: 'expo-router/build/views/Sitemap.js',
+      page: '/_sitemap',
+      namedRegex: /^\/_sitemap(?:\/)?$/,
+      routeKeys: {},
+      generated: true
+    },
+    {
+      file: './(tabs)/shake-the-hat.tsx',
+      page: '/(tabs)/shake-the-hat',
+      namedRegex: /^(?:\/\(tabs\))?\/shake\-the\-hat(?:\/)?$/,
+      routeKeys: {}
+    }
+  ],
+  notFoundRoutes: [
+    {
+      file: './+not-found.tsx',
+      page: '/+not-found',
+      namedRegex: /^(?:\/(?<notfound>.+?))?(?:\/)?$/,
+      routeKeys: [Object]
+    }
+  ],
+  redirects: [],
+  rewrites: [],
+  middleware: undefined
+}
+2026-01-09T00:28:41.821Z expo:start:server:middleware:manifest Resolved entry point: node_modules/expo-router/entry.js (project root: /Users/jnash/Source/core-score)
+2026-01-09T00:28:41.823Z expo:start:server:middleware:manifest Resolved entry point: node_modules/expo-router/entry.js (project root: /Users/jnash/Source/core-score)
+2026-01-09T00:28:41.826Z expo:start:server:metro:multi-platform Enabling alias: react-native-vector-icons -> @expo/vector-icons
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+| 2026-01-09T00:28:42.047Z expo:metro-config:supervising-transform-worker Loading custom transformer at "/Users/jnash/Source/core-score/node_modules/react-native-css-interop/dist/metro/transformer.js"
+| 2026-01-09T00:28:42.047Z expo:metro-config:supervising-transform-worker Loading custom transformer at "/Users/jnash/Source/core-score/node_modules/react-native-css-interop/dist/metro/transformer.js"
+| 2026-01-09T00:28:42.050Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-worker" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-worker/src/index.js"
+| 2026-01-09T00:28:42.050Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-worker" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-worker/src/index.js"
+| 2026-01-09T00:28:42.050Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Assets" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Assets.js"
+| 2026-01-09T00:28:42.050Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Bundler/util" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Bundler/util.js"
+| 2026-01-09T00:28:42.050Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Assets" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Assets.js"
+| 2026-01-09T00:28:42.050Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Bundler/util" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Bundler/util.js"
+| 2026-01-09T00:28:42.051Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache" -> "/Users/jnash/Source/core-score/node_modules/metro-cache/src/index.js"
+| 2026-01-09T00:28:42.051Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache-key" -> "/Users/jnash/Source/core-score/node_modules/metro-cache-key/src/index.js"
+| 2026-01-09T00:28:42.051Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-source-map" -> "/Users/jnash/Source/core-score/node_modules/metro-source-map/src/source-map.js"
+| 2026-01-09T00:28:42.051Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache" -> "/Users/jnash/Source/core-score/node_modules/metro-cache/src/index.js"
+| 2026-01-09T00:28:42.051Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache-key" -> "/Users/jnash/Source/core-score/node_modules/metro-cache-key/src/index.js"
+| 2026-01-09T00:28:42.051Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-plugins" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-plugins/src/index.js"
+| 2026-01-09T00:28:42.051Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/collectDependencies" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/collectDependencies.js"
+| 2026-01-09T00:28:42.051Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-source-map" -> "/Users/jnash/Source/core-score/node_modules/metro-source-map/src/source-map.js"
+| 2026-01-09T00:28:42.051Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-plugins" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-plugins/src/index.js"
+| 2026-01-09T00:28:42.051Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/collectDependencies" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/collectDependencies.js"
+| 2026-01-09T00:28:42.052Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/generateImportNames" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/generateImportNames.js"
+| 2026-01-09T00:28:42.052Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/importLocationsPlugin" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/importLocationsPlugin.js"
+| 2026-01-09T00:28:42.052Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/JsFileWrapping" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/JsFileWrapping.js"
+| 2026-01-09T00:28:42.052Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/generateImportNames" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/generateImportNames.js"
+| 2026-01-09T00:28:42.052Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/importLocationsPlugin" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/importLocationsPlugin.js"
+| 2026-01-09T00:28:42.053Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/JsFileWrapping" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/JsFileWrapping.js"
+| 2026-01-09T00:28:42.168Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:42.226Z expo:babel:exports Found assignment to module.exports or exports at 39
+2026-01-09T00:28:42.264Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.265Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react-dom/server.node ->  node:react-dom/server.node
+| 2026-01-09T00:28:42.297Z expo:babel:exports Found assignment to module.exports or exports at 4
+2026-01-09T00:28:42.299Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-jsx-dev-runtime.production.js
+| 2026-01-09T00:28:42.320Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:42.328Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:42.345Z expo:babel:exports Found assignment to module.exports or exports at 3
+2026-01-09T00:28:42.382Z expo:start:server:metro:multi-platform Redirecting module "/Users/jnash/Source/core-score/node_modules/react-native-web/dist/exports/BackHandler/index.js" to shim
+| 2026-01-09T00:28:42.361Z expo:babel:router routerEntry /Users/jnash/Source/core-score/node_modules/expo-router/entry.js /Users/jnash/Source/core-score/app ../../app
+| 2026-01-09T00:28:42.434Z expo:babel:exports Found assignment to module.exports or exports at 37
+2026-01-09T00:28:42.457Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): debug ->  node:debug
+2026-01-09T00:28:42.481Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:42.453Z expo:babel:exports Found assignment to module.exports or exports at 9
+| 2026-01-09T00:28:42.463Z expo:babel:exports Found assignment to module.exports or exports at 9
+| 2026-01-09T00:28:42.505Z expo:babel:exports Found assignment to module.exports or exports at 325
+2026-01-09T00:28:42.520Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.538Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:42.604Z expo:metro-config:supervising-transform-worker Loading custom transformer at "/Users/jnash/Source/core-score/node_modules/react-native-css-interop/dist/metro/transformer.js"
+| 2026-01-09T00:28:42.608Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-worker" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-worker/src/index.js"
+| 2026-01-09T00:28:42.609Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Assets" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Assets.js"
+| 2026-01-09T00:28:42.609Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Bundler/util" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Bundler/util.js"
+| 2026-01-09T00:28:42.610Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache" -> "/Users/jnash/Source/core-score/node_modules/metro-cache/src/index.js"
+| 2026-01-09T00:28:42.610Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache-key" -> "/Users/jnash/Source/core-score/node_modules/metro-cache-key/src/index.js"
+| 2026-01-09T00:28:42.610Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-source-map" -> "/Users/jnash/Source/core-score/node_modules/metro-source-map/src/source-map.js"
+| 2026-01-09T00:28:42.610Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-plugins" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-plugins/src/index.js"
+| 2026-01-09T00:28:42.610Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/collectDependencies" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/collectDependencies.js"
+| 2026-01-09T00:28:42.611Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/generateImportNames" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/generateImportNames.js"
+| 2026-01-09T00:28:42.611Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/importLocationsPlugin" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/importLocationsPlugin.js"
+| 2026-01-09T00:28:42.611Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/JsFileWrapping" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/JsFileWrapping.js"
+| 2026-01-09T00:28:42.624Z expo:metro-config:supervising-transform-worker Loading custom transformer at "/Users/jnash/Source/core-score/node_modules/react-native-css-interop/dist/metro/transformer.js"
+| 2026-01-09T00:28:42.626Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-worker" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-worker/src/index.js"
+| 2026-01-09T00:28:42.628Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Assets" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Assets.js"
+| 2026-01-09T00:28:42.628Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Bundler/util" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Bundler/util.js"
+| 2026-01-09T00:28:42.628Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache" -> "/Users/jnash/Source/core-score/node_modules/metro-cache/src/index.js"
+| 2026-01-09T00:28:42.628Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache-key" -> "/Users/jnash/Source/core-score/node_modules/metro-cache-key/src/index.js"
+| 2026-01-09T00:28:42.628Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-source-map" -> "/Users/jnash/Source/core-score/node_modules/metro-source-map/src/source-map.js"
+| 2026-01-09T00:28:42.629Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-plugins" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-plugins/src/index.js"
+| 2026-01-09T00:28:42.629Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/collectDependencies" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/collectDependencies.js"
+| 2026-01-09T00:28:42.630Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/generateImportNames" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/generateImportNames.js"
+| 2026-01-09T00:28:42.630Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/importLocationsPlugin" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/importLocationsPlugin.js"
+| 2026-01-09T00:28:42.630Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/JsFileWrapping" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/JsFileWrapping.js"
+| 2026-01-09T00:28:42.626Z expo:metro-config:supervising-transform-worker Loading custom transformer at "/Users/jnash/Source/core-score/node_modules/react-native-css-interop/dist/metro/transformer.js"
+| 2026-01-09T00:28:42.628Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-worker" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-worker/src/index.js"
+| 2026-01-09T00:28:42.629Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Assets" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Assets.js"
+| 2026-01-09T00:28:42.630Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Bundler/util" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Bundler/util.js"
+| 2026-01-09T00:28:42.630Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache" -> "/Users/jnash/Source/core-score/node_modules/metro-cache/src/index.js"
+| 2026-01-09T00:28:42.630Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache-key" -> "/Users/jnash/Source/core-score/node_modules/metro-cache-key/src/index.js"
+| 2026-01-09T00:28:42.630Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-source-map" -> "/Users/jnash/Source/core-score/node_modules/metro-source-map/src/source-map.js"
+| 2026-01-09T00:28:42.630Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-plugins" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-plugins/src/index.js"
+| 2026-01-09T00:28:42.630Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/collectDependencies" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/collectDependencies.js"
+| 2026-01-09T00:28:42.632Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/generateImportNames" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/generateImportNames.js"
+| 2026-01-09T00:28:42.632Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/importLocationsPlugin" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/importLocationsPlugin.js"
+| 2026-01-09T00:28:42.630Z expo:metro-config:supervising-transform-worker Loading custom transformer at "/Users/jnash/Source/core-score/node_modules/react-native-css-interop/dist/metro/transformer.js"
+| 2026-01-09T00:28:42.632Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/JsFileWrapping" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/JsFileWrapping.js"
+| 2026-01-09T00:28:42.633Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-worker" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-worker/src/index.js"
+2026-01-09T00:28:42.656Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): fontfaceobserver ->  node:fontfaceobserver
+2026-01-09T00:28:42.669Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.677Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react-dom/client ->  node:react-dom/client
+| 2026-01-09T00:28:42.633Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Assets" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Assets.js"
+| 2026-01-09T00:28:42.634Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Bundler/util" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Bundler/util.js"
+| 2026-01-09T00:28:42.635Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache" -> "/Users/jnash/Source/core-score/node_modules/metro-cache/src/index.js"
+| 2026-01-09T00:28:42.635Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache-key" -> "/Users/jnash/Source/core-score/node_modules/metro-cache-key/src/index.js"
+| 2026-01-09T00:28:42.635Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-source-map" -> "/Users/jnash/Source/core-score/node_modules/metro-source-map/src/source-map.js"
+| 2026-01-09T00:28:42.635Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-plugins" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-plugins/src/index.js"
+| 2026-01-09T00:28:42.635Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/collectDependencies" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/collectDependencies.js"
+| 2026-01-09T00:28:42.637Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/generateImportNames" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/generateImportNames.js"
+| 2026-01-09T00:28:42.637Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/importLocationsPlugin" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/importLocationsPlugin.js"
+| 2026-01-09T00:28:42.637Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/JsFileWrapping" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/JsFileWrapping.js"
+| 2026-01-09T00:28:42.650Z expo:babel:router routerEntry /Users/jnash/Source/core-score/node_modules/expo-router/entry.js /Users/jnash/Source/core-score/app ../../app
+| 2026-01-09T00:28:42.648Z expo:metro-config:supervising-transform-worker Loading custom transformer at "/Users/jnash/Source/core-score/node_modules/react-native-css-interop/dist/metro/transformer.js"
+| 2026-01-09T00:28:42.651Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-worker" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-worker/src/index.js"
+| 2026-01-09T00:28:42.653Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Assets" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Assets.js"
+| 2026-01-09T00:28:42.653Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Bundler/util" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Bundler/util.js"
+| 2026-01-09T00:28:42.653Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache" -> "/Users/jnash/Source/core-score/node_modules/metro-cache/src/index.js"
+| 2026-01-09T00:28:42.653Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache-key" -> "/Users/jnash/Source/core-score/node_modules/metro-cache-key/src/index.js"
+| 2026-01-09T00:28:42.653Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-source-map" -> "/Users/jnash/Source/core-score/node_modules/metro-source-map/src/source-map.js"
+| 2026-01-09T00:28:42.654Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-plugins" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-plugins/src/index.js"
+| 2026-01-09T00:28:42.654Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/collectDependencies" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/collectDependencies.js"
+| 2026-01-09T00:28:42.656Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/generateImportNames" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/generateImportNames.js"
+| 2026-01-09T00:28:42.656Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/importLocationsPlugin" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/importLocationsPlugin.js"
+| 2026-01-09T00:28:42.656Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/JsFileWrapping" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/JsFileWrapping.js"
+| 2026-01-09T00:28:42.655Z expo:metro-config:supervising-transform-worker Loading custom transformer at "/Users/jnash/Source/core-score/node_modules/react-native-css-interop/dist/metro/transformer.js"
+| 2026-01-09T00:28:42.658Z expo:babel:exports Found assignment to module.exports or exports at 26
+| 2026-01-09T00:28:42.660Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:42.661Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-worker" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-worker/src/index.js"
+| 2026-01-09T00:28:42.662Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Assets" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Assets.js"
+| 2026-01-09T00:28:42.663Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/Bundler/util" -> "/Users/jnash/Source/core-score/node_modules/metro/src/Bundler/util.js"
+| 2026-01-09T00:28:42.663Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache" -> "/Users/jnash/Source/core-score/node_modules/metro-cache/src/index.js"
+| 2026-01-09T00:28:42.663Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-cache-key" -> "/Users/jnash/Source/core-score/node_modules/metro-cache-key/src/index.js"
+| 2026-01-09T00:28:42.664Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-source-map" -> "/Users/jnash/Source/core-score/node_modules/metro-source-map/src/source-map.js"
+| 2026-01-09T00:28:42.664Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro-transform-plugins" -> "/Users/jnash/Source/core-score/node_modules/metro-transform-plugins/src/index.js"
+| 2026-01-09T00:28:42.664Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/collectDependencies" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/collectDependencies.js"
+| 2026-01-09T00:28:42.665Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/generateImportNames" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/generateImportNames.js"
+| 2026-01-09T00:28:42.666Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/importLocationsPlugin" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/importLocationsPlugin.js"
+| 2026-01-09T00:28:42.666Z expo:metro-config:supervising-transform-worker:module-mapper Redirected request "metro/private/ModuleGraph/worker/JsFileWrapping" -> "/Users/jnash/Source/core-score/node_modules/metro/src/ModuleGraph/worker/JsFileWrapping.js"
+2026-01-09T00:28:42.705Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:42.783Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:42.784Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.791Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.794Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.795Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.795Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.805Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:42.805Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.805Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.805Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.819Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.819Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.820Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.830Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.830Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.830Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.837Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:42.837Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.837Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.837Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.846Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:42.846Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.846Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.852Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.852Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.852Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.862Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.862Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.862Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.867Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.868Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.868Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.869Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.869Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.882Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.882Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.882Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.906Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:42.906Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.907Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.909Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.917Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:42.917Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.917Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.918Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.934Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:42.934Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.934Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:42.939Z expo:babel:exports Found assignment to module.exports or exports at 36
+2026-01-09T00:28:42.956Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:42.953Z expo:babel:exports Found assignment to module.exports or exports at 10
+2026-01-09T00:28:42.976Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:42.977Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:42.977Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.983Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:42.997Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.004Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:43.004Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:43.005Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.009Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.012Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:43.012Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:43.020Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.023Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:43.023Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:43.023Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:43.013Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:43.038Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.041Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.042Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.043Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.051Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:43.064Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.067Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.091Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:43.091Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:43.056Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.065Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.068Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:43.072Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:43.074Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:43.080Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:43.083Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:43.090Z expo:babel:exports Found assignment to module.exports or exports at 4
+2026-01-09T00:28:43.093Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-jsx-runtime.production.js
+| 2026-01-09T00:28:43.092Z expo:babel:exports Found assignment to module.exports or exports at 40
+2026-01-09T00:28:43.125Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:43.102Z expo:babel:exports Found assignment to module.exports or exports at 8
+| 2026-01-09T00:28:43.108Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.114Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:43.114Z expo:babel:router routerEntry /Users/jnash/Source/core-score/node_modules/expo-router/entry.js /Users/jnash/Source/core-score/app ../../app
+| 2026-01-09T00:28:43.133Z expo:babel:router routerEntry /Users/jnash/Source/core-score/node_modules/expo-router/entry.js /Users/jnash/Source/core-score/app ../../app
+2026-01-09T00:28:43.139Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.148Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:43.164Z expo:babel:exports Found assignment to module.exports or exports at 8
+2026-01-09T00:28:43.186Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.210Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.232Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): query-string ->  node:query-string
+2026-01-09T00:28:43.245Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): fast-deep-equal ->  node:fast-deep-equal
+2026-01-09T00:28:43.247Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.280Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): escape-string-regexp ->  node:escape-string-regexp
+2026-01-09T00:28:43.324Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.326Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.336Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): fast-deep-equal ->  node:fast-deep-equal
+| 2026-01-09T00:28:43.339Z expo:babel:exports Found assignment to module.exports or exports at 20
+2026-01-09T00:28:43.365Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): invariant ->  node:invariant
+2026-01-09T00:28:43.369Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.370Z expo:metro:tsconfig-paths @/components/useColorScheme -> /Users/jnash/Source/core-score/components/useColorScheme
+2026-01-09T00:28:43.374Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.377Z expo:metro:tsconfig-paths @/components/useClientOnlyValue -> /Users/jnash/Source/core-score/components/useClientOnlyValue
+| 2026-01-09T00:28:43.345Z expo:babel:exports Found assignment to module.exports or exports at 1
+2026-01-09T00:28:43.386Z expo:metro:tsconfig-paths @/components/Themed -> /Users/jnash/Source/core-score/components/Themed
+2026-01-09T00:28:43.388Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.391Z expo:metro:tsconfig-paths @/components/EditScreenInfo -> /Users/jnash/Source/core-score/components/EditScreenInfo
+| 2026-01-09T00:28:43.398Z expo:babel:exports Found assignment to module.exports or exports at 1
+2026-01-09T00:28:43.409Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:43.416Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:43.417Z expo:start:server:metro:multi-platform Redirecting module "/Users/jnash/Source/core-score/node_modules/react-native-web/dist/exports/AppRegistry/AppContainer.js" to shim
+2026-01-09T00:28:43.417Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:43.403Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:43.416Z expo:babel:exports Found assignment to module.exports or exports at 52
+| 2026-01-09T00:28:43.427Z expo:babel:exports Found assignment to module.exports or exports at 461
+2026-01-09T00:28:43.436Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+| 2026-01-09T00:28:43.450Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:43.451Z expo:babel:exports Found assignment to module.exports or exports at 8
+| 2026-01-09T00:28:43.453Z expo:babel:exports Found assignment to module.exports or exports at 8
+2026-01-09T00:28:43.493Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): postcss-value-parser ->  node:postcss-value-parser
+| 2026-01-09T00:28:43.496Z expo:babel:exports Found assignment to module.exports or exports at 1
+2026-01-09T00:28:43.519Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.533Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react-dom ->  node:react-dom
+| 2026-01-09T00:28:43.506Z expo:babel:exports Found assignment to module.exports or exports at 1
+2026-01-09T00:28:43.546Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:43.546Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:43.564Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.565Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.567Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:43.567Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:43.568Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:43.574Z expo:babel:exports Found assignment to module.exports or exports at 54
+2026-01-09T00:28:43.578Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:43.578Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:43.578Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:43.579Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.582Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): memoize-one ->  node:memoize-one
+2026-01-09T00:28:43.583Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.585Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.586Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:43.587Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:43.587Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.590Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react.production.js
+2026-01-09T00:28:43.594Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-jsx-dev-runtime.production.js
+2026-01-09T00:28:43.597Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:43.597Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+| 2026-01-09T00:28:43.588Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:43.592Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:43.602Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:43.611Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.626Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:43.633Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:43.648Z expo:babel:router routerEntry /Users/jnash/Source/core-score/node_modules/expo-router/entry.js /Users/jnash/Source/core-score/app ../../app
+2026-01-09T00:28:43.662Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.666Z expo:start:server:metro:multi-platform Redirecting module "/Users/jnash/Source/core-score/node_modules/react-native-web/dist/exports/BackHandler/index.js" to shim
+| 2026-01-09T00:28:43.664Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:43.677Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:43.685Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.694Z expo:babel:exports Found assignment to module.exports or exports at 38
+| 2026-01-09T00:28:43.696Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.700Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:43.701Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.707Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.711Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.723Z expo:babel:exports Found assignment to module.exports or exports at 36
+2026-01-09T00:28:43.759Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.765Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.774Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/createForOfIteratorHelperLoose ->  node:@babel/runtime/helpers/createForOfIteratorHelperLoose
+2026-01-09T00:28:43.774Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:43.774Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:43.777Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): nullthrows ->  node:nullthrows
+2026-01-09T00:28:43.778Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:43.739Z expo:babel:exports Found assignment to module.exports or exports at 8
+| 2026-01-09T00:28:43.749Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.756Z expo:babel:exports Found assignment to module.exports or exports at 28
+| 2026-01-09T00:28:43.758Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.762Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.764Z expo:babel:exports Found assignment to module.exports or exports at 325
+| 2026-01-09T00:28:43.764Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:43.772Z expo:babel:exports Found assignment to module.exports or exports at 36
+2026-01-09T00:28:43.796Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.797Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): invariant ->  node:invariant
+2026-01-09T00:28:43.799Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.804Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): fast-deep-equal ->  node:fast-deep-equal
+| 2026-01-09T00:28:43.777Z expo:babel:exports Found assignment to module.exports or exports at 39
+| 2026-01-09T00:28:43.778Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.780Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:43.786Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:43.792Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.792Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.793Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:43.793Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.799Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.808Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.809Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.811Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.813Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:43.821Z expo:babel:exports Found assignment to module.exports or exports at 3
+2026-01-09T00:28:43.839Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-is.production.js
+2026-01-09T00:28:43.854Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): escape-string-regexp ->  node:escape-string-regexp
+| 2026-01-09T00:28:43.825Z expo:babel:exports Found assignment to module.exports or exports at 39
+| 2026-01-09T00:28:43.827Z expo:babel:exports Found assignment to module.exports or exports at 40
+| 2026-01-09T00:28:43.828Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:43.829Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:43.833Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:43.833Z expo:babel:exports Found assignment to module.exports or exports at 34
+| 2026-01-09T00:28:43.836Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:43.862Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:43.870Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:43.896Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:43.941Z expo:babel:exports Found assignment to module.exports or exports at 1
+2026-01-09T00:28:43.945Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.966Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:43.977Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:43.951Z expo:babel:exports Found assignment to module.exports or exports at 17
+2026-01-09T00:28:43.984Z expo:metro:tsconfig-paths @/constants/Colors -> /Users/jnash/Source/core-score/constants/Colors
+2026-01-09T00:28:43.989Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:43.989Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:44.016Z expo:babel:exports Found assignment to module.exports or exports at 12
+2026-01-09T00:28:44.043Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:44.019Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:44.025Z expo:babel:exports Found assignment to module.exports or exports at 14
+| 2026-01-09T00:28:44.033Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:44.054Z expo:babel:exports Found assignment to module.exports or exports at 38
+2026-01-09T00:28:44.094Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): inline-style-prefixer/lib/createPrefixer ->  node:inline-style-prefixer/lib/createPrefixer
+2026-01-09T00:28:44.099Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:44.099Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/createForOfIteratorHelperLoose ->  node:@babel/runtime/helpers/createForOfIteratorHelperLoose
+2026-01-09T00:28:44.100Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:44.100Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:44.101Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:44.060Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:44.124Z expo:babel:exports Found assignment to module.exports or exports at 8
+| 2026-01-09T00:28:44.125Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:44.135Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.136Z expo:babel:exports Found assignment to module.exports or exports at 40
+| 2026-01-09T00:28:44.145Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.150Z expo:babel:exports Found assignment to module.exports or exports at 739
+| 2026-01-09T00:28:44.154Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.155Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:44.160Z expo:babel:exports Found assignment to module.exports or exports at 325
+| 2026-01-09T00:28:44.166Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:44.171Z expo:babel:exports Found assignment to module.exports or exports at 8
+| 2026-01-09T00:28:44.185Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:44.189Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:44.190Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:44.203Z expo:babel:exports Found assignment to module.exports or exports at 36
+2026-01-09T00:28:44.230Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:44.210Z expo:babel:exports Found assignment to module.exports or exports at 26
+| 2026-01-09T00:28:44.211Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:44.213Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:44.217Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.222Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.227Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:44.237Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:44.249Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:44.249Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react-dom/client ->  node:react-dom/client
+| 2026-01-09T00:28:44.241Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:44.251Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:44.288Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:44.313Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:44.318Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:44.318Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/createForOfIteratorHelperLoose ->  node:@babel/runtime/helpers/createForOfIteratorHelperLoose
+| 2026-01-09T00:28:44.289Z expo:babel:router routerEntry /Users/jnash/Source/core-score/node_modules/expo-router/entry.js /Users/jnash/Source/core-score/app ../../app
+| 2026-01-09T00:28:44.298Z expo:babel:router routerEntry /Users/jnash/Source/core-score/node_modules/expo-router/entry.js /Users/jnash/Source/core-score/app ../../app
+| 2026-01-09T00:28:44.303Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:44.317Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:44.319Z expo:babel:exports Found assignment to module.exports or exports at 40
+| 2026-01-09T00:28:44.323Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:44.324Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.331Z expo:babel:exports Found assignment to module.exports or exports at 123
+2026-01-09T00:28:44.335Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): invariant ->  node:invariant
+2026-01-09T00:28:44.336Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:44.337Z expo:babel:inline-manifest public manifest {
+|   name: 'The Core Four Score',
+|   slug: 'core-score',
+|   version: '1.0.0',
+|   orientation: 'portrait',
+|   icon: './assets/images/icon.png',
+|   scheme: 'corescore',
+|   userInterfaceStyle: 'light',
+|   newArchEnabled: false,
+|   splash: {
+|     image: './assets/images/splash-icon.png',
+|     resizeMode: 'contain',
+|     backgroundColor: '#013220'
+|   },
+|   web: {
+|     bundler: 'metro',
+|     output: 'static',
+|     favicon: './assets/images/favicon.png',
+|     meta: undefined,
+|     build: undefined,
+|     scope: undefined,
+|     crossorigin: undefined,
+|     description: undefined,
+|     startUrl: undefined,
+|     shortName: 'The Core Four Score',
+|     display: undefined,
+|     orientation: 'portrait',
+|     dir: undefined,
+|     barStyle: undefined,
+|     backgroundColor: '#013220',
+|     themeColor: undefined,
+|     lang: undefined,
+|     name: 'The Core Four Score'
+|   },
+|   experiments: { typedRoutes: true },
+|   extra: { eas: { projectId: 'YOUR_EAS_PROJECT_ID' }, router: {} },
+|   description: undefined,
+|   sdkVersion: '54.0.0',
+|   platforms: [ 'ios', 'android', 'web' ],
+|   primaryColor: undefined
+| }
+| 2026-01-09T00:28:44.360Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.365Z expo:babel:exports Found assignment to module.exports or exports at 36
+2026-01-09T00:28:44.386Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): query-string ->  node:query-string
+| 2026-01-09T00:28:44.369Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:44.371Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:44.375Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:44.378Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.379Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:44.382Z expo:babel:exports Found assignment to module.exports or exports at 59
+| 2026-01-09T00:28:44.389Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:44.392Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:44.395Z expo:babel:exports Found assignment to module.exports or exports at 22
+| 2026-01-09T00:28:44.396Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:44.398Z expo:babel:exports Found assignment to module.exports or exports at 28
+2026-01-09T00:28:44.403Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:44.431Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:44.441Z expo:start:server:metro:multi-platform Using React Navigation's web modal implementation.
+2026-01-09T00:28:44.442Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:44.438Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:44.468Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/extends ->  node:@babel/runtime/helpers/extends
+2026-01-09T00:28:44.468Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectWithoutPropertiesLoose ->  node:@babel/runtime/helpers/objectWithoutPropertiesLoose
+2026-01-09T00:28:44.469Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:44.470Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:44.497Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:44.790Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/objectSpread2 ->  node:@babel/runtime/helpers/objectSpread2
+2026-01-09T00:28:44.840Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): inline-style-prefixer/lib/plugins/crossFade ->  node:inline-style-prefixer/lib/plugins/crossFade
+2026-01-09T00:28:44.840Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): inline-style-prefixer/lib/plugins/imageSet ->  node:inline-style-prefixer/lib/plugins/imageSet
+2026-01-09T00:28:44.840Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): inline-style-prefixer/lib/plugins/logical ->  node:inline-style-prefixer/lib/plugins/logical
+2026-01-09T00:28:44.840Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): inline-style-prefixer/lib/plugins/position ->  node:inline-style-prefixer/lib/plugins/position
+2026-01-09T00:28:44.841Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): inline-style-prefixer/lib/plugins/sizing ->  node:inline-style-prefixer/lib/plugins/sizing
+2026-01-09T00:28:44.841Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): inline-style-prefixer/lib/plugins/transition ->  node:inline-style-prefixer/lib/plugins/transition
+| 2026-01-09T00:28:44.839Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:44.848Z expo:metro-config:transform-worker Parsed client boundaries: []
+| 2026-01-09T00:28:44.852Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:44.882Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:44.888Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.898Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.902Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.919Z expo:babel:exports Found assignment to module.exports or exports at 35
+2026-01-09T00:28:44.921Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-dom-client.production.js
+| 2026-01-09T00:28:44.922Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:44.924Z expo:babel:exports Found assignment to module.exports or exports at 40
+| 2026-01-09T00:28:44.925Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.935Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:44.939Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.945Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:44.947Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.953Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.956Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:44.957Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.961Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.963Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:44.968Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:44.970Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:45.012Z expo:babel:exports Found assignment to module.exports or exports at 3
+2026-01-09T00:28:45.019Z expo:metro:tsconfig-paths @/components/EditScreenInfo -> /Users/jnash/Source/core-score/components/EditScreenInfo
+2026-01-09T00:28:45.019Z expo:metro:tsconfig-paths @/components/Themed -> /Users/jnash/Source/core-score/components/Themed
+2026-01-09T00:28:45.037Z expo:metro:tsconfig-paths @/components/useClientOnlyValue -> /Users/jnash/Source/core-score/components/useClientOnlyValue
+| 2026-01-09T00:28:45.024Z expo:babel:exports Found assignment to module.exports or exports at 28
+| 2026-01-09T00:28:45.039Z expo:babel:exports Found assignment to module.exports or exports at 39
+| 2026-01-09T00:28:45.040Z expo:babel:exports Found assignment to module.exports or exports at 140
+| 2026-01-09T00:28:45.043Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.047Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:45.051Z expo:babel:exports Found assignment to module.exports or exports at 36
+2026-01-09T00:28:45.061Z expo:metro:tsconfig-paths @/components/useColorScheme -> /Users/jnash/Source/core-score/components/useColorScheme
+2026-01-09T00:28:45.064Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:45.066Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:45.081Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:45.058Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.065Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:45.072Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.072Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.076Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.080Z expo:babel:exports Found assignment to module.exports or exports at 52
+| 2026-01-09T00:28:45.084Z expo:babel:exports Found assignment to module.exports or exports at 40
+| 2026-01-09T00:28:45.093Z expo:babel:exports Found assignment to module.exports or exports at 39
+2026-01-09T00:28:45.095Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:45.117Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @radix-ui/react-slot ->  node:@radix-ui/react-slot
+2026-01-09T00:28:45.117Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:45.126Z expo:start:server:metro:multi-platform Redirecting module "/Users/jnash/Source/core-score/node_modules/react-native-web/dist/exports/AppRegistry/AppContainer.js" to shim
+| 2026-01-09T00:28:45.097Z expo:babel:exports Found assignment to module.exports or exports at 461
+| 2026-01-09T00:28:45.100Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.103Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:45.104Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.110Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:45.113Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.115Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:45.121Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.129Z expo:babel:exports Found assignment to module.exports or exports at 9
+| 2026-01-09T00:28:45.130Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:45.141Z expo:babel:exports Found assignment to module.exports or exports at 39
+| 2026-01-09T00:28:45.152Z expo:babel:exports Found assignment to module.exports or exports at 8
+| 2026-01-09T00:28:45.156Z expo:babel:exports Found assignment to module.exports or exports at 51
+| 2026-01-09T00:28:45.157Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:45.163Z expo:babel:exports Found assignment to module.exports or exports at 7
+2026-01-09T00:28:45.187Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:45.192Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:45.175Z expo:babel:exports Found assignment to module.exports or exports at 13
+| 2026-01-09T00:28:45.176Z expo:babel:exports Found assignment to module.exports or exports at 6
+Web node_modules/expo-router/entry.js ▓▓▓▓▓░░░░░░░░░░░ 36.0% (248/416)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 70.0% (574/686)
+| 2026-01-09T00:28:45.357Z expo:babel:exports Found assignment to module.exports or exports at 14
+2026-01-09T00:28:45.373Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:45.362Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:45.424Z expo:babel:exports Found assignment to module.exports or exports at 54
+2026-01-09T00:28:45.486Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): @babel/runtime/helpers/createForOfIteratorHelperLoose ->  node:@babel/runtime/helpers/createForOfIteratorHelperLoose
+| 2026-01-09T00:28:45.493Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:45.498Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:45.501Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:45.505Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:45.506Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:45.507Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:45.546Z expo:babel:exports Found assignment to module.exports or exports at 40
+2026-01-09T00:28:45.578Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-jsx-runtime.production.js
+| 2026-01-09T00:28:45.555Z expo:babel:exports Found assignment to module.exports or exports at 38
+| 2026-01-09T00:28:45.573Z expo:babel:inline-manifest public manifest {
+|   name: 'The Core Four Score',
+|   slug: 'core-score',
+|   version: '1.0.0',
+|   orientation: 'portrait',
+|   icon: './assets/images/icon.png',
+|   scheme: 'corescore',
+|   userInterfaceStyle: 'light',
+|   newArchEnabled: false,
+|   splash: {
+|     image: './assets/images/splash-icon.png',
+|     resizeMode: 'contain',
+|     backgroundColor: '#013220'
+|   },
+|   web: {
+|     bundler: 'metro',
+|     output: 'static',
+|     favicon: './assets/images/favicon.png',
+|     meta: undefined,
+|     build: undefined,
+|     scope: undefined,
+|     crossorigin: undefined,
+|     description: undefined,
+|     startUrl: undefined,
+|     shortName: 'The Core Four Score',
+|     display: undefined,
+|     orientation: 'portrait',
+|     dir: undefined,
+|     barStyle: undefined,
+|     backgroundColor: '#013220',
+|     themeColor: undefined,
+|     lang: undefined,
+|     name: 'The Core Four Score'
+|   },
+|   experiments: { typedRoutes: true },
+|   extra: { eas: { projectId: 'YOUR_EAS_PROJECT_ID' }, router: {} },
+|   description: undefined,
+|   sdkVersion: '54.0.0',
+|   platforms: [ 'ios', 'android', 'web' ],
+|   primaryColor: undefined
+| }
+| 2026-01-09T00:28:45.574Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.576Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:45.596Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.612Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:45.630Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:45.641Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:45.637Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:45.649Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:45.662Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:45.672Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:45.675Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:45.683Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.693Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:45.709Z expo:babel:exports Found assignment to module.exports or exports at 49
+| 2026-01-09T00:28:45.731Z expo:babel:exports Found assignment to module.exports or exports at 17
+| 2026-01-09T00:28:45.733Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:45.742Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:45.753Z expo:babel:exports Found assignment to module.exports or exports at 3
+2026-01-09T00:28:45.787Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:45.759Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.765Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:45.768Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.799Z expo:babel:exports Found assignment to module.exports or exports at 36
+2026-01-09T00:28:45.809Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:45.818Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.822Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.825Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.829Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:45.830Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:45.833Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:45.837Z expo:babel:exports Found assignment to module.exports or exports at 4
+2026-01-09T00:28:45.862Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:45.868Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:45.840Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:45.854Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:45.866Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:45.870Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:45.874Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:45.880Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:45.880Z expo:babel:exports Found assignment to module.exports or exports at 28
+| 2026-01-09T00:28:45.880Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:45.917Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): invariant ->  node:invariant
+2026-01-09T00:28:45.922Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:45.924Z expo:babel:exports Found assignment to module.exports or exports at 1243
+| 2026-01-09T00:28:45.947Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:45.957Z expo:babel:exports Found assignment to module.exports or exports at 411
+2026-01-09T00:28:45.976Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:45.985Z expo:babel:exports Found assignment to module.exports or exports at 2340
+| 2026-01-09T00:28:46.052Z expo:babel:exports Found assignment to module.exports or exports at 123
+| 2026-01-09T00:28:46.079Z expo:babel:exports Found assignment to module.exports or exports at 140
+| 2026-01-09T00:28:46.105Z expo:babel:exports Found assignment to module.exports or exports at 7582
+2026-01-09T00:28:46.124Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:46.147Z expo:babel:exports Found assignment to module.exports or exports at 35
+2026-01-09T00:28:46.149Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-dom.production.js
+| 2026-01-09T00:28:46.243Z expo:babel:exports Found assignment to module.exports or exports at 3
+2026-01-09T00:28:46.411Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:46.435Z expo:babel:exports Found assignment to module.exports or exports at 37
+| 2026-01-09T00:28:46.440Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:46.444Z expo:babel:exports Found assignment to module.exports or exports at 24876
+| 2026-01-09T00:28:46.455Z expo:babel:exports Found assignment to module.exports or exports at 9
+| 2026-01-09T00:28:46.496Z expo:babel:exports Found assignment to module.exports or exports at 12
+| 2026-01-09T00:28:46.505Z expo:babel:exports Found assignment to module.exports or exports at 40
+| 2026-01-09T00:28:46.516Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:46.522Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:46.523Z expo:babel:exports Found assignment to module.exports or exports at 325
+| 2026-01-09T00:28:46.524Z expo:babel:exports Found assignment to module.exports or exports at 360
+| 2026-01-09T00:28:46.557Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:46.559Z expo:start:server:metro:multi-platform Using React Navigation's web modal implementation.
+2026-01-09T00:28:46.564Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-is.production.js
+2026-01-09T00:28:46.566Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:46.570Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:46.584Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:46.585Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:46.558Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:46.563Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:46.578Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:46.597Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:46.690Z expo:babel:exports Found assignment to module.exports or exports at 33819
+| 2026-01-09T00:28:46.723Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:46.737Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:46.757Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:46.762Z expo:babel:exports Found assignment to module.exports or exports at 48
+| 2026-01-09T00:28:46.764Z expo:babel:exports Found assignment to module.exports or exports at 15
+| 2026-01-09T00:28:46.767Z expo:babel:exports Found assignment to module.exports or exports at 48
+| 2026-01-09T00:28:46.788Z expo:babel:exports Found assignment to module.exports or exports at 154
+2026-01-09T00:28:46.832Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): color ->  node:color
+| 2026-01-09T00:28:46.860Z expo:babel:exports Found assignment to module.exports or exports at 98
+| 2026-01-09T00:28:46.865Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:46.878Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:46.950Z expo:babel:exports Found assignment to module.exports or exports at 117
+| 2026-01-09T00:28:46.992Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:46.997Z expo:babel:exports Found assignment to module.exports or exports at 625
+| 2026-01-09T00:28:46.997Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:47.002Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:47.003Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.004Z expo:babel:exports Found assignment to module.exports or exports at 80
+| 2026-01-09T00:28:47.007Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:47.012Z expo:babel:exports Found assignment to module.exports or exports at 39
+| 2026-01-09T00:28:47.019Z expo:babel:exports Found assignment to module.exports or exports at 625
+| 2026-01-09T00:28:47.021Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.027Z expo:babel:exports Found assignment to module.exports or exports at 22
+2026-01-09T00:28:47.047Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:47.076Z expo:babel:exports Found assignment to module.exports or exports at 3
+2026-01-09T00:28:47.233Z expo:metro:tsconfig-paths @/constants/Colors -> /Users/jnash/Source/core-score/constants/Colors
+| 2026-01-09T00:28:47.252Z expo:babel:exports Found assignment to module.exports or exports at 3
+2026-01-09T00:28:47.264Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+2026-01-09T00:28:47.278Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): color ->  node:color
+2026-01-09T00:28:47.296Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:47.311Z expo:babel:exports Found assignment to module.exports or exports at 12
+2026-01-09T00:28:47.317Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): color ->  node:color
+| 2026-01-09T00:28:47.339Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.346Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:47.357Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.359Z expo:babel:exports Found assignment to module.exports or exports at 63
+| 2026-01-09T00:28:47.360Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:47.373Z expo:babel:exports Found assignment to module.exports or exports at 187
+| 2026-01-09T00:28:47.375Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.375Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.382Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.382Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.383Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.383Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.389Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.390Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:47.424Z expo:babel:exports Found assignment to module.exports or exports at 3
+2026-01-09T00:28:47.444Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-refresh-runtime.production.min.js
+| 2026-01-09T00:28:47.437Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.441Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:47.445Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:47.454Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.482Z expo:babel:exports Found assignment to module.exports or exports at 4
+2026-01-09T00:28:47.598Z expo:start:server:metro:multi-platform Virtualizing Node.js "util"
+2026-01-09T00:28:47.599Z expo:start:server:metro:multi-platform Virtualizing Node.js "crypto"
+| 2026-01-09T00:28:47.615Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.618Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.649Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.661Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:47.720Z expo:babel:exports Found assignment to module.exports or exports at 59
+2026-01-09T00:28:47.750Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/scheduler.production.js
+| 2026-01-09T00:28:47.730Z expo:babel:exports Found assignment to module.exports or exports at 28
+| 2026-01-09T00:28:47.748Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:47.780Z expo:babel:exports Found assignment to module.exports or exports at 38
+| 2026-01-09T00:28:47.850Z expo:babel:exports Found assignment to module.exports or exports at 8
+2026-01-09T00:28:47.869Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:47.850Z expo:babel:exports Found assignment to module.exports or exports at 12
+| 2026-01-09T00:28:47.857Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.863Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:47.865Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:47.868Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:47.870Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.870Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.874Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.875Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.875Z expo:babel:exports Found assignment to module.exports or exports at 51
+| 2026-01-09T00:28:47.878Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.881Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.884Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:47.890Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): warn-once ->  node:warn-once
+2026-01-09T00:28:47.900Z expo:start:server:metro:multi-platform Virtualizing Node.js (custom): react ->  node:react
+| 2026-01-09T00:28:47.885Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.890Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.892Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.896Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.896Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.902Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.909Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.914Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.918Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.923Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.925Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:47.944Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:47.993Z expo:babel:exports Found assignment to module.exports or exports at 39
+| 2026-01-09T00:28:48.028Z expo:babel:exports Found assignment to module.exports or exports at 160
+| 2026-01-09T00:28:48.028Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.037Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.038Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.038Z expo:babel:exports Found assignment to module.exports or exports at 645
+| 2026-01-09T00:28:48.040Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.047Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.047Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.048Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.051Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.054Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.064Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.073Z expo:babel:exports Found assignment to module.exports or exports at 20
+| 2026-01-09T00:28:48.091Z expo:babel:exports Found assignment to module.exports or exports at 32
+| 2026-01-09T00:28:48.094Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.095Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.097Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.098Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.099Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.102Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.112Z expo:babel:exports Found assignment to module.exports or exports at 182
+| 2026-01-09T00:28:48.113Z expo:babel:exports Found assignment to module.exports or exports at 18
+| 2026-01-09T00:28:48.131Z expo:babel:exports Found assignment to module.exports or exports at 215
+| 2026-01-09T00:28:48.159Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.162Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.162Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:48.162Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.203Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:48.236Z expo:babel:exports Found assignment to module.exports or exports at 36
+| 2026-01-09T00:28:48.257Z expo:babel:exports Found assignment to module.exports or exports at 182
+| 2026-01-09T00:28:48.261Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.271Z expo:babel:exports Found assignment to module.exports or exports at 4
+2026-01-09T00:28:48.275Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-is.production.min.js
+| 2026-01-09T00:28:48.277Z expo:babel:exports Found assignment to module.exports or exports at 19
+2026-01-09T00:28:48.303Z expo:start:server:metro:multi-platform Virtualizing Node.js "tls"
+2026-01-09T00:28:48.312Z expo:start:server:metro:multi-platform Virtualizing Node.js "process"
+| 2026-01-09T00:28:48.282Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.289Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.292Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.295Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:48.296Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.301Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.305Z expo:babel:exports Found assignment to module.exports or exports at 20
+| 2026-01-09T00:28:48.306Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.311Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.312Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.320Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.323Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.334Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.342Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.347Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.348Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:48.355Z expo:babel:exports Found assignment to module.exports or exports at 19
+2026-01-09T00:28:48.372Z expo:start:server:metro:multi-platform Virtualizing Node.js "net"
+2026-01-09T00:28:48.378Z expo:start:server:metro:multi-platform Virtualizing Node.js "http2"
+2026-01-09T00:28:48.383Z expo:start:server:metro:multi-platform Virtualizing Node.js "dns"
+2026-01-09T00:28:48.383Z expo:start:server:metro:multi-platform Virtualizing Node.js "util"
+| 2026-01-09T00:28:48.362Z expo:babel:exports Found assignment to module.exports or exports at 18
+| 2026-01-09T00:28:48.366Z expo:babel:exports Found assignment to module.exports or exports at 18
+| 2026-01-09T00:28:48.368Z expo:babel:exports Found assignment to module.exports or exports at 18
+| 2026-01-09T00:28:48.379Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.380Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.388Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:48.396Z expo:babel:exports Found assignment to module.exports or exports at 20
+2026-01-09T00:28:48.400Z expo:start:server:metro:multi-platform Virtualizing Node.js "fs"
+2026-01-09T00:28:48.400Z expo:start:server:metro:multi-platform Virtualizing Node.js "path"
+| 2026-01-09T00:28:48.399Z expo:babel:exports Found assignment to module.exports or exports at 599
+| 2026-01-09T00:28:48.402Z expo:babel:exports Found assignment to module.exports or exports at 20
+| 2026-01-09T00:28:48.415Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.420Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:48.426Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:48.431Z expo:babel:exports Found assignment to module.exports or exports at 319
+| 2026-01-09T00:28:48.436Z expo:babel:exports Found assignment to module.exports or exports at 14
+| 2026-01-09T00:28:48.444Z expo:babel:exports Found assignment to module.exports or exports at 42
+| 2026-01-09T00:28:48.449Z expo:babel:exports Found assignment to module.exports or exports at 17
+| 2026-01-09T00:28:48.450Z expo:babel:exports Found assignment to module.exports or exports at 11
+| 2026-01-09T00:28:48.450Z expo:babel:exports Found assignment to module.exports or exports at 136
+| 2026-01-09T00:28:48.454Z expo:babel:exports Found assignment to module.exports or exports at 28
+| 2026-01-09T00:28:48.458Z expo:babel:exports Found assignment to exports at 9
+| 2026-01-09T00:28:48.462Z expo:babel:exports Found assignment to module.exports or exports at 154
+| 2026-01-09T00:28:48.470Z expo:babel:exports Found assignment to module.exports or exports at 8
+| 2026-01-09T00:28:48.520Z expo:babel:exports Found assignment to module.exports or exports at 6
+2026-01-09T00:28:48.533Z expo:start:server:metro:multi-platform Virtualizing Node.js "fs"
+2026-01-09T00:28:48.545Z expo:start:server:metro:multi-platform Virtualizing Node.js "events"
+2026-01-09T00:28:48.546Z expo:start:server:metro:multi-platform Virtualizing Node.js "stream"
+| 2026-01-09T00:28:48.525Z expo:babel:exports Found assignment to module.exports or exports at 192
+| 2026-01-09T00:28:48.526Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:48.529Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.531Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.531Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.538Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.538Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.540Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.540Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.541Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.544Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.544Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.545Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.548Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.548Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.549Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.549Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.552Z expo:babel:exports Found assignment to module.exports or exports at 19
+2026-01-09T00:28:48.581Z expo:start:server:metro:multi-platform Virtualizing Node.js "os"
+| 2026-01-09T00:28:48.556Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.558Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.559Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.560Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.561Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.562Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.564Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.571Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.568Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.577Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.668Z expo:babel:exports Found assignment to module.exports or exports at 54
+2026-01-09T00:28:48.677Z expo:start:server:metro:multi-platform Virtualizing Node.js "zlib"
+2026-01-09T00:28:48.682Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-refresh-runtime.production.min.js
+| 2026-01-09T00:28:48.668Z expo:babel:exports Found assignment to module.exports or exports at 22
+| 2026-01-09T00:28:48.678Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:48.685Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:48.707Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.710Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.715Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.729Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.744Z expo:babel:exports Found assignment to module.exports or exports at 19
+2026-01-09T00:28:48.765Z expo:start:server:metro:multi-platform Virtualizing Node.js "http"
+2026-01-09T00:28:48.766Z expo:start:server:metro:multi-platform Virtualizing Node.js "url"
+| 2026-01-09T00:28:48.753Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.757Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.760Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.767Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.768Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.772Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.775Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.780Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.789Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.792Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.793Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.798Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:48.800Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:48.800Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:48.802Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:48.803Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.804Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:48.805Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:48.807Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.814Z expo:babel:exports Found assignment to module.exports or exports at 63
+| 2026-01-09T00:28:48.818Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.826Z expo:babel:exports Found assignment to module.exports or exports at 6
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.1% (906/994)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 92.3% (1078/1137)
+| 2026-01-09T00:28:48.845Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.849Z expo:babel:exports Found assignment to module.exports or exports at 645
+2026-01-09T00:28:48.874Z expo:start:server:metro:multi-platform Redirecting module "/Users/jnash/Source/core-score/node_modules/react-native-web/dist/exports/BackHandler/index.js" to shim
+| 2026-01-09T00:28:48.901Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.903Z expo:babel:exports Found assignment to module.exports or exports at 496
+| 2026-01-09T00:28:48.908Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.913Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:48.914Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.920Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.922Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:48.926Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.934Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.950Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.952Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.959Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.961Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.963Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.967Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.973Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.973Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.974Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.976Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.982Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:48.985Z expo:babel:exports Found assignment to module.exports or exports at 7
+| 2026-01-09T00:28:48.988Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:48.992Z expo:babel:exports Found assignment to module.exports or exports at 18
+| 2026-01-09T00:28:48.993Z expo:babel:exports Found assignment to module.exports or exports at 12
+| 2026-01-09T00:28:48.995Z expo:babel:exports Found assignment to module.exports or exports at 8
+| 2026-01-09T00:28:49.003Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:49.003Z expo:babel:exports Found assignment to module.exports or exports at 160
+| 2026-01-09T00:28:49.009Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:49.010Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:49.011Z expo:babel:exports Found assignment to module.exports or exports at 15
+| 2026-01-09T00:28:49.011Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:49.023Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:49.026Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:49.026Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:49.027Z expo:babel:exports Found assignment to module.exports or exports at 81
+| 2026-01-09T00:28:49.033Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.035Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.036Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.041Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.042Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.051Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.058Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.059Z expo:babel:exports Found assignment to module.exports or exports at 8
+| 2026-01-09T00:28:49.061Z expo:babel:exports Found assignment to module.exports or exports at 19
+| 2026-01-09T00:28:49.061Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:49.070Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.072Z expo:babel:exports Found assignment to module.exports or exports at 78
+| 2026-01-09T00:28:49.072Z expo:babel:exports Found assignment to module.exports or exports at 182
+| 2026-01-09T00:28:49.078Z expo:babel:exports Found assignment to module.exports or exports at 140
+| 2026-01-09T00:28:49.085Z expo:babel:exports Found assignment to module.exports or exports at 2
+2026-01-09T00:28:49.089Z expo:start:server:metro:multi-platform Skipping production module: ./cjs/react-is.production.min.js
+| 2026-01-09T00:28:49.089Z expo:babel:exports Found assignment to module.exports or exports at 4
+| 2026-01-09T00:28:49.091Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.093Z expo:babel:exports Found assignment to module.exports or exports at 32
+| 2026-01-09T00:28:49.094Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.098Z expo:babel:exports Found assignment to module.exports or exports at 215
+| 2026-01-09T00:28:49.099Z expo:babel:exports Found assignment to module.exports or exports at 3
+| 2026-01-09T00:28:49.101Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.108Z expo:babel:exports Found assignment to module.exports or exports at 1
+| 2026-01-09T00:28:49.108Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:49.108Z expo:babel:exports Found assignment to module.exports or exports at 2
+| 2026-01-09T00:28:49.112Z expo:babel:exports Found assignment to module.exports or exports at 18
+| 2026-01-09T00:28:49.120Z expo:babel:exports Found assignment to module.exports or exports at 11
+| 2026-01-09T00:28:49.128Z expo:babel:exports Found assignment to module.exports or exports at 28
+| 2026-01-09T00:28:49.137Z expo:babel:exports Found assignment to module.exports or exports at 192
+| 2026-01-09T00:28:49.151Z expo:babel:exports Found assignment to module.exports or exports at 17
+| 2026-01-09T00:28:49.161Z expo:babel:exports Found assignment to module.exports or exports at 136
+| 2026-01-09T00:28:49.164Z expo:babel:exports Found assignment to module.exports or exports at 319
+| 2026-01-09T00:28:49.170Z expo:babel:exports Found assignment to module.exports or exports at 42
+| 2026-01-09T00:28:49.173Z expo:babel:exports Found assignment to module.exports or exports at 6
+| 2026-01-09T00:28:49.183Z expo:babel:exports Found assignment to exports at 9
+| 2026-01-09T00:28:49.223Z expo:babel:exports Found assignment to module.exports or exports at 22
+| 2026-01-09T00:28:49.253Z expo:babel:exports Found assignment to module.exports or exports at 54
+| 2026-01-09T00:28:49.257Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:49.258Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:49.259Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:49.261Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:49.265Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:49.268Z expo:babel:exports Found assignment to module.exports or exports at 5
+| 2026-01-09T00:28:49.284Z expo:babel:exports Found assignment to module.exports or exports at 7
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.8% (1152/1153)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.3% (1179/1214)

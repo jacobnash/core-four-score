@@ -2,17 +2,20 @@ import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Image,
-  RefreshControl,
+  Alert,
+  Image, Platform, RefreshControl,
   ScrollView,
+  StyleSheet,
   Text,
+  TouchableOpacity,
   View
 } from 'react-native';
 import { Button } from '../../components/Button';
 import { LeaderboardCard } from '../../components/LeaderboardCard';
 import { useAuth } from '../../contexts/AuthContext';
-import { leaderboardService } from '../../services/firestore';
+import { leaderboardService, tournamentService } from '../../services/firestore';
 import { LeaderboardEntry } from '../../types';
+import { webBoxShadow } from '../../utils/shadow';
 
 export default function HomeScreen() {
   const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
@@ -50,9 +53,9 @@ export default function HomeScreen() {
   // Auth Loading State
   if (authLoading) {
     return (
-      <View className="flex-1 section-bg items-center justify-center">
+      <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color="#FF6700" />
-        <Text className="text-cream mt-4 text-lg">Loading...</Text>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
@@ -60,41 +63,31 @@ export default function HomeScreen() {
   // Not Authenticated
   if (!user) {
     return (
-      <View className="flex-1 section-bg overflow-hidden">
-        <View pointerEvents="none" className="absolute inset-0">
-          <View className="absolute -right-16 -top-16 w-52 h-52 rounded-full bg-brand-orange/18" />
-          <View className="absolute -left-20 bottom-8 w-72 h-72 rounded-full bg-cream/10" />
-        </View>
-
-        <View className="flex-1 items-center justify-center p-6">
-          <View className="w-full card-strong p-6 shadow-card-strong">
-            <Text className="eyebrow text-center mb-2">Deer Camp Edition</Text>
-            <Text className="title-lg text-center mb-3">🦌 The Core Four Score</Text>
-            <Text className="body text-center mb-6">
-              Track your Euchre glory and shame.
-            </Text>
-            <Button
-              title="Sign In with Google"
-              onPress={signInWithGoogle}
-              size="lg"
-              variant="primary"
-            />
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.centered}>
+            <View style={styles.authCard}>
+              <Text style={styles.eyebrow}>Deer Camp Edition</Text>
+              <Text style={styles.titleLg}>🦌 The Core Four Score</Text>
+              <Text style={styles.body}>Track your Euchre glory and shame.</Text>
+              <View style={{ height: 12 }} />
+              <Button
+                title="Sign In with Google"
+                onPress={signInWithGoogle}
+                size="lg"
+                variant="primary"
+              />
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 section-bg overflow-hidden">
-      <View pointerEvents="none" className="absolute inset-0">
-        <View className="absolute -right-12 -top-12 w-44 h-44 rounded-full bg-brand-orange/18" />
-        <View className="absolute -left-16 bottom-10 w-64 h-64 rounded-full bg-cream/10" />
-      </View>
-
+    <View style={styles.container}>
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ padding: 16, paddingBottom: 64, gap: 24 }}
+        contentContainerStyle={styles.content}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -104,72 +97,102 @@ export default function HomeScreen() {
         }
       >
         {/* Header */}
-        <View className="card-strong p-5 shadow-card-strong">
-          <View className="flex-row justify-between items-start gap-4">
-            <View className="flex-1 gap-1">
-              <Text className="eyebrow">Deer Camp Edition</Text>
-              <Text className="title-lg mb-1">🦌 The Lodge</Text>
-              <Text className="body-dim">
-                Welcome back, {user.displayName}!
-              </Text>
+        <View style={styles.headerCard}>
+          <View style={styles.headerRow}>
+            <View style={styles.headerLeft}>
+              <Text style={styles.eyebrow}>Deer Camp Edition</Text>
+              <Text style={styles.titleLg}>🦌 The Lodge</Text>
+              <Text style={styles.muted}>Welcome back, {user.displayName}!</Text>
             </View>
 
-            <View className="items-end">
-              <View className="flex-row items-center gap-3 glass-overlay rounded-pill px-3 py-2 shadow-card">
+            <View style={styles.userBox}>
+              <TouchableOpacity style={styles.userInner} onPress={() => router.push('/profile')}>
                 {user.photoURL ? (
                   <Image
                     source={{ uri: user.photoURL }}
-                    className="w-10 h-10 rounded-full border border-gold/40"
+                    style={styles.avatar}
                   />
                 ) : (
-                  <View className="w-10 h-10 rounded-full bg-gold/20 border border-gold/40 items-center justify-center">
-                    <Text className="text-sm font-bold text-cream">
-                      {user.displayName?.slice(0, 2)?.toUpperCase() || 'YOU'}
-                    </Text>
+                  <View style={styles.avatarPlaceholder}>
+                    <Text style={styles.avatarInitials}>{user.displayName?.slice(0, 2)?.toUpperCase() || 'YOU'}</Text>
                   </View>
                 )}
-                <View className="items-end">
-                  <Text className="text-sm font-semibold text-cream">{user.displayName}</Text>
-                  <Text className="text-xs text-cream/70">{user.email}</Text>
+                <View style={styles.userMeta}>
+                  <Text style={styles.userName}>{user.displayName}</Text>
+                  <Text style={styles.userEmail}>{user.email}</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
 
         {/* Quick Actions */}
-        <View className="card p-4 gap-3">
-          <Text className="eyebrow">Jump into the action</Text>
+        <View style={styles.card}>
+          <Text style={styles.eyebrow}>Jump into the action</Text>
+          <View style={{ height: 8 }} />
           <Button
             title="🎲 START NEW GAME"
-            onPress={() => router.push('/game')}
+            onPress={async () => {
+              try {
+                const members = await tournamentService.getTournamentMembers(TOURNAMENT_ID);
+                if (!members || members.length < 2) {
+                  Alert.alert('Not enough players', 'Need at least 2 tournament members to start a game.');
+                  return;
+                }
+
+                // Pick up to 4 players. If more than 4, randomly select 4.
+                let picked = members.map(m => m.uid);
+                if (picked.length > 4) {
+                  const shuffled = [...picked].sort(() => Math.random() - 0.5);
+                  picked = shuffled.slice(0, 4);
+                }
+
+                // If fewer than 4 but >=2, try to fill from members (already picked from members so this is just a fallback)
+                if (picked.length < 4) {
+                  const remaining = members.map(m => m.uid).filter(id => !picked.includes(id));
+                  while (picked.length < 4 && remaining.length > 0) {
+                    picked.push(remaining.shift()!);
+                  }
+                }
+
+                // Shuffle into teams
+                const shuffled = [...picked].sort(() => Math.random() - 0.5);
+                const team1 = shuffled.slice(0, 2);
+                const team2 = shuffled.slice(2, 4);
+
+                const playerNames: Record<string, string> = {};
+                members.forEach(m => (playerNames[m.uid] = m.displayName));
+
+                router.push({
+                  pathname: '/game',
+                  params: {
+                    team1: JSON.stringify(team1),
+                    team2: JSON.stringify(team2),
+                    playerNames: JSON.stringify(playerNames),
+                  },
+                });
+              } catch (err) {
+                console.error('Failed to start new game:', err);
+                Alert.alert('Error', 'Failed to start game.');
+              }
+            }}
             size="lg"
             variant="primary"
-          />
-          <Button
-            title="🎩 Shake the Hat"
-            onPress={() => router.push('/shake-the-hat')}
-            size="md"
-            variant="secondary"
           />
         </View>
 
         {/* Leaderboard */}
-        <View className="card p-4">
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="title-md">📊 Leaderboard</Text>
-            <Text className="text-xs text-cream/70">Auto-refresh when you pull</Text>
+        <View style={styles.card}>
+          <View style={styles.leaderHeader}>
+            <Text style={styles.titleMd}>📊 Leaderboard</Text>
+            <Text style={styles.mutedSmall}>Auto-refresh when you pull</Text>
           </View>
           {loading && !refreshing ? (
             <ActivityIndicator size="large" color="#FF6700" />
           ) : leaderboard.length === 0 ? (
-            <View className="card-plain p-6 items-center">
-              <Text className="text-cream text-center text-lg">
-                No games played yet!
-              </Text>
-              <Text className="text-cream/80 text-center mt-2">
-                Start a game to see stats
-              </Text>
+            <View style={[styles.card, styles.centered]}>
+              <Text style={styles.titleLg}>No games played yet!</Text>
+              <Text style={styles.muted}>Start a game to see stats</Text>
             </View>
           ) : (
             leaderboard.map((entry, index) => (
@@ -183,13 +206,153 @@ export default function HomeScreen() {
         </View>
 
         {/* Sign Out Button */}
-        <Button
-          title="Sign Out"
-          onPress={signOut}
-          variant="danger"
-          size="sm"
-        />
+        <View style={{ marginTop: 8 }}>
+          <Button
+            title="Sign Out"
+            onPress={signOut}
+            variant="danger"
+            size="sm"
+          />
+        </View>
       </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F7F7F8',
+  },
+  centered: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  content: {
+    padding: 16,
+    paddingBottom: 64,
+    gap: 20,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#333',
+  },
+  authCard: {
+    backgroundColor: '#fff',
+    padding: 18,
+    borderRadius: 12,
+    width: '100%',
+    maxWidth: 560,
+    alignItems: 'center',
+    ...(Platform.OS === 'web' ? { boxShadow: webBoxShadow('rgba(0,0,0,0.06)', 6, 12) } : {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.06,
+      shadowRadius: 12,
+      elevation: 3,
+    }),
+  },
+  headerCard: {
+    backgroundColor: '#fff',
+    padding: 14,
+    borderRadius: 12,
+    ...(Platform.OS === 'web' ? { boxShadow: webBoxShadow('rgba(0,0,0,0.06)', 6, 12) } : {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.06,
+      shadowRadius: 12,
+      elevation: 3,
+    }),
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  userBox: {
+    alignItems: 'flex-end',
+  },
+  userInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F7F8F9',
+    padding: 8,
+    borderRadius: 999,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  avatarPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFDFAA',
+    marginRight: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarInitials: {
+    fontWeight: '700',
+  },
+  userMeta: {
+    alignItems: 'flex-end',
+  },
+  userName: {
+    fontWeight: '700',
+  },
+  userEmail: {
+    color: '#666',
+    fontSize: 12,
+  },
+  eyebrow: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#666',
+  },
+  titleLg: {
+    fontSize: 22,
+    fontWeight: '800',
+    marginTop: 4,
+  },
+  body: {
+    color: '#666',
+    marginTop: 6,
+  },
+  muted: {
+    color: '#666',
+  },
+  card: {
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 12,
+    ...(Platform.OS === 'web' ? { boxShadow: webBoxShadow('rgba(0,0,0,0.06)', 6, 12) } : {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.06,
+      shadowRadius: 12,
+      elevation: 3,
+    }),
+  },
+  leaderHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  titleMd: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  mutedSmall: {
+    color: '#999',
+    fontSize: 12,
+  }
+});

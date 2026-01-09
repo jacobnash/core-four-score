@@ -143,19 +143,9 @@ Use this checklist to ensure your Core Four Score app is fully configured and re
 ### The Lodge (Home)
 - [ ] Can see leaderboard (empty at first)
 - [ ] "START NEW GAME" button appears
-- [ ] "Shake the Hat" button works
 - [ ] Pull-to-refresh works
 - [ ] Sign Out button works
 
-### Shake the Hat
-- [ ] Navigate to "Shake the Hat" tab
-- [ ] Can see list of tournament members
-- [ ] Can select/deselect players
-- [ ] "Shake the Hat" button generates teams
-- [ ] Teams display correctly
-- [ ] Can re-shuffle teams
-- [ ] Need at least 4 players error works
-- [ ] Need even players error works
 
 ## Phase 7: Build Testing (Optional)
 

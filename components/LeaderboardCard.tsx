@@ -1,6 +1,8 @@
-import React from 'react';
-import { Image, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LeaderboardEntry } from '../types';
+import { webBoxShadow } from '../utils/shadow';
+import RenegListModal from './RenegListModal';
 
 interface LeaderboardCardProps {
     entry: LeaderboardEntry;
@@ -8,6 +10,7 @@ interface LeaderboardCardProps {
 }
 
 export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ entry, rank }) => {
+    const [modalVisible, setModalVisible] = useState(false);
     const getRankBadge = () => {
         if (rank === 1) return '🥇';
         if (rank === 2) return '🥈';
@@ -15,55 +18,136 @@ export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ entry, rank })
         return `#${rank}`;
     };
 
-    const cardAccent = rank === 1
-        ? 'border-2 border-gold/60 shadow-card-strong'
-        : 'border border-cream/30 shadow-card';
-    const badgeBg = rank <= 3 ? 'bg-gold/30 border-gold/70' : 'bg-forest-green border-cream/40';
-
     return (
-        <View className={`card mb-3 flex-row items-center ${cardAccent}`}>
-            {/* Rank Badge */}
-            <View className={`w-12 h-12 items-center justify-center rounded-xl border ${badgeBg}`}>
-                <Text className="text-xl font-bold text-cream">{getRankBadge()}</Text>
-            </View>
+        <View style={[styles.card, rank === 1 ? styles.cardTop : null]}>
+            <View style={styles.left}>
+                <View style={styles.rankBadge}>
+                    <Text style={styles.rankText}>{getRankBadge()}</Text>
+                </View>
 
-            {/* Player Info */}
-            <View className="flex-1 flex-row items-center">
-                {entry.photoURL && (
-                    <Image
-                        source={{ uri: entry.photoURL }}
-                        className="w-12 h-12 rounded-full mr-3"
-                    />
+                {entry.photoURL ? (
+                    <Image source={{ uri: entry.photoURL }} style={styles.avatar} />
+                ) : (
+                    <View style={styles.avatarPlaceholder} />
                 )}
-                <View className="flex-1">
-                    <Text className="text-lg font-bold text-cream">{entry.displayName}</Text>
-                    <Text className="text-sm text-cream/80">{entry.gamesPlayed} games played</Text>
-                    <View className="mt-1 flex-row gap-2">
-                        <View className="chip">
-                            <Text className="text-xs text-gold font-semibold">W {entry.wins}</Text>
-                        </View>
-                        <View className="chip-ghost">
-                            <Text className="text-xs text-cream/80">GP {entry.gamesPlayed}</Text>
-                        </View>
-                    </View>
+
+                <View style={styles.info}>
+                    <Text style={styles.name}>{entry.displayName}</Text>
+                    <Text style={styles.muted}>{entry.gamesPlayed} games</Text>
                 </View>
             </View>
 
-            {/* Stats */}
-            <View className="items-end">
-                <Text className="text-2xl font-bold text-brand-orange">{entry.wins}</Text>
-                <Text className="text-xs text-cream opacity-80">wins</Text>
-                <Text className="text-sm text-gold mt-1 font-semibold">
-                    {entry.winPercentage.toFixed(1)}%
-                </Text>
+            <View style={styles.stats}>
+                <Text style={styles.wins}>{entry.wins}</Text>
+                <Text style={styles.mutedSmall}>wins</Text>
+                <Text style={styles.winPct}>{entry.winPercentage.toFixed(1)}%</Text>
             </View>
 
-            {/* Renegs (Wall of Shame indicator) */}
             {entry.totalRenegs > 0 && (
-                <View className="ml-3 bg-red-600 rounded-full w-8 h-8 items-center justify-center">
-                    <Text className="text-cream font-bold text-xs">{entry.totalRenegs}</Text>
-                </View>
+                <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.renegBadge}>
+                    <Text style={styles.renegText}>{entry.totalRenegs}</Text>
+                </TouchableOpacity>
             )}
+
+            <RenegListModal visible={modalVisible} userId={entry.userId} onClose={() => setModalVisible(false)} />
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    card: {
+        backgroundColor: '#fff',
+        padding: 12,
+        borderRadius: 12,
+        marginBottom: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        ...(Platform.OS === 'web' ? { boxShadow: webBoxShadow('rgba(0,0,0,0.06)', 6, 12) } : {
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.06,
+            shadowRadius: 12,
+            elevation: 3,
+        }),
+    },
+    cardTop: {
+        borderWidth: 1,
+        borderColor: '#F4C95D33',
+    },
+    left: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    rankBadge: {
+        width: 44,
+        height: 44,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+        backgroundColor: '#FFF4E6',
+    },
+    rankText: {
+        fontSize: 18,
+        fontWeight: '700',
+    },
+    avatar: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        marginRight: 12,
+    },
+    avatarPlaceholder: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: '#EEE',
+        marginRight: 12,
+    },
+    info: {
+        flex: 1,
+    },
+    name: {
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    muted: {
+        color: '#666',
+        marginTop: 4,
+    },
+    stats: {
+        alignItems: 'flex-end',
+        marginLeft: 12,
+    },
+    wins: {
+        fontSize: 20,
+        fontWeight: '800',
+        color: '#FF6700',
+    },
+    winPct: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#F4C95D',
+        marginTop: 6,
+    },
+    mutedSmall: {
+        color: '#999',
+        fontSize: 12,
+    },
+    renegBadge: {
+        marginLeft: 12,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: '#FF6B6B',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    renegText: {
+        color: '#fff',
+        fontSize: 12,
+        fontWeight: '700',
+    }
+});

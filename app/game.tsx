@@ -1,71 +1,88 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, ScrollView, Text, TextInput, View } from 'react-native';
+import { Alert, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Button } from '../components/Button';
 import { useAuth } from '../contexts/AuthContext';
-import { gameService } from '../services/firestore';
+import { gameService, renegService } from '../services/firestore';
+import { webBoxShadow } from '../utils/shadow';
 
 export default function GameScreen() {
     const { user } = useAuth();
     const params = useLocalSearchParams();
 
-    // Parse team data from params (passed from Shake the Hat)
-    const team1Ids = params.team1 ? JSON.parse(params.team1 as string) : [];
-    const team2Ids = params.team2 ? JSON.parse(params.team2 as string) : [];
-    const playerNames = params.playerNames ? JSON.parse(params.playerNames as string) : {};
+    const team1Ids: string[] = params.team1 ? JSON.parse(params.team1 as string) : [];
+    const team2Ids: string[] = params.team2 ? JSON.parse(params.team2 as string) : [];
+    const playerNames: Record<string, string> = params.playerNames ? JSON.parse(params.playerNames as string) : {};
 
-    const [team1Score, setTeam1Score] = useState('0');
-    const [team2Score, setTeam2Score] = useState('0');
+    const players = [...team1Ids, ...team2Ids];
+
+    const team1Names = team1Ids.map(id => playerNames[id] || id).join(' & ');
+    const team2Names = team2Ids.map(id => playerNames[id] || id).join(' & ');
+
+    const [winnerTeam, setWinnerTeam] = useState<'team1' | 'team2' | null>(null);
+    const [renegExcuses, setRenegExcuses] = useState<Record<string, string[]>>({});
+    const [excuseModalVisible, setExcuseModalVisible] = useState(false);
+    const [activePlayerForExcuse, setActivePlayerForExcuse] = useState<string | null>(null);
+    const [excuseInput, setExcuseInput] = useState('');
     const [location, setLocation] = useState('');
+    const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+    const [locationModalVisible, setLocationModalVisible] = useState(false);
+    const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
     const [notes, setNotes] = useState('');
     const [saving, setSaving] = useState(false);
 
     const TOURNAMENT_ID = 'default-tournament';
 
+    const clearForm = () => {
+        setWinnerTeam(null);
+        setRenegExcuses({});
+        setLocation('');
+        setNotes('');
+    };
+
     const handleSaveGame = async () => {
-        const score1 = parseInt(team1Score);
-        const score2 = parseInt(team2Score);
-
-        if (isNaN(score1) || isNaN(score2)) {
-            Alert.alert('Invalid Score', 'Please enter valid numbers for both teams');
+        if (!winnerTeam) {
+            Alert.alert('Select Winner', 'Please select which team won.');
             return;
         }
 
-        if (score1 === score2) {
-            Alert.alert('Tie Game', 'There are no ties in Euchre! One team must win.');
-            return;
-        }
+        setSaving(true);
+        let newGameId: string | null = null;
+        let newRenegId: string | null = null;
 
         try {
-            setSaving(true);
-            await gameService.createGame({
+            const team1IsWinner = winnerTeam === 'team1';
+
+            newGameId = await gameService.createGame({
                 timestamp: new Date(),
                 location: location || 'Unknown Location',
                 teams: [
-                    {
-                        playerIds: team1Ids,
-                        score: score1,
-                        isWinner: score1 > score2
-                    },
-                    {
-                        playerIds: team2Ids,
-                        score: score2,
-                        isWinner: score2 > score1
-                    }
+                    { playerIds: team1Ids, score: team1IsWinner ? 1 : 0, isWinner: team1IsWinner },
+                    { playerIds: team2Ids, score: team1IsWinner ? 0 : 1, isWinner: !team1IsWinner },
                 ],
                 tags: [],
                 notes,
-                tournamentId: TOURNAMENT_ID
+                tournamentId: TOURNAMENT_ID,
             });
 
-            Alert.alert(
-                'Game Recorded! 🎉',
-                `${score1 > score2 ? 'Team 1' : 'Team 2'} wins ${Math.max(score1, score2)}-${Math.min(score1, score2)}`,
-                [{ text: 'OK', onPress: () => router.push('/shake-the-hat') }]
-            );
-        } catch (error) {
-            console.error('Error saving game:', error);
-            Alert.alert('Error', 'Failed to save game. Please try again.');
+            // Save any staged reneg entries recorded for players (one doc per staged excuse)
+            const createdRenegIds: string[] = [];
+            const entries = Object.entries(renegExcuses).filter(([, arr]) => (arr || []).length > 0);
+            for (const [playerId, arr] of entries) {
+                const excuses = [...(arr || [])];
+                for (let i = 0; i < excuses.length; i++) {
+                    const excuse = excuses[i] || '';
+                    const id = await renegService.createReneg({ playerId, gameId: newGameId!, excuse, timestamp: new Date() });
+                    createdRenegIds.push(id);
+                }
+            }
+
+            // Navigate back to home after saving
+            clearForm();
+            router.push('/');
+        } catch (err) {
+            console.error('Error saving game:', err);
+            Alert.alert('Error', 'Failed to save game.');
         } finally {
             setSaving(false);
         }
@@ -73,136 +90,227 @@ export default function GameScreen() {
 
     if (!user) {
         return (
-            <View className="flex-1 section-bg items-center justify-center p-6">
-                <Text className="text-cream text-xl text-center">
-                    Please sign in to record games
-                </Text>
+            <View style={[styles.container, styles.centered]}>
+                <Text style={styles.noticeText}>Please sign in to record games</Text>
             </View>
         );
     }
 
     return (
-        <View className="flex-1 section-bg">
-            <View className="absolute -right-12 -top-12 w-44 h-44 rounded-full bg-brand-orange/18" />
-            <View className="absolute -left-16 bottom-10 w-64 h-64 rounded-full bg-cream/10" />
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.content}>
+                <View style={styles.card}>
+                    <Text style={[styles.titleMd, styles.centerText]}>Today's Matchup</Text>
 
-            <ScrollView className="flex-1" contentContainerStyle={{ padding: 16, paddingBottom: 56, gap: 20 }}>
-                {/* Header */}
-                <View className="card-strong p-5 shadow-card-strong">
-                    <Text className="eyebrow mb-1">Score Keeper</Text>
-                    <Text className="title-lg mb-2">🎯 The Blind</Text>
-                    <Text className="body-dim">
-                        Record the final score and settle the debate.
-                    </Text>
-                </View>
-
-                {/* Teams Display */}
-                <View className="card p-4">
-                    <Text className="title-md mb-4 text-center">Today's Matchup</Text>
-
-                    {/* Team 1 */}
-                    <View className="bg-brand-orange rounded-card p-4 mb-4 border-2 border-cream shadow-card">
-                        <Text className="text-xl font-bold text-cream mb-2 text-center">
-                            Team 1
-                        </Text>
-                        {team1Ids.map((playerId: string, index: number) => (
-                            <Text key={playerId} className="text-lg text-cream text-center">
-                                {index > 0 && '& '}{playerNames[playerId] || 'Unknown'}
-                            </Text>
-                        ))}
+                    <View style={[styles.team, styles.teamPrimary, styles.centeredTeam]}>
+                        <Text style={[styles.teamTitle, styles.centerText]}>{team1Names}</Text>
                     </View>
 
-                    {/* VS */}
-                    <Text className="text-2xl font-bold text-gold text-center mb-4">VS</Text>
+                    <Text style={[styles.vsText, styles.centerText]}>VS</Text>
 
-                    {/* Team 2 */}
-                    <View className="bg-forest-green rounded-card p-4 border-4 border-brand-orange shadow-card">
-                        <Text className="text-xl font-bold text-cream mb-2 text-center">
-                            Team 2
-                        </Text>
-                        {team2Ids.map((playerId: string, index: number) => (
-                            <Text key={playerId} className="text-lg text-cream text-center">
-                                {index > 0 && '& '}{playerNames[playerId] || 'Unknown'}
-                            </Text>
-                        ))}
+                    <View style={[styles.team, styles.teamSecondary, styles.centeredTeam]}>
+                        <Text style={[styles.teamTitle, styles.centerText]}>{team2Names}</Text>
                     </View>
                 </View>
 
-                {/* Score Input */}
-                <View className="card p-4">
-                    <Text className="title-md mb-4">Final Score</Text>
+                <View style={styles.card}>
+                    <Text style={styles.titleMd}>Result</Text>
 
-                    <View className="flex-row gap-4 mb-4">
-                        <View className="flex-1">
-                            <Text className="text-cream font-semibold mb-2">Team 1 Score</Text>
-                            <TextInput
-                                className="glass-overlay rounded-card px-4 h-14 text-cream text-2xl font-bold text-center border border-cream/30"
-                                value={team1Score}
-                                onChangeText={setTeam1Score}
-                                keyboardType="number-pad"
-                                placeholder="0"
-                                placeholderTextColor="#F5F5DC80"
-                            />
+                    <View style={styles.row}>
+                        <TouchableOpacity style={[styles.resultBox, winnerTeam === 'team1' ? styles.resultSelected : null]} onPress={() => setWinnerTeam('team1')}>
+                            <Text style={styles.resultTitle}>{team1Names} Wins</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={[styles.resultBox, winnerTeam === 'team2' ? styles.resultSelected : null]} onPress={() => setWinnerTeam('team2')}>
+                            <Text style={styles.resultTitle}>{team2Names} Wins</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.field}>
+                        <Text style={styles.label}>Renegs (optional)</Text>
+                        <ScrollView horizontal contentContainerStyle={styles.playerRow} showsHorizontalScrollIndicator={false}>
+                            {players.map(p => {
+                                const excuses = renegExcuses[p] || [];
+                                const previewRaw = (excuses || []).join('; ');
+                                const preview = previewRaw.length > 80 ? previewRaw.slice(0, 77) + '...' : previewRaw;
+                                return (
+                                    <View key={p} style={styles.playerCard}>
+                                        <TouchableOpacity onPress={() => { setActivePlayerForExcuse(p); setExcuseInput(''); setExcuseModalVisible(true); }}>
+                                            <Text style={styles.playerName}>{playerNames[p] || p}</Text>
+                                            {preview ? <Text style={styles.excusePreview}>({preview})</Text> : null}
+                                        </TouchableOpacity>
+                                    </View>
+                                );
+                            })}
+                        </ScrollView>
+                    </View>
+                    {/* Excuse modal */}
+                    <Modal visible={excuseModalVisible} animationType="slide" transparent>
+                        <View style={styles.modalBackdrop}>
+                            <View style={styles.modalCard}>
+                                <Text style={styles.titleMd}>Add Excuse for {activePlayerForExcuse ? playerNames[activePlayerForExcuse] || activePlayerForExcuse : ''}</Text>
+                                <TextInput value={excuseInput} onChangeText={setExcuseInput} placeholder="Enter excuse..." style={styles.input} />
+                                <View style={{ height: 12 }} />
+                                <View style={{ flexDirection: 'row', gap: 8 }}>
+                                    <TouchableOpacity style={[styles.renegButton, { flex: 1 }]} onPress={() => { setExcuseModalVisible(false); setActivePlayerForExcuse(null); setExcuseInput(''); }}>
+                                        <Text style={{ textAlign: 'center' }}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[styles.renegButton, { flex: 1 }]} onPress={() => {
+                                        if (!activePlayerForExcuse) return;
+                                        setRenegExcuses(prev => ({ ...prev, [activePlayerForExcuse]: [...(prev[activePlayerForExcuse] || []), excuseInput] }));
+                                        setExcuseModalVisible(false);
+                                        setExcuseInput('');
+                                        setActivePlayerForExcuse(null);
+                                    }}>
+                                        <Text style={{ textAlign: 'center' }}>Save Excuse</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </View>
+                    </Modal>
 
-                        <View className="flex-1">
-                            <Text className="text-cream font-semibold mb-2">Team 2 Score</Text>
-                            <TextInput
-                                className="glass-overlay rounded-card px-4 h-14 text-cream text-2xl font-bold text-center border border-cream/30"
-                                value={team2Score}
-                                onChangeText={setTeam2Score}
-                                keyboardType="number-pad"
-                                placeholder="0"
-                                placeholderTextColor="#F5F5DC80"
-                            />
+                    <View style={styles.field}>
+                        <Text style={styles.label}>Location</Text>
+                        <TouchableOpacity onPress={async () => {
+                            // Fetch suggestions then open modal
+                            try {
+                                const suggestions = await gameService.getLocationSuggestions(TOURNAMENT_ID, 500);
+                                setLocationSuggestions(suggestions);
+                                setFilteredSuggestions(suggestions);
+                            } catch (err) {
+                                console.error('Failed to fetch location suggestions', err);
+                                setLocationSuggestions([]);
+                                setFilteredSuggestions([]);
+                            }
+                            setLocationModalVisible(true);
+                        }}>
+                            <View style={{ pointerEvents: 'none' }}>
+                                <TextInput value={location} onChangeText={setLocation} placeholder="Where'd you play?" placeholderTextColor="#999" style={styles.input} editable={false} />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+
+                    <Modal visible={locationModalVisible} animationType="slide" transparent>
+                        <View style={styles.modalBackdrop}>
+                            <View style={[styles.modalCard, { maxHeight: '70%' }]}>
+                                <Text style={styles.titleMd}>Choose Location</Text>
+                                <TextInput
+                                    value={location}
+                                    onChangeText={(text) => {
+                                        setLocation(text);
+                                        // simple fuzzy filter
+                                        const q = text.trim().toLowerCase();
+                                        if (!q) {
+                                            setFilteredSuggestions(locationSuggestions);
+                                            return;
+                                        }
+                                        const scored = locationSuggestions.map(s => {
+                                            const lower = s.toLowerCase();
+                                            const score = lower.includes(q) ? 100 - lower.indexOf(q) : 0;
+                                            return { s, score };
+                                        }).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+                                        setFilteredSuggestions(scored.map(x => x.s));
+                                    }}
+                                    placeholder="Type a location or pick one below"
+                                    placeholderTextColor="#999"
+                                    style={[styles.input, { marginTop: 8 }]}
+                                />
+                                <View style={{ height: 8 }} />
+                                <TouchableOpacity style={[styles.renegButton]} onPress={() => { setLocationModalVisible(false); }}>
+                                    <Text style={{ textAlign: 'center' }}>Use This Location</Text>
+                                </TouchableOpacity>
+                                <View style={{ height: 8 }} />
+                                <TouchableOpacity style={[styles.renegButton]} onPress={async () => {
+                                    // Fetch all past locations (maxGames = 0 means no limit)
+                                    try {
+                                        const suggestions = await gameService.getLocationSuggestions(TOURNAMENT_ID, 0, true);
+                                        setLocationSuggestions(suggestions);
+                                        setFilteredSuggestions(suggestions);
+                                    } catch (err) {
+                                        console.error('Failed to fetch all location suggestions', err);
+                                        setLocationSuggestions([]);
+                                        setFilteredSuggestions([]);
+                                    }
+                                }}>
+                                    <Text style={{ textAlign: 'center' }}>Show All Locations</Text>
+                                </TouchableOpacity>
+                                <View style={{ height: 12 }} />
+                                <ScrollView style={{ marginTop: 8 }}>
+                                    {filteredSuggestions.length === 0 && <Text style={{ color: '#666' }}>No recent locations</Text>}
+                                    {filteredSuggestions.map((loc, idx) => (
+                                        <TouchableOpacity key={idx} onPress={() => { setLocation(loc); setLocationModalVisible(false); }} style={styles.locationRow}>
+                                            <Text style={{ fontSize: 16 }}>{loc}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </ScrollView>
+                                <View style={{ height: 12 }} />
+                                <TouchableOpacity style={[styles.renegButton]} onPress={() => setLocationModalVisible(false)}>
+                                    <Text style={{ textAlign: 'center' }}>Close</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
+                    </Modal>
 
-                    <View className="mb-4">
-                        <Text className="text-cream font-semibold mb-2">Location</Text>
-                        <TextInput
-                            className="glass-overlay rounded-card px-4 h-12 text-cream border border-cream/30"
-                            value={location}
-                            onChangeText={setLocation}
-                            placeholder="Where'd you play?"
-                            placeholderTextColor="#F5F5DC80"
-                        />
-                    </View>
-
-                    <View>
-                        <Text className="text-cream font-semibold mb-2">Notes (optional)</Text>
-                        <TextInput
-                            className="glass-overlay rounded-card px-4 py-3 text-cream border border-cream/30"
-                            value={notes}
-                            onChangeText={setNotes}
-                            placeholder="Any memorable moments?"
-                            placeholderTextColor="#F5F5DC80"
-                            multiline
-                            numberOfLines={3}
-                            textAlignVertical="top"
-                        />
+                    <View style={styles.field}>
+                        <Text style={styles.label}>Notes (optional)</Text>
+                        <TextInput value={notes} onChangeText={setNotes} placeholder="Any notable events?" placeholderTextColor="#999" multiline numberOfLines={3} textAlignVertical="top" style={[styles.input, styles.textArea]} />
                     </View>
                 </View>
 
-                {/* Actions */}
-                <View className="gap-3">
-                    <Button
-                        title="📝 Record Game"
-                        onPress={handleSaveGame}
-                        size="lg"
-                        variant="primary"
-                        loading={saving}
-                        disabled={saving}
-                    />
-                    <Button
-                        title="Cancel"
-                        onPress={() => router.back()}
-                        size="md"
-                        variant="secondary"
-                        disabled={saving}
-                    />
+                <View style={styles.actions}>
+                    <Button title="📝 Record Game" onPress={handleSaveGame} size="lg" variant="primary" loading={saving} disabled={saving} />
+                    <View style={{ height: 12 }} />
+                    <Button title="Cancel" onPress={() => router.back()} size="md" variant="secondary" disabled={saving} />
                 </View>
             </ScrollView>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: '#F7F7F8' },
+    centered: { alignItems: 'center', justifyContent: 'center' },
+    content: { padding: 16, paddingBottom: 56, gap: 20 },
+    headerCard: { backgroundColor: '#fff', padding: 16, borderRadius: 12, ...(Platform.OS === 'web' ? { boxShadow: webBoxShadow('rgba(0,0,0,0.06)', 6, 12) } : { shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 12, elevation: 3 }) },
+    subtitle: { fontSize: 12, fontWeight: '700', color: '#666' },
+    title: { fontSize: 22, fontWeight: '800', marginTop: 6, marginBottom: 6 },
+    muted: { color: '#666' },
+    card: { backgroundColor: '#fff', padding: 12, borderRadius: 12, ...(Platform.OS === 'web' ? { boxShadow: webBoxShadow('rgba(0,0,0,0.06)', 6, 12) } : { shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 12, elevation: 3 }) },
+    team: { padding: 12, borderRadius: 8, marginBottom: 8 },
+    teamPrimary: { backgroundColor: '#FFEDD8' },
+    teamSecondary: { backgroundColor: '#E9F7F1' },
+    teamTitle: { fontSize: 18, fontWeight: '700', marginBottom: 6 },
+    playerName: { fontSize: 16, color: '#333', marginBottom: 2 },
+    vsText: { textAlign: 'center', fontSize: 18, fontWeight: '800', marginVertical: 8, color: '#B8860B' },
+    titleMd: { fontSize: 18, fontWeight: '700', marginBottom: 8 },
+    centerText: { textAlign: 'center' },
+    centeredTeam: { alignItems: 'center', justifyContent: 'center' },
+    row: { flexDirection: 'row', gap: 12, marginBottom: 12 },
+    flex1: { flex: 1 },
+    label: { fontSize: 14, fontWeight: '600', marginBottom: 6 },
+    input: { backgroundColor: '#F2F4F7', borderRadius: 8, paddingHorizontal: 12, height: 44, fontSize: 16, color: '#111' },
+    textArea: { height: 100, paddingTop: 10 },
+    actions: { marginTop: 8 },
+    noticeText: { fontSize: 16, color: '#333' },
+    field: { marginBottom: 12 },
+    resultBox: { flex: 1, padding: 12, borderRadius: 10, backgroundColor: '#FFF', alignItems: 'center', justifyContent: 'center' },
+    resultSelected: { backgroundColor: '#FFE9D6', borderColor: '#FFAB6B', borderWidth: 1 },
+    resultTitle: { fontSize: 16, fontWeight: '700' },
+    playerChip: { paddingVertical: 6, paddingHorizontal: 10, borderRadius: 999, marginRight: 8, marginBottom: 8 },
+    playerChipSelected: { backgroundColor: '#FFEDD8' },
+    playerChipUnselected: { backgroundColor: '#F2F4F7' },
+    playerChipText: { color: '#111' },
+    playerChipTextSelected: { color: '#111', fontWeight: '700' },
+    renegRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 },
+    renegControls: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    renegButton: { backgroundColor: '#F2F4F7', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+    renegButtonText: { fontSize: 18, fontWeight: '700' },
+    renegCount: { marginHorizontal: 8, fontSize: 16, minWidth: 20, textAlign: 'center' },
+    excusePreview: { color: '#666', fontSize: 12, marginTop: 2 },
+    playerRow: { flexDirection: 'row', gap: 12, paddingVertical: 8 },
+    playerCard: { backgroundColor: '#fff', padding: 10, borderRadius: 10, marginRight: 8, minWidth: 120, maxWidth: 220, ...(Platform.OS === 'web' ? { boxShadow: webBoxShadow('rgba(0,0,0,0.04)', 4, 8) } : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 2 }) },
+    locationRow: { paddingVertical: 10, borderBottomColor: '#EEE', borderBottomWidth: 1 },
+    modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center' },
+    modalCard: { backgroundColor: '#fff', padding: 16, borderRadius: 12, width: '90%' },
+});
+

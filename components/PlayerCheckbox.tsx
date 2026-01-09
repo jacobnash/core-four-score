@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { User } from '../types';
 
 interface PlayerCheckboxProps {
@@ -16,26 +16,68 @@ export const PlayerCheckbox: React.FC<PlayerCheckboxProps> = ({
     return (
         <TouchableOpacity
             onPress={onToggle}
-            className={`p-4 mb-3 rounded-card border-2 flex-row items-center shadow-card ${isSelected
-                ? 'bg-brand-orange border-brand-orange'
-                : 'glass-overlay'
-                }`}
+            style={[styles.row, isSelected ? styles.selected : styles.unselected]}
         >
             {/* Checkbox */}
             <View
-                className={`w-7 h-7 rounded-lg border-2 mr-3 items-center justify-center ${isSelected ? 'bg-cream border-cream' : 'border-cream/70'
-                    }`}
+                style={[styles.checkbox, isSelected ? styles.checkboxSelected : styles.checkboxUnselected]}
             >
                 {isSelected && <Text className="text-forest-green font-bold">✓</Text>}
             </View>
 
             {/* Player Name */}
-            <View className="flex-1">
-                <Text className="text-lg font-semibold text-cream">
-                    {user.displayName}
-                </Text>
-                <Text className="text-xs text-cream/80">{user.email}</Text>
+            <View style={styles.info}>
+                <Text style={styles.name}>{user.displayName}</Text>
+                <Text style={styles.email}>{user.email}</Text>
             </View>
         </TouchableOpacity>
     );
 };
+
+const styles = StyleSheet.create({
+    row: {
+        padding: 12,
+        marginBottom: 12,
+        borderRadius: 12,
+        borderWidth: 2,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    selected: {
+        backgroundColor: '#FFF3E6',
+        borderColor: '#FF6700',
+    },
+    unselected: {
+        backgroundColor: '#F7F7F8',
+        borderColor: '#E6E9EE',
+    },
+    checkbox: {
+        width: 28,
+        height: 28,
+        borderRadius: 6,
+        borderWidth: 2,
+        marginRight: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    checkboxSelected: {
+        backgroundColor: '#fff',
+        borderColor: '#fff',
+    },
+    checkboxUnselected: {
+        borderColor: '#d1d5db',
+    },
+    info: {
+        flex: 1,
+    },
+    name: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#111',
+    },
+    email: {
+        fontSize: 12,
+        color: '#666',
+    }
+});

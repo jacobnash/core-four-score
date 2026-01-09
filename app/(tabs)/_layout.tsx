@@ -33,13 +33,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon emoji="🏠" color={color} />,
         }}
       />
-      <Tabs.Screen
-        name="shake-the-hat"
-        options={{
-          title: 'Shake the Hat',
-          tabBarIcon: ({ color }) => <TabBarIcon emoji="🎩" color={color} />,
-        }}
-      />
     </Tabs>
   );
 }

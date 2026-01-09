@@ -182,7 +182,6 @@ Create a test tournament and add your user:
 - [ ] Can sign in with Google
 - [ ] User profile is created in Firestore
 - [ ] Can view The Lodge (leaderboard)
-- [ ] Can see tournament members in "Shake the Hat"
 - [ ] Can generate teams
 - [ ] Security rules prevent unauthorized access
 
