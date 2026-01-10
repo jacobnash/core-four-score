@@ -1,6 +1,7 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import React from 'react';
-import { Text } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../contexts/AuthContext';
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
@@ -10,6 +11,8 @@ function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
 }
 
 export default function TabLayout() {
+  const router = useRouter();
+  const { user } = useAuth();
   return (
     <Tabs
       screenOptions={{
@@ -19,11 +22,24 @@ export default function TabLayout() {
           backgroundColor: '#013220', // forest-green
           borderTopColor: '#FF6700',
           borderTopWidth: 2,
+          height: 70,
+          paddingBottom: 12,
         },
         headerShown: useClientOnlyValue(false, true),
         headerStyle: {
           backgroundColor: '#013220',
         },
+        headerRight: () => (
+          <TouchableOpacity style={{ marginRight: 12 }} onPress={() => router.push('/profile')}>
+            {user?.photoURL ? (
+              <Image source={{ uri: user.photoURL }} style={{ width: 36, height: 36, borderRadius: 18 }} />
+            ) : (
+              <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#FFDFAA', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontWeight: '700' }}>{user?.displayName?.slice(0, 2).toUpperCase() || 'ME'}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        ),
         headerTintColor: '#F5F5DC',
       }}>
       <Tabs.Screen

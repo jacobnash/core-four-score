@@ -3,11 +3,10 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Image, Platform, RefreshControl,
+  Platform, RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View
 } from 'react-native';
 import { Button } from '../../components/Button';
@@ -19,6 +18,7 @@ import { webBoxShadow } from '../../utils/shadow';
 
 export default function HomeScreen() {
   const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
+  const [showHeader, setShowHeader] = useState(true);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -48,6 +48,15 @@ export default function HomeScreen() {
     if (user) {
       loadLeaderboard();
     }
+    // Show header for ~5 seconds when user is present
+    let t: number | undefined;
+    if (user) {
+      setShowHeader(true);
+      t = setTimeout(() => setShowHeader(false), 5000) as unknown as number;
+    }
+    return () => {
+      if (t) clearTimeout(t);
+    };
   }, [user]);
 
   // Auth Loading State
@@ -96,39 +105,22 @@ export default function HomeScreen() {
           />
         }
       >
-        {/* Header */}
-        <View style={styles.headerCard}>
-          <View style={styles.headerRow}>
-            <View style={styles.headerLeft}>
-              <Text style={styles.eyebrow}>Deer Camp Edition</Text>
-              <Text style={styles.titleLg}>🦌 Ope'Land</Text>
-              <Text style={styles.muted}>Welcome back, {user.displayName}!</Text>
-            </View>
+        {showHeader && (
+          <View style={styles.headerCard}>
+            <View style={styles.headerRow}>
+              <View style={styles.headerLeft}>
+                <Text style={styles.eyebrow}>Deer Camp Edition</Text>
+                <Text style={styles.titleLg}>🦌 Ope'Land</Text>
+                <Text style={styles.welcome}>Welcome back, {user.displayName}!</Text>
+              </View>
 
-            <View style={styles.userBox}>
-              <TouchableOpacity style={styles.userInner} onPress={() => router.push('/profile')}>
-                {user.photoURL ? (
-                  <Image
-                    source={{ uri: user.photoURL }}
-                    style={styles.avatar}
-                  />
-                ) : (
-                  <View style={styles.avatarPlaceholder}>
-                    <Text style={styles.avatarInitials}>{user.displayName?.slice(0, 2)?.toUpperCase() || 'YOU'}</Text>
-                  </View>
-                )}
-                <View style={styles.userMeta}>
-                  <Text style={styles.userName}>{user.displayName}</Text>
-                  <Text style={styles.userEmail}>{user.email}</Text>
-                </View>
-              </TouchableOpacity>
+              {/* Profile button moved to header */}
             </View>
           </View>
-        </View>
+        )}
 
         {/* Quick Actions */}
         <View style={styles.card}>
-          <Text style={styles.eyebrow}>Jump into the action</Text>
           <View style={{ height: 8 }} />
           <Button
             title="🎲 START NEW GAME"
@@ -205,15 +197,7 @@ export default function HomeScreen() {
           )}
         </View>
 
-        {/* Sign Out Button */}
-        <View style={{ marginTop: 8 }}>
-          <Button
-            title="Sign Out"
-            onPress={signOut}
-            variant="danger"
-            size="sm"
-          />
-        </View>
+        {/* Sign Out moved to Profile page */}
       </ScrollView>
     </View>
   );
@@ -273,6 +257,7 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     flex: 1,
+    alignItems: 'center',
   },
   userBox: {
     alignItems: 'flex-end',
@@ -321,6 +306,11 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '800',
     marginTop: 4,
+  },
+  welcome: {
+    color: '#666',
+    marginTop: 6,
+    textAlign: 'center',
   },
   body: {
     color: '#666',

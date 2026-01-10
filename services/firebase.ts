@@ -5,6 +5,7 @@ import {
     initializeAuth
 } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import { Platform } from 'react-native';
 
 // TODO: Replace with your Firebase configuration
@@ -23,6 +24,9 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firestore
 export const db = getFirestore(app);
+
+// Initialize Storage
+export const storage = getStorage(app);
 
 // Initialize Auth with proper persistence
 let auth: Auth;

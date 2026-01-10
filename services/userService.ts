@@ -46,6 +46,17 @@ export const userService = {
         return newUser;
     },
 
+    async updateUser(uid: string, displayName?: string, photoURL?: string): Promise<void> {
+        const payload: any = {
+            updatedAt: Timestamp.now()
+        };
+
+        if (typeof displayName === 'string') payload.displayName = displayName;
+        if (typeof photoURL === 'string') payload.photoURL = photoURL;
+
+        await setDoc(doc(db, 'users', uid), payload, { merge: true });
+    },
+
     async getUserStats(uid: string, tournamentId?: string): Promise<UserStats> {
         // Calculate stats from actual games and renegs filtered by tournament if provided
         let gamesQuery = query(collection(db, 'games'));

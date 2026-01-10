@@ -194,7 +194,6 @@ const totals = {
 const renegs = [
     { date: '9/2/2022', player: 'cait', excuse: '', },
     { date: '9/2/2022', player: 'cait', excuse: '', },
-    { date: '9/3/2022', player: 'cait', excuse: '', },
     { date: '9/4/2022', player: 'grace', excuse: '', },
     { date: '9/4/2022', player: 'cait', excuse: '', },
     { date: '9/7/2022', player: 'grace', excuse: '', },

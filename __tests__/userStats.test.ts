@@ -234,7 +234,7 @@ jest.mock('firebase/firestore', () => {
         if (collectionName === 'users') {
             const user = users.find(u => u.id === id);
             return {
-                exists: () => !!user,
+                exists: (): boolean => !!user,
                 id: user?.id,
                 data: user?.data
             };
@@ -243,13 +243,13 @@ jest.mock('firebase/firestore', () => {
         if (collectionName === 'tournaments') {
             const tournament = tournaments.find(t => t.id === id);
             return {
-                exists: () => !!tournament,
+                exists: (): boolean => !!tournament,
                 id: tournament?.id,
                 data: tournament?.data
             };
         }
 
-        return { exists: () => false };
+        return { exists: (): boolean => false };
     });
 
     return {
