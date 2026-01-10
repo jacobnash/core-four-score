@@ -11,8 +11,9 @@
     "test:watch": "jest --watch",
     "lint": "eslint .",
     "build:web": "expo export --platform web",
-    "predeploy": "npm run build:web",
-    "deploy": "npm run build:web && npx firebase-tools deploy --only hosting",
+    "build:web:copy": "npm run build:web && node ./scripts/copy-thumbnail.js",
+    "predeploy": "npm run build:web:copy",
+    "deploy": "npm run build:web:copy && npx firebase-tools deploy --only hosting",
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean"
   },
@@ -60,6 +61,7 @@
     "jest": "~29.7.0",
     "jest-expo": "^54.0.16",
     "react-test-renderer": "^19.1.0",
+    "sharp": "^0.34.5",
     "typescript": "~5.9.2"
   },
   "private": true

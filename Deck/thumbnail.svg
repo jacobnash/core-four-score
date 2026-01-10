@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SVG wrapper embedding the existing PNG thumbnail.png -->
+<svg xmlns="http://www.w3.org/2000/svg" width="590" height="490" viewBox="0 0 590 490" preserveAspectRatio="xMidYMid meet">
+  <image href="thumbnail.png" width="590" height="490" preserveAspectRatio="xMidYMid meet" />
+</svg>
