@@ -181,7 +181,7 @@ Create a test tournament and add your user:
 
 - [ ] Can sign in with Google
 - [ ] User profile is created in Firestore
-- [ ] Can view The Lodge (leaderboard)
+- [ ] Can view Ope'Land (leaderboard)
 - [ ] Can generate teams
 - [ ] Security rules prevent unauthorized access
 

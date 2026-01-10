@@ -32,7 +32,7 @@ module.exports = {
         button: '0 6px 18px rgba(0, 0, 0, 0.28)',
       },
       backgroundImage: {
-        'lodge-gradient': 'linear-gradient(180deg, #0D0F0E 0%, #013220 40%, #0B3B2E 100%)',
+        'opeland-gradient': 'linear-gradient(180deg, #0D0F0E 0%, #013220 40%, #0B3B2E 100%)',
       },
       opacity: {
         6: '0.06',

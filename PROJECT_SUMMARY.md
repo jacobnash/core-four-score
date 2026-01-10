@@ -31,7 +31,7 @@
 
 #### 4. Core Features
 
-**The Lodge (Home Dashboard)**
+**Ope'Land (Home Dashboard)**
 - ✅ Welcome screen with Google Sign-In
 - ✅ Leaderboard displaying:
   - Player rankings (🥇🥈🥉)
@@ -83,7 +83,7 @@ core-score/
 ├── app/
 │   ├── (tabs)/
 │   │   ├── _layout.tsx          # Tab navigation with theme
-│   │   ├── index.tsx            # The Lodge (Home)
+│   │   ├── index.tsx            # Ope'Land (Home)
 │   └── _layout.tsx              # Root with AuthProvider
 ├── components/
 │   ├── Button.tsx               # Themed button component

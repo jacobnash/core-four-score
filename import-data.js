@@ -192,22 +192,34 @@ const totals = {
 
 // Historical renegs with excuses
 const renegs = [
-    { date: '11/29/23', player: 'dylan', excuse: 'I was distracted and was playing from the kitty' },
-    { date: '12/6/23', player: 'cait', excuse: 'Excitement / Chestnuts' },
-    { date: '12/29/23', player: 'dylan', excuse: "None I'm stupid" },
-    { date: '1/23/24', player: 'cait', excuse: 'I was just too excited' },
-    { date: '2/27/24', player: 'grace', excuse: 'I forgot that I dealt' },
-    { date: '3/10/24', player: 'cait', excuse: "My whole brain isn't working today. I don't know. The food was so spicy." },
-    { date: '8/21/24', player: 'dylan', excuse: 'I was queuing up Billy Joel and I had one too many Vieux Carres' },
-    { date: '9/18/24', player: 'grace', excuse: 'Irish setter commercial' },
-    { date: '9/23/24', player: 'jacob', excuse: "Randall Restle is supposed to have a good website, and obviously 'Cait, radio shacks don't exist anymore'" },
-    { date: '9/29/24', player: 'cait', excuse: "I grabbed the wrong hand. It's not an excuse but it's all that I have" },
-    { date: '11/14/24', player: 'cait', excuse: 'No excuse. I just forgot that I had a heart - Heartless Cait' },
-    { date: '12/10/24', player: 'cait', excuse: "I thought we were playing clubs. Jake didn't argue it hard enough" },
-    { date: '6/13/25', player: 'cait', excuse: 'I thought it was my lead' },
-    { date: '10/30/25', player: 'grace', excuse: 'There was a cat eating canned cat food on the table next to us' },
-    { date: '10/3/25', player: 'dylan', excuse: "I don't know. I finally had good cards" },
-];
+    { date: '9/2/2022', player: 'cait', excuse: '', },
+    { date: '9/2/2022', player: 'cait', excuse: '', },
+    { date: '9/3/2022', player: 'cait', excuse: '', },
+    { date: '9/4/2022', player: 'grace', excuse: '', },
+    { date: '9/4/2022', player: 'cait', excuse: '', },
+    { date: '9/7/2022', player: 'grace', excuse: '', },
+    { date: '9/7/2022', player: 'jacob', excuse: '', },
+    { date: '9/7/2022', player: 'cait', excuse: '', },
+    { date: '1/4/2023', player: 'dylan', excuse: '', },
+    { date: '1/16/2023', player: 'grace', excuse: '', },
+    { date: '5/3/2023', player: 'dylan', excuse: '', },
+    { date: '9/28/2023', player: 'cait', excuse: '', },
+    { date: '11/7/2023', player: 'jacob', excuse: '', },
+    { date: '11/29/2023', player: 'dylan', excuse: 'I was distracted and was playing from the kitty', },
+    { date: '12/6/2023', player: 'cait', excuse: '"Excitement / Chestnuts"', },
+    { date: '12/29/2023', player: 'dylan', excuse: 'None I\'m stupid', },
+    { date: '1/23/2024', player: 'cait', excuse: '"I was just too excited"', },
+    { date: '2/27/2024', player: 'grace', excuse: '"I forgot that I dealt"', },
+    { date: '3/10/2024', player: 'cait', excuse: '"My whole brain isn\'t working today. I don\'t know. The food was so spicy." ', },
+    { date: '8/21/2024', player: 'dylan', excuse: '"I was queuing up Billy Joel and I had one too many Vieux Carres"', },
+    { date: '9/18/2024', player: 'grace', excuse: '"Irish setter commercial"', },
+    { date: '9/23/2024', player: 'jacob', excuse: '"Randall Restle is supposed to have a good website, and obviously \'Cait, radio shacks don\'t exist anymore\'l', },
+    { date: '9/29/2024', player: 'cait', excuse: '"I grabbed the wrong hand. It\'s not an excuse but it\'s all that I have"', },
+    { date: '11/14/2024', player: 'cait', excuse: '"No excuse. I just forgot that I had a heart" - Heartless Cait', },
+    { date: '12/10/2024', player: 'cait', excuse: '"I thought we were playing clubs. Jake didn\'t argue it hard enough"', },
+    { date: '6/13/2025', player: 'cait', excuse: '"I thought it was my lead"', },
+    { date: '10/30/2025', player: 'grace', excuse: 'There was a cat eating eating canned cat food on the table next to us', },
+    { date: '10/3/2025', player: 'dylan', excuse: 'I don\'t know. I finally had good cards', },];
 
 function validateAndBuildTeams(game, players) {
     const flags = {
@@ -331,6 +343,8 @@ async function importData() {
 
         // Step 4: Import renegs (The Wall of Shame!)
         console.log('Importing renegs (Wall of Shame)...');
+        let importedRenegs = 0;
+        let skippedRenegs = 0;
         for (const reneg of renegs) {
             const renegRef = db.collection('renegs').doc();
 
@@ -339,15 +353,26 @@ async function importData() {
             const fullYear = year.length === 2 ? `20${year}` : year;
             const renegDate = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
 
-            await renegRef.set({
-                playerId: players[reneg.player].uid,
-                gameId: 'historical',
-                excuse: reneg.excuse,
-                tournamentId: 'the-core-four',
-                timestamp: Timestamp.fromDate(renegDate)
-            });
+            const playerKey = reneg.player;
+            const playerObj = players[playerKey];
+            if (!playerObj || !playerObj.uid) {
+                console.warn(`Skipping reneg for unknown player key: ${playerKey} (date: ${reneg.date})`);
+                skippedRenegs++;
+                continue;
+            }
+
+            if (!DRY_RUN) {
+                await renegRef.set({
+                    playerId: playerObj.uid,
+                    gameId: 'historical',
+                    excuse: reneg.excuse,
+                    tournamentId: 'the-core-four',
+                    timestamp: Timestamp.fromDate(renegDate)
+                });
+            }
+            importedRenegs++;
         }
-        console.log(`✓ Imported ${renegs.length} renegs with excuses\n`);
+        console.log(`✓ Imported: ${importedRenegs}${DRY_RUN ? ' (dry-run: not written)' : ''}; Skipped: ${skippedRenegs} renegs\n`);
 
         console.log('=== IMPORT COMPLETE ===\n');
         console.log('Next steps:');

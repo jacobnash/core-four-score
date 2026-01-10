@@ -4,7 +4,7 @@ A Euchre tournament companion app built with React Native (Expo) featuring a rus
 
 ## 🎯 Features
 
-- **The Lodge (Home Dashboard)**: Leaderboard with wins, win percentage, and reneg counts
+- **Ope'Land (Home Dashboard)**: Leaderboard with wins, win percentage, and reneg counts
 - **Google Authentication**: Secure sign-in with Google accounts
 - **Real-time Stats**: Firebase Firestore backend for live data sync
 - **Cross-Platform**: Works on iOS, Android (Expo Go), and Web (PWA)
@@ -165,7 +165,7 @@ eas submit --platform android
 core-score/
 ├── app/                    # Expo Router screens
 │   ├── (tabs)/            # Tab navigation
-│   │   ├── index.tsx      # Home (The Lodge)
+│   │   ├── index.tsx      # Home (Ope'Land)
 │   └── _layout.tsx        # Root layout with AuthProvider
 ├── components/            # Reusable UI components
 │   ├── Button.tsx
@@ -199,7 +199,7 @@ core-score/
 
 ### Viewing Stats
 
-- The Lodge displays the leaderboard with:
+- Ope'Land displays the leaderboard with:
   - Rank
   - Wins
   - Win percentage

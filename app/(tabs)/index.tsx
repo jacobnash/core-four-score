@@ -101,7 +101,7 @@ export default function HomeScreen() {
           <View style={styles.headerRow}>
             <View style={styles.headerLeft}>
               <Text style={styles.eyebrow}>Deer Camp Edition</Text>
-              <Text style={styles.titleLg}>🦌 The Lodge</Text>
+              <Text style={styles.titleLg}>🦌 Ope'Land</Text>
               <Text style={styles.muted}>Welcome back, {user.displayName}!</Text>
             </View>
 

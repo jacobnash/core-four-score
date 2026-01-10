@@ -99,7 +99,7 @@ Use this checklist to ensure your Core Four Score app is fully configured and re
 - [ ] Google sign-in popup appears
 - [ ] Select your Google account
 - [ ] Authentication succeeds
-- [ ] See "The Lodge" home screen
+- [ ] See "Ope'Land" home screen
 - [ ] Your name appears in welcome message
 
 ### Check Firestore
@@ -140,7 +140,7 @@ Use this checklist to ensure your Core Four Score app is fully configured and re
 
 ## Phase 6: Feature Testing
 
-### The Lodge (Home)
+### Ope'Land (Home)
 - [ ] Can see leaderboard (empty at first)
 - [ ] "START NEW GAME" button appears
 - [ ] Pull-to-refresh works

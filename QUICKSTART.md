@@ -95,7 +95,7 @@ Then scan the QR code with:
 
 1. Click "Sign In with Google"
 2. Authenticate with your Google account
-3. You should see "The Lodge" home screen
+3. You should see "Ope'Land" home screen
 
 ### First-Time Setup
 
@@ -178,7 +178,7 @@ npm start
 
 ```
 app/(tabs)/
-├── index.tsx          # Home (The Lodge)
+├── index.tsx          # Home (Ope'Land)
 
 components/
 ├── Button.tsx         # Reusable button
@@ -197,7 +197,7 @@ contexts/
 
 Now that the foundation is working:
 
-1. ✅ Home Dashboard (The Lodge) - Done
+1. ✅ Home Dashboard (Ope'Land) - Done
 3. 🔲 Score Keeping Screen
 4. 🔲 Reneg Modal (Game Warden Citation)
 5. 🔲 Wall of Shame Screen
