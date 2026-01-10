@@ -46,6 +46,20 @@ export const userService = {
         return newUser;
     },
 
+    async getAllUsers(): Promise<User[]> {
+        const snap = await getDocs(collection(db, 'users'));
+        return snap.docs.map(d => {
+            const data: any = d.data();
+            return {
+                uid: d.id,
+                displayName: data.displayName,
+                email: data.email,
+                photoURL: data.photoURL,
+                stats: { wins: 0, renegs: 0, gamesPlayed: 0 }
+            } as User;
+        });
+    },
+
     async updateUser(uid: string, displayName?: string, photoURL?: string): Promise<void> {
         const payload: any = {
             updatedAt: Timestamp.now()

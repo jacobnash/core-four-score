@@ -13,6 +13,7 @@ import { Button } from '../../components/Button';
 import { LeaderboardCard } from '../../components/LeaderboardCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { leaderboardService, tournamentService } from '../../services/firestore';
+import { useTournament } from '../../contexts/TournamentContext';
 import { LeaderboardEntry } from '../../types';
 import { webBoxShadow } from '../../utils/shadow';
 
@@ -23,8 +24,15 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // TODO: Replace with actual tournament ID
-  const TOURNAMENT_ID = 'the-core-four';
+  const { activeTournament } = useTournament();
+  // If no active tournament, send user to tournaments selection
+  useEffect(() => {
+    if (!activeTournament && user) {
+      router.replace('/(tabs)/tournaments');
+    }
+  }, [activeTournament, user]);
+
+  const TOURNAMENT_ID = activeTournament?.id || '';
 
   const loadLeaderboard = async () => {
     try {
@@ -45,7 +53,7 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && TOURNAMENT_ID) {
       loadLeaderboard();
     }
     // Show header for ~5 seconds when user is present
@@ -125,6 +133,12 @@ export default function HomeScreen() {
           <Button
             title="🎲 START NEW GAME"
             onPress={async () => {
+              if (!TOURNAMENT_ID) {
+                Alert.alert('No tournament selected', 'Please select a tournament first.');
+                router.push('/(tabs)/tournaments');
+                return;
+              }
+
               try {
                 const members = await tournamentService.getTournamentMembers(TOURNAMENT_ID);
                 if (!members || members.length < 2) {
@@ -170,6 +184,12 @@ export default function HomeScreen() {
             }}
             size="lg"
             variant="primary"
+          />
+          <View style={{ height: 8 }} />
+          <Button
+            title="🏆 Tournaments"
+            onPress={() => router.push('/(tabs)/tournaments')}
+            size="md"
           />
         </View>
 

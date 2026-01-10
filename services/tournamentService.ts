@@ -1,4 +1,4 @@
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, setDoc, Timestamp } from 'firebase/firestore';
 import { Tournament, User } from '../types';
 import { db } from './firebase';
 import { userService } from './userService';
@@ -27,5 +27,38 @@ export const tournamentService = {
         );
 
         return members.filter((u): u is User => u !== null);
+    }
+,
+
+    async getAllTournaments(): Promise<Tournament[]> {
+        const snap = await getDocs(collection(db, 'tournaments'));
+        return snap.docs.map(d => {
+            const data = d.data();
+            return {
+                id: d.id,
+                name: data.name,
+                memberIds: data.memberIds || [],
+                createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
+                updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
+            } as Tournament;
+        });
+    },
+
+    async createTournament(name: string, memberIds: string[]): Promise<Tournament> {
+        const id = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
+        const payload = {
+            name,
+            memberIds,
+            createdAt: Timestamp.now(),
+            updatedAt: Timestamp.now()
+        };
+        await setDoc(doc(db, 'tournaments', id), payload);
+        return {
+            id,
+            name,
+            memberIds,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        } as Tournament;
     }
 };
