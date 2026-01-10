@@ -33,6 +33,20 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon emoji="🏠" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="stats"
+        options={{
+          title: 'Stats',
+          tabBarIcon: ({ color }) => <TabBarIcon emoji="📈" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="rules"
+        options={{
+          title: 'Rules',
+          tabBarIcon: ({ color }) => <TabBarIcon emoji="📜" color={color} />,
+        }}
+      />
     </Tabs>
   );
 }

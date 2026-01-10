@@ -31,7 +31,7 @@ export default function GameScreen() {
     const [notes, setNotes] = useState('');
     const [saving, setSaving] = useState(false);
 
-    const TOURNAMENT_ID = 'default-tournament';
+    const TOURNAMENT_ID = 'the-core-four';
 
     const clearForm = () => {
         setWinnerTeam(null);
@@ -72,7 +72,7 @@ export default function GameScreen() {
                 const excuses = [...(arr || [])];
                 for (let i = 0; i < excuses.length; i++) {
                     const excuse = excuses[i] || '';
-                    const id = await renegService.createReneg({ playerId, gameId: newGameId!, excuse, timestamp: new Date() });
+                    const id = await renegService.createReneg({ playerId, gameId: newGameId!, excuse, tournamentId: TOURNAMENT_ID, timestamp: new Date() });
                     createdRenegIds.push(id);
                 }
             }

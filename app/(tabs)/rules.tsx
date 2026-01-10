@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
 import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
-import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../services/firebase';
 import { userService } from '../../services/firestore';
+import { APPROVAL_THRESHOLD, computeNextApprovals, isProposalExpired } from '../../utils/rules';
 
 type RuleDoc = {
     id: string;
@@ -11,22 +12,8 @@ type RuleDoc = {
     author: string;
     approvals: string[];
     createdAt: any;
+    lockedAt?: any;
 };
-
-const BUILT_IN_RULES: RuleDoc[] = [
-    { id: 'builtin-1', text: "Thou shall'nt re nor neg; and when thou shall re or neg or re and neg, thou shall't alloweth the opponent", author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-2', text: 'Rules for the farmer: 3 of a kind of 9 or 10. Whoever calls it first gets to swap', author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-3', text: 'If you lead two cards, and do not win both tricks, you lose the lead for the following hand', author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-4', text: 'Screw the dealer', author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-5', text: "When making it next, if a suit is called, as soon as play begins, the called suit cannot be changed", author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-6', text: "You can \"me too\" but you can't \"not me\" during braveheart", author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-7', text: "You can play out of turn if it doesn't effect the result of the hand", author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-8', text: 'A card once laid is a fate sealed.', author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-9', text: "A card once cast from the hand doth lie bare for all to see, yet may be summoned from memory by the rival faction. But mark ye this: both members of the opposing side must, with solemn accord, speak what the card was, else it shall not be branded a reneg.", author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-10', text: "You aren't allowed to play a card from any source except your hand. I.e if you play a card from a source that is not your hand, it is a reneg", author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-11', text: 'Not discarding, no matter the circumstances of the hands, is illegal and counts as a misdeal', author: 'system', approvals: [], createdAt: new Date() },
-    { id: 'builtin-12', text: 'If multiple cards are played at once, the opponent can decide the order in that the cards were played', author: 'system', approvals: [], createdAt: new Date() },
-];
 
 export default function RulesScreen() {
     const { user } = useAuth();
@@ -44,14 +31,18 @@ export default function RulesScreen() {
         await cleanupOldProposals(snap.docs);
         const fresh = await getDocs(collection(db, 'rules'));
         const arr: RuleDoc[] = fresh.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
-        // Remove any firestore rule that exactly matches a built-in text
-        const builtinTexts = new Set(BUILT_IN_RULES.map(r => r.text.trim()));
-        const filtered = arr.filter(r => !builtinTexts.has((r.text || '').trim()));
-        const combined = [...BUILT_IN_RULES, ...filtered];
+        // Sort to show built-in rules first, then proposals
+        arr.sort((a, b) => {
+            const aIsBuiltin = a.author === 'system';
+            const bIsBuiltin = b.author === 'system';
+            if (aIsBuiltin && !bIsBuiltin) return -1;
+            if (!aIsBuiltin && bIsBuiltin) return 1;
+            return 0;
+        });
 
         // Build list of UIDs to resolve to display names (authors + approvers), excluding 'system'
         const uidSet = new Set<string>();
-        for (const r of combined) {
+        for (const r of arr) {
             if (r.author && r.author !== 'system') uidSet.add(r.author);
             (r.approvals || []).forEach((a: string) => { if (a && a !== 'system') uidSet.add(a); });
         }
@@ -71,22 +62,16 @@ export default function RulesScreen() {
             setUidToName(map);
         }
 
-        setRules(combined);
+        setRules(arr);
     }
 
     async function cleanupOldProposals(docs: any[]) {
         const now = Date.now();
-        const weekMs = 7 * 24 * 60 * 60 * 1000;
         for (const d of docs) {
             try {
                 const data = d.data();
                 const approvals = data?.approvals || [];
-                if (approvals.length >= 3) continue;
-                let createdAt = data?.createdAt;
-                if (!createdAt) continue;
-                if (typeof createdAt.toDate === 'function') createdAt = createdAt.toDate();
-                else createdAt = new Date(createdAt);
-                if (now - new Date(createdAt).getTime() > weekMs) {
+                if (isProposalExpired(data?.createdAt, approvals.length, now)) {
                     await deleteDoc(doc(db, 'rules', d.id));
                 }
             } catch (err) {
@@ -104,7 +89,8 @@ export default function RulesScreen() {
             text: proposal.trim(),
             author: user.uid,
             approvals: [user.uid],
-            createdAt: new Date()
+            createdAt: new Date(),
+            lockedAt: null
         });
         setModalVisible(false);
         setProposal('');
@@ -114,14 +100,37 @@ export default function RulesScreen() {
     async function toggleApprove(rule: RuleDoc) {
         if (!user) return;
         const ref = doc(db, 'rules', rule.id);
-        const has = (rule.approvals || []).includes(user.uid);
-        const next = has ? rule.approvals.filter(a => a !== user.uid) : [...(rule.approvals || []), user.uid];
-        await updateDoc(ref, { approvals: next });
+        const currentApprovals = rule.approvals || [];
+        const wasAccepted = currentApprovals.length >= APPROVAL_THRESHOLD;
+        const next = computeNextApprovals(rule, user.uid);
+        const willBeAccepted = next.length >= APPROVAL_THRESHOLD;
+        const unchanged = next.length === currentApprovals.length && next.every((v, i) => v === currentApprovals[i]);
+        if (unchanged) return;
+
+        let lockedAt = rule.lockedAt ?? null;
+        if (!wasAccepted && willBeAccepted) {
+            lockedAt = new Date();
+        } else if (wasAccepted && !lockedAt) {
+            // Backfill if missing
+            lockedAt = new Date();
+        }
+
+        await updateDoc(ref, { approvals: next, lockedAt });
         fetchRules();
     }
 
     function renderRule({ item }: { item: RuleDoc }) {
-        const approved = (item.approvals || []).length >= 3;
+        const approved = (item.approvals || []).length >= APPROVAL_THRESHOLD;
+        const userHasApproved = (item.approvals || []).includes(user?.uid || '');
+        const lockButton = approved && userHasApproved;
+        const buttonDisabled = item.author === 'system' || lockButton;
+        const buttonLabel = item.author === 'system'
+            ? '—'
+            : lockButton
+                ? 'Locked'
+                : userHasApproved
+                    ? 'Unapprove'
+                    : 'Approve';
         return (
             <View style={styles.ruleRow}>
                 <View style={{ flex: 1 }}>
@@ -130,17 +139,23 @@ export default function RulesScreen() {
                 </View>
                 <View style={styles.ruleMeta}>
                     {approved && <Text style={styles.acceptedBadge}>Accepted</Text>}
+                    {item.lockedAt ? (
+                        <Text style={{ color: '#444', fontSize: 11 }}>Locked {new Date(item.lockedAt.toDate ? item.lockedAt.toDate() : item.lockedAt).toLocaleDateString()}</Text>
+                    ) : null}
                     <Text style={{ color: '#666', fontSize: 12 }}>{(item.approvals || []).length} approvals</Text>
                     {(item.approvals || []).length > 0 && (
                         <Text style={{ color: '#666', fontSize: 11 }}>{(item.approvals || []).map(a => uidToName[a] || a).join(', ')}</Text>
                     )}
                     {item.author !== 'system' ? (
-                        <TouchableOpacity style={styles.approveButton} onPress={() => toggleApprove(item)}>
-                            <Text style={{ color: '#fff' }}>{(item.approvals || []).includes(user?.uid || '') ? 'Unapprove' : 'Approve'}</Text>
+                        <TouchableOpacity
+                            style={[styles.approveButton, buttonDisabled ? styles.approveButtonDisabled : null]}
+                            onPress={() => { if (!buttonDisabled) toggleApprove(item); }}
+                        >
+                            <Text style={{ color: '#fff' }}>{buttonLabel}</Text>
                         </TouchableOpacity>
                     ) : (
-                        <View style={[styles.approveButton, { backgroundColor: '#999' }]}>
-                            <Text style={{ color: '#fff' }}>—</Text>
+                        <View style={[styles.approveButton, styles.approveButtonDisabled]}>
+                            <Text style={{ color: '#fff' }}>{buttonLabel}</Text>
                         </View>
                     )}
                 </View>
@@ -189,6 +204,7 @@ const styles = StyleSheet.create({
     ruleText: { fontSize: 16, marginBottom: 6 },
     ruleMeta: { flexDirection: 'column', alignItems: 'flex-end', marginLeft: 12 },
     approveButton: { backgroundColor: '#013220', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, marginTop: 6 },
+    approveButtonDisabled: { backgroundColor: '#555' },
     modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center' },
     modalCard: { backgroundColor: '#fff', padding: 16, borderRadius: 12, width: '90%' },
     titleMd: { fontSize: 18, fontWeight: '700', marginBottom: 8 },

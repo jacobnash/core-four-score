@@ -53,6 +53,7 @@ export interface Reneg {
     playerId: string;
     gameId: string;
     excuse: string;
+    tournamentId: string;
     timestamp: Date;
 }
 

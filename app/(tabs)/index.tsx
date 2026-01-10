@@ -24,7 +24,7 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   // TODO: Replace with actual tournament ID
-  const TOURNAMENT_ID = 'default-tournament';
+  const TOURNAMENT_ID = 'the-core-four';
 
   const loadLeaderboard = async () => {
     try {
