@@ -77,26 +77,12 @@ export default function HomeScreen() {
     );
   }
 
-  // Not Authenticated
+  // Not Authenticated - this should not happen as auth is enforced at root level
+  // But keeping for safety
   if (!user) {
     return (
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.centered}>
-            <View style={styles.authCard}>
-              <Text style={styles.eyebrow}>Deer Camp Edition</Text>
-              <Text style={styles.titleLg}>🦌 The Core Four Score</Text>
-              <Text style={styles.body}>Track your Euchre glory and shame.</Text>
-              <View style={{ height: 12 }} />
-              <Button
-                title="Sign In with Google"
-                onPress={signInWithGoogle}
-                size="lg"
-                variant="primary"
-              />
-            </View>
-          </View>
-        </ScrollView>
+      <View style={[styles.container, styles.centered]}>
+        <Text>Please sign in to view this content.</Text>
       </View>
     );
   }

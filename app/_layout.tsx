@@ -1,10 +1,10 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { AuthProvider } from '../contexts/AuthContext';
+import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { TournamentProvider } from '../contexts/TournamentContext';
 
 import { useColorScheme } from '@/components/useColorScheme';
@@ -42,22 +42,46 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <AuthProvider>
+      <TournamentProvider>
+        <RootLayoutNav />
+      </TournamentProvider>
+    </AuthProvider>
+  );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const { user, loading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  // Handle auth state changes and redirect accordingly
+  useEffect(() => {
+    if (loading) return; // Wait for auth to load
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!user && !inAuthGroup) {
+      // Not logged in and not in auth group, redirect to login
+      router.replace('/(auth)/login');
+    } else if (user && inAuthGroup) {
+      // Logged in and in auth group, redirect to home
+      router.replace('/(tabs)');
+    }
+  }, [user, loading, segments]);
 
   return (
-    <AuthProvider>
-      <TournamentProvider>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          </Stack>
-        </ThemeProvider>
-      </TournamentProvider>
-    </AuthProvider>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack
+        screenOptions={{ animationEnabled: false }}
+        initialRouteName="(tabs)"
+      >
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+      </Stack>
+    </ThemeProvider>
   );
 }
