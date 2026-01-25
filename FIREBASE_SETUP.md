@@ -46,6 +46,8 @@ In Firestore, create these collections (they can be empty for now):
 
 ### Security Rules
 
+> Policy: Never delete data. Use archival fields and status transitions instead of deletes.
+
 Replace the default rules with these production-ready rules:
 
 ```javascript

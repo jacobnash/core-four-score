@@ -5,6 +5,13 @@ import { useAuth } from '../../contexts/AuthContext';
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
+const ALLOWED_RULE_USERS = [
+  'Ghobb73dkDavNS31eTDeK1n2zBG2',
+  'WDzkjttsK9g4Uobrywwe8o2nbtN2',
+  'SvmJSd43QveWNKw8w1qEh0zulTm1',
+  'lkW4ipmG1FM8MYtWI0JlUpqutzv1'
+];
+
 // Simple emoji icon component for tabs
 function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
   return <Text style={{ fontSize: 24, color }}>{emoji}</Text>;
@@ -13,6 +20,8 @@ function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
 export default function TabLayout() {
   const router = useRouter();
   const { user } = useAuth();
+  const isAllowedUser = user && ALLOWED_RULE_USERS.includes(user.uid);
+
   return (
     <Tabs
       screenOptions={{
@@ -56,11 +65,27 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon emoji="📈" color={color} />,
         }}
       />
+      {isAllowedUser && (
+        <Tabs.Screen
+          name="rules"
+          options={{
+            title: 'Rules',
+            tabBarIcon: ({ color }) => <TabBarIcon emoji="📜" color={color} />,
+          }}
+        />
+      )}
       <Tabs.Screen
-        name="rules"
+        name="games"
         options={{
-          title: 'Rules',
-          tabBarIcon: ({ color }) => <TabBarIcon emoji="📜" color={color} />,
+          title: 'Games',
+          tabBarIcon: ({ color }) => <TabBarIcon emoji="🎲" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="tournaments"
+        options={{
+          title: 'Tournaments',
+          tabBarIcon: ({ color }) => <TabBarIcon emoji="🏆" color={color} />,
         }}
       />
     </Tabs>

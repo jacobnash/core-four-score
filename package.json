@@ -15,7 +15,8 @@
     "predeploy": "npm run build:web:copy",
     "deploy": "npm run build:web:copy && npx firebase-tools deploy --only hosting",
     "prebuild": "expo prebuild",
-    "prebuild:clean": "expo prebuild --clean"
+    "prebuild:clean": "expo prebuild --clean",
+    "backfill:tournaments": "node ./scripts/backfill-tournaments.js"
   },
   "importScripts": {
     "import:dry": "DRY_RUN=true node ./scripts/import/import-data.js",
@@ -52,7 +53,8 @@
     "react-native-svg": "^15.15.1",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.5.1",
-    "victory-native": "^36.9.2"
+    "victory-native": "^36.9.2",
+    "fuse.js": "^6.6.2"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.3",

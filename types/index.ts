@@ -5,6 +5,10 @@ export interface User {
     email: string;
     photoURL?: string;
     stats: UserStats;
+    // Preferred tournament (persisted) used to auto-select on login
+    preferredTournamentId?: string | null;
+    // Last active tournament (persisted) for UX fallbacks
+    lastActiveTournamentId?: string | null;
 }
 
 export interface UserStats {
@@ -16,10 +20,22 @@ export interface UserStats {
 // Tournament Types
 export interface Tournament {
     id: string;
+    // Backwards-compatible string id stored on tournament documents
+    tournamentId?: string;
     name: string;
     memberIds: string[];
     createdAt: Date;
     updatedAt: Date;
+    // Lifecycle status: draft (pre-start), active (started), archived (not deleted)
+    status?: 'draft' | 'active' | 'archived';
+    // Creator uid (best-effort backfill)
+    createdBy?: string | null;
+    // Optional visibility control
+    visibility?: 'private' | 'public';
+    // Optional invites list (uids awaiting acceptance)
+    inviteIds?: string[];
+    // Lightweight schema version for forward migration
+    schemaVersion?: number;
 }
 
 // Game Types
@@ -31,6 +47,9 @@ export interface Game {
     tags: GameTag[];
     notes?: string;
     tournamentId: string;
+    // No-deletes policy: support archival
+    status?: 'active' | 'archived';
+    archivedAt?: Date | null;
 }
 
 export interface Team {
@@ -55,6 +74,9 @@ export interface Reneg {
     excuse: string;
     tournamentId: string;
     timestamp: Date;
+    // No-deletes policy: support archival
+    status?: 'active' | 'archived';
+    archivedAt?: Date | null;
 }
 
 // Leaderboard Types

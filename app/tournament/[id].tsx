@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert, FlatList } from 'react-native';
-import { Button } from '../../components/Button';
-import { useAuth } from '../../contexts/AuthContext';
-import { tournamentService } from '../../services/firestore';
 import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import { Button } from '../../components/Button';
+import { LeaderboardCard } from '../../components/LeaderboardCard';
+import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
+import { gameService, leaderboardService, tournamentService } from '../../services/firestore';
 
 export default function TournamentDetail() {
   const { id } = useLocalSearchParams();
@@ -13,6 +14,9 @@ export default function TournamentDetail() {
   const [loading, setLoading] = useState(true);
   const [players, setPlayers] = useState<any[]>([]);
   const [tournament, setTournament] = useState<any | null>(null);
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [gamesCount, setGamesCount] = useState<number | null>(null);
+  const [gamesSample, setGamesSample] = useState<any | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -22,6 +26,19 @@ export default function TournamentDetail() {
         setTournament(t);
         const members = await tournamentService.getTournamentMembers(id as string);
         setPlayers(members);
+        const lb = await leaderboardService.getLeaderboard(id as string);
+        setLeaderboard(lb);
+        // Diagnostic: fetch games for this tournamentId to verify stored documents
+        try {
+          const games = await gameService.getGames(id as string, 100);
+          setGamesCount(games.length);
+          setGamesSample(games.length > 0 ? games[0] : null);
+          console.log('TournamentDetail: games sample for', id, games.length > 0 ? games[0] : 'no games');
+        } catch (gErr) {
+          console.warn('Failed to fetch games for diagnostic', gErr);
+          setGamesCount(null);
+          setGamesSample(null);
+        }
         // If user navigated directly to this route, make it active if allowed
         if (t && user && t.memberIds?.includes(user.uid)) {
           setActiveTournamentById(id as string);
@@ -62,7 +79,7 @@ export default function TournamentDetail() {
     const playerNames: Record<string, string> = {};
     players.forEach(m => (playerNames[m.uid] = m.displayName));
 
-    router.push({ pathname: '/game', params: { team1: JSON.stringify(team1), team2: JSON.stringify(team2), playerNames: JSON.stringify(playerNames) } });
+    router.push({ pathname: '/game', params: { team1: JSON.stringify(team1), team2: JSON.stringify(team2), playerNames: JSON.stringify(playerNames), tournamentId: String(tournament.id || id) } });
   };
 
   if (loading) return (
@@ -84,24 +101,42 @@ export default function TournamentDetail() {
       <View style={styles.card}>
         <Text style={styles.titleLg}>{tournament.name}</Text>
         <Text style={styles.mutedSmall}>{players.length} players</Text>
+        {typeof gamesCount === 'number' && (
+          <Text style={styles.mutedSmall}>{gamesCount} games found for this tournament</Text>
+        )}
 
         <View style={{ height: 12 }} />
+        {tournament?.status !== 'active' ? (
+          <>
+            <Button title="Start Tournament" onPress={async () => {
+              try {
+                await tournamentService.startTournament(String(id));
+                const t2 = await tournamentService.getTournament(String(id));
+                setTournament(t2);
+                Alert.alert('Tournament Started', 'Membership is now frozen.');
+              } catch (err) {
+                console.error('Failed to start tournament', err);
+                Alert.alert('Error', 'Failed to start tournament');
+              }
+            }} />
+            <View style={{ height: 8 }} />
+          </>
+        ) : null}
         <Button title="Start Game" onPress={startGame} variant="primary" />
         <View style={{ height: 12 }} />
         <Button title="Back to Tournaments" onPress={() => router.push('/(tabs)/tournaments')} />
 
         <View style={{ height: 12 }} />
-        <Text style={{ fontWeight: '700' }}>Players</Text>
-        <FlatList
-          data={players}
-          keyExtractor={p => p.uid}
-          renderItem={({ item }) => (
-            <View style={{ paddingVertical: 8 }}>
-              <Text style={{ fontWeight: '700' }}>{item.displayName}</Text>
-              <Text style={styles.mutedSmall}>{item.email}</Text>
-            </View>
-          )}
-        />
+        <Text style={{ fontWeight: '700' }}>Leaderboard</Text>
+        {leaderboard.length === 0 ? (
+          <View style={{ paddingVertical: 12 }}>
+            <Text style={styles.mutedSmall}>No games yet for this tournament.</Text>
+          </View>
+        ) : (
+          leaderboard.map((entry, idx) => (
+            <LeaderboardCard key={entry.userId} entry={entry} rank={idx + 1} />
+          ))
+        )}
       </View>
     </View>
   );

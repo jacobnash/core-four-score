@@ -228,6 +228,13 @@ colors: {
 }
 ```
 
+## 📜 Data Policy: No Deletes
+- Never delete documents or fields in Firestore.
+- Use archival flags (e.g., `status: 'archived'`, `archivedAt`) instead of deletes.
+- Replace any cleanup scripts with archival or status updates.
+- Firestore rules should block `delete` operations in production.
+- Services throw if a delete path is called; prefer `archive*()` methods.
+
 ## 🧪 Testing
 
 ### Unit Tests

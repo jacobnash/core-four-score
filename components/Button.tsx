@@ -9,6 +9,8 @@ interface ButtonProps {
     size?: 'sm' | 'md' | 'lg';
     disabled?: boolean;
     loading?: boolean;
+    // Backwards-compatible alias used in some call sites
+    isLoading?: boolean;
     className?: string;
 }
 
@@ -19,6 +21,7 @@ export const Button: React.FC<ButtonProps> = ({
     size = 'md',
     disabled = false,
     loading = false,
+    isLoading = false,
     className = '',
 }) => {
     const containerStyles: Record<string, ViewStyle> = {
@@ -42,10 +45,10 @@ export const Button: React.FC<ButtonProps> = ({
     return (
         <TouchableOpacity
             onPress={onPress}
-            disabled={disabled || loading}
-            style={[styles.buttonBase, containerStyles[variant], { height: heightBySize[size] }, disabled || loading ? styles.disabled : null]}
+            disabled={disabled || loading || isLoading}
+            style={[styles.buttonBase, containerStyles[variant], { height: heightBySize[size] }, disabled || loading || isLoading ? styles.disabled : null]}
         >
-            {loading ? (
+            {loading || isLoading ? (
                 <ActivityIndicator color="#FFF" />
             ) : (
                 <Text style={[styles.buttonText, textStyles[size]]}>{title}</Text>

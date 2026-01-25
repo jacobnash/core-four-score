@@ -22,7 +22,9 @@ export const userService = {
             displayName: data.displayName,
             email: data.email,
             photoURL: data.photoURL,
-            stats: { wins: 0, renegs: 0, gamesPlayed: 0 } // Stats calculated dynamically via getUserStats
+            stats: { wins: 0, renegs: 0, gamesPlayed: 0 }, // Stats calculated dynamically via getUserStats
+            preferredTournamentId: data.preferredTournamentId ?? null,
+            lastActiveTournamentId: data.lastActiveTournamentId ?? null,
         };
     },
 
@@ -32,7 +34,9 @@ export const userService = {
             displayName,
             email,
             photoURL,
-            stats: { wins: 0, renegs: 0, gamesPlayed: 0 }
+            stats: { wins: 0, renegs: 0, gamesPlayed: 0 },
+            preferredTournamentId: null,
+            lastActiveTournamentId: null,
         };
 
         await setDoc(doc(db, 'users', uid), {
@@ -40,7 +44,9 @@ export const userService = {
             email,
             photoURL,
             createdAt: Timestamp.now(),
-            updatedAt: Timestamp.now()
+            updatedAt: Timestamp.now(),
+            preferredTournamentId: null,
+            lastActiveTournamentId: null,
         });
 
         return newUser;
@@ -55,7 +61,9 @@ export const userService = {
                 displayName: data.displayName,
                 email: data.email,
                 photoURL: data.photoURL,
-                stats: { wins: 0, renegs: 0, gamesPlayed: 0 }
+                stats: { wins: 0, renegs: 0, gamesPlayed: 0 },
+                preferredTournamentId: data.preferredTournamentId ?? null,
+                lastActiveTournamentId: data.lastActiveTournamentId ?? null,
             } as User;
         });
     },
@@ -69,6 +77,20 @@ export const userService = {
         if (typeof photoURL === 'string') payload.photoURL = photoURL;
 
         await setDoc(doc(db, 'users', uid), payload, { merge: true });
+    },
+
+    async setPreferredTournament(uid: string, tournamentId: string | null): Promise<void> {
+        await setDoc(doc(db, 'users', uid), {
+            preferredTournamentId: tournamentId,
+            updatedAt: Timestamp.now(),
+        }, { merge: true });
+    },
+
+    async setLastActiveTournament(uid: string, tournamentId: string | null): Promise<void> {
+        await setDoc(doc(db, 'users', uid), {
+            lastActiveTournamentId: tournamentId,
+            updatedAt: Timestamp.now(),
+        }, { merge: true });
     },
 
     async getUserStats(uid: string, tournamentId?: string): Promise<UserStats> {

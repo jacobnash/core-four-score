@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import { Alert, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Button } from '../components/Button';
 import { useAuth } from '../contexts/AuthContext';
+import { useTournament } from '../contexts/TournamentContext';
 import { gameService, renegService } from '../services/firestore';
 import { webBoxShadow } from '../utils/shadow';
 
 export default function GameScreen() {
     const { user } = useAuth();
     const params = useLocalSearchParams();
+    const { activeTournament } = useTournament();
 
     const team1Ids: string[] = params.team1 ? JSON.parse(params.team1 as string) : [];
     const team2Ids: string[] = params.team2 ? JSON.parse(params.team2 as string) : [];
@@ -31,7 +33,8 @@ export default function GameScreen() {
     const [notes, setNotes] = useState('');
     const [saving, setSaving] = useState(false);
 
-    const TOURNAMENT_ID = 'the-core-four';
+    const tournamentIdParam: string | undefined = typeof params.tournamentId === 'string' ? (params.tournamentId as string) : undefined;
+    const TOURNAMENT_ID = tournamentIdParam || activeTournament?.id || activeTournament?.tournamentId || '';
 
     const clearForm = () => {
         setWinnerTeam(null);

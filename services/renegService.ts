@@ -1,8 +1,6 @@
 import {
     collection,
-    deleteDoc,
     doc,
-    getDoc,
     getDocs,
     limit,
     orderBy,
@@ -32,13 +30,8 @@ export const renegService = {
     },
 
     async deleteReneg(id: string): Promise<void> {
-        const renegRef = doc(db, 'renegs', id);
-        const renegSnap = await getDoc(renegRef);
-        if (!renegSnap.exists()) return;
-
-        // Note: renegs are calculated from reneg documents via getUserStats
-
-        await deleteDoc(renegRef);
+        // No-deletes policy: disable destructive operations. Use archiveReneg() instead.
+        throw new Error('Delete operations are disabled. Use archiveReneg() instead.');
     },
 
     async getRenegs(maxResults: number = 1000): Promise<Reneg[]> {

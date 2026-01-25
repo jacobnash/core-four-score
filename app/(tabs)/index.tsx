@@ -12,8 +12,8 @@ import {
 import { Button } from '../../components/Button';
 import { LeaderboardCard } from '../../components/LeaderboardCard';
 import { useAuth } from '../../contexts/AuthContext';
-import { leaderboardService, tournamentService } from '../../services/firestore';
 import { useTournament } from '../../contexts/TournamentContext';
+import { leaderboardService, tournamentService } from '../../services/firestore';
 import { LeaderboardEntry } from '../../types';
 import { webBoxShadow } from '../../utils/shadow';
 
@@ -175,6 +175,7 @@ export default function HomeScreen() {
                     team1: JSON.stringify(team1),
                     team2: JSON.stringify(team2),
                     playerNames: JSON.stringify(playerNames),
+                    tournamentId: TOURNAMENT_ID,
                   },
                 });
               } catch (err) {

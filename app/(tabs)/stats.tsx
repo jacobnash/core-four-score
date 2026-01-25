@@ -2,11 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { VictoryAxis, VictoryChart, VictoryLegend, VictoryLine, VictoryTheme } from 'victory-native';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTournament } from '../../contexts/TournamentContext';
 import { gameService, renegService, tournamentService } from '../../services/firestore';
 import { Game, Reneg, User } from '../../types';
 import { webBoxShadow } from '../../utils/shadow';
 
-const TOURNAMENT_ID = 'the-core-four';
+// Use the active tournament from context instead of a hardcoded id
+// const TOURNAMENT_ID = 'the-core-four';
 
 // Normalize a Date to midnight for daily bucketing
 function toDay(d: Date): Date {
@@ -34,6 +36,7 @@ function uniqueSortedDaysFromDates(dates: Date[]): Date[] {
 
 export default function StatsScreen() {
     const { user } = useAuth();
+    const { activeTournament } = useTournament();
     const [loading, setLoading] = useState(true);
     const [members, setMembers] = useState<User[]>([]);
     const [games, setGames] = useState<Game[]>([]);
@@ -44,9 +47,19 @@ export default function StatsScreen() {
             if (!user) return;
             try {
                 setLoading(true);
+                const tournamentId = activeTournament?.id;
+                if (!tournamentId) {
+                    // No tournament selected; bail early and keep loading false
+                    setMembers([]);
+                    setGames([]);
+                    setRenegs([]);
+                    setLoading(false);
+                    return;
+                }
+
                 const [m, g, r] = await Promise.all([
-                    tournamentService.getTournamentMembers(TOURNAMENT_ID),
-                    gameService.getGames(TOURNAMENT_ID, 0),
+                    tournamentService.getTournamentMembers(tournamentId),
+                    gameService.getGames(tournamentId, 0),
                     renegService.getRenegs(0),
                 ]);
                 setMembers(m);

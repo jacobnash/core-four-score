@@ -1,4 +1,4 @@
-import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
@@ -13,6 +13,7 @@ type RuleDoc = {
     approvals: string[];
     createdAt: any;
     lockedAt?: any;
+    status?: string;
 };
 
 export default function RulesScreen() {
@@ -30,7 +31,9 @@ export default function RulesScreen() {
         const snap = await getDocs(collection(db, 'rules'));
         await cleanupOldProposals(snap.docs);
         const fresh = await getDocs(collection(db, 'rules'));
-        const arr: RuleDoc[] = fresh.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
+        const arr: RuleDoc[] = fresh.docs
+            .map(d => ({ id: d.id, ...(d.data() as any) }))
+            .filter(r => r.status !== 'expired');
         // Sort to show built-in rules first, then proposals
         arr.sort((a, b) => {
             const aIsBuiltin = a.author === 'system';
@@ -72,7 +75,8 @@ export default function RulesScreen() {
                 const data = d.data();
                 const approvals = data?.approvals || [];
                 if (isProposalExpired(data?.createdAt, approvals.length, now)) {
-                    await deleteDoc(doc(db, 'rules', d.id));
+                    // No-deletes policy: mark expired instead of deleting
+                    await updateDoc(doc(db, 'rules', d.id), { status: 'expired', expiredAt: new Date() });
                 }
             } catch (err) {
                 console.warn('cleanupOldProposals error for doc', d.id, err);

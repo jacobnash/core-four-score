@@ -2,6 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // TEMP: Open for development - LOCK DOWN FOR PRODUCTION
+    // IMPORTANT: No-deletes policy — production rules should block delete operations.
     match /{document=**} {
       allow read, write: if true;
     }

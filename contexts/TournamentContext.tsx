@@ -1,9 +1,9 @@
+import { router } from 'expo-router';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { useAuth } from './AuthContext';
-import { tournamentService } from '../services/firestore';
+import { tournamentService, userService } from '../services/firestore';
 import { Tournament } from '../types';
-import { router } from 'expo-router';
+import { useAuth } from './AuthContext';
 
 interface TournamentContextType {
     tournaments: Tournament[];
@@ -34,7 +34,13 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             const all = await tournamentService.getAllTournaments();
             const mine = all.filter(t => t.memberIds?.includes(user.uid));
             setTournaments(mine);
-            // If activeTournament is not set but we have tournaments, optionally set the first one
+            // Auto-select preferred tournament if available and valid
+            if (!activeTournament && user.preferredTournamentId) {
+                const preferred = mine.find(t => t.id === user.preferredTournamentId || t.tournamentId === user.preferredTournamentId);
+                if (preferred) {
+                    setActiveTournament(preferred);
+                }
+            }
         } catch (err) {
             console.error('Failed to load tournaments', err);
             Alert.alert('Error', 'Failed to load tournaments');
@@ -53,6 +59,15 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 return;
             }
             setActiveTournament(t);
+            // Persist preferred + last active tournament for this user
+            if (user?.uid) {
+                try {
+                    await userService.setPreferredTournament(user.uid, t.id);
+                    await userService.setLastActiveTournament(user.uid, t.id);
+                } catch (persistErr) {
+                    console.warn('Failed to persist preferred/last active tournament', persistErr);
+                }
+            }
             // Navigate to home (OpeLand)
             router.replace('/');
         } catch (err) {

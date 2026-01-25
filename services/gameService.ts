@@ -1,8 +1,6 @@
 import {
     collection,
-    deleteDoc,
     doc,
-    getDoc,
     getDocs,
     limit,
     orderBy,
@@ -34,14 +32,8 @@ export const gameService = {
     },
 
     async deleteGame(id: string): Promise<void> {
-        const gameRef = doc(db, 'games', id);
-        const gameSnap = await getDoc(gameRef);
-        if (!gameSnap.exists()) return;
-
-        // Note: wins and gamesPlayed are calculated from game documents via getUserStats
-        // No need to roll back user metadata here
-
-        await deleteDoc(gameRef);
+        // No-deletes policy: disable destructive operations. Use archival instead.
+        throw new Error('Delete operations are disabled. Use archiveGame() instead.');
     },
 
     async getGames(tournamentId: string, max: number = 20): Promise<Game[]> {
