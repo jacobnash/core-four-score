@@ -9,10 +9,14 @@ import {
     Text,
     View
 } from 'react-native';
+import { GameDetailModal } from '../../components/GameDetailModal';
+import { GameListItem, resolveWinningTeam } from '../../components/GameListItem';
+import { TournamentBanner } from '../../components/TournamentBanner';
+import { ENABLE_IMPROVED_DATA_VIEWS } from '../../constants/featureFlags';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
 import { gameService, tournamentService } from '../../services/firestore';
-import { Game, Team, User } from '../../types';
+import { Game, User } from '../../types';
 import { webBoxShadow } from '../../utils/shadow';
 
 export default function GamesScreen() {
@@ -25,8 +29,8 @@ export default function GamesScreen() {
     const [members, setMembers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
-    // If no active tournament, send user to tournaments selection
     useEffect(() => {
         if (!activeTournament && user) {
             router.replace('/(tabs)/tournaments');
@@ -38,17 +42,6 @@ export default function GamesScreen() {
         members.forEach(u => { m[u.uid] = u.displayName; });
         return m;
     }, [members]);
-
-    const resolveWinningTeam = (teams: Team[]): Team | null => {
-        if (!Array.isArray(teams) || teams.length === 0) return null;
-        const flagged = teams.find(t => t.isWinner);
-        if (flagged) return flagged;
-        const numeric = teams.filter(t => typeof t.score === 'number');
-        if (numeric.length < 2) return null;
-        const max = Math.max(...numeric.map(t => t.score));
-        const maxTeams = numeric.filter(t => t.score === max);
-        return maxTeams.length === 1 ? maxTeams[0] : null; // tie => null
-    };
 
     const loadData = async () => {
         if (!user || !TOURNAMENT_ID) return;
@@ -79,7 +72,6 @@ export default function GamesScreen() {
         }
     }, [user, TOURNAMENT_ID]);
 
-    // Auth Loading State
     if (authLoading) {
         return (
             <View style={[styles.container, styles.centered]}>
@@ -89,7 +81,6 @@ export default function GamesScreen() {
         );
     }
 
-    // Not Authenticated
     if (!user) {
         return (
             <View style={[styles.container, styles.centered]}>
@@ -97,6 +88,26 @@ export default function GamesScreen() {
             </View>
         );
     }
+
+    const renderLegacyGameRow = (g: Game) => {
+        const winTeam = resolveWinningTeam(g.teams);
+        const winners = winTeam?.playerIds?.map(id => nameMap[id] || 'Unknown').join(' & ') || 'Unknown';
+        const where = (g.location || '').trim() || 'Unknown Location';
+        const when = g.timestamp ? new Date(g.timestamp).toLocaleString() : 'Unknown time';
+        const scores = g.teams.map(t => `${t.score ?? '?'}`).join('–');
+        return (
+            <View key={g.id} style={styles.listItem}>
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.itemTitle}>{when}</Text>
+                    <Text style={styles.itemSub}>📍 {where}</Text>
+                    <Text style={styles.itemSub}>🏆 {winners}</Text>
+                </View>
+                <View style={styles.scoreBadge}>
+                    <Text style={styles.scoreText}>{scores}</Text>
+                </View>
+            </View>
+        );
+    };
 
     return (
         <View style={styles.container}>
@@ -106,12 +117,19 @@ export default function GamesScreen() {
                     <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#FF6700" />
                 }
             >
-                <View style={styles.headerCard}>
-                    <Text style={styles.titleLg}>🎲 Recent Games</Text>
-                    <Text style={styles.mutedSmall}>{activeTournament?.name || 'Tournament'}</Text>
-                </View>
+                {ENABLE_IMPROVED_DATA_VIEWS ? (
+                    <TournamentBanner tournament={activeTournament} memberCount={members.length} />
+                ) : (
+                    <View style={styles.headerCard}>
+                        <Text style={styles.titleLg}>🎲 Recent Games</Text>
+                        <Text style={styles.mutedSmall}>{activeTournament?.name || 'Tournament'}</Text>
+                    </View>
+                )}
 
                 <View style={styles.card}>
+                    {ENABLE_IMPROVED_DATA_VIEWS && (
+                        <Text style={styles.titleMd}>🎲 Recent Games</Text>
+                    )}
                     {loading && !refreshing ? (
                         <ActivityIndicator size="large" color="#FF6700" />
                     ) : games.length === 0 ? (
@@ -119,29 +137,29 @@ export default function GamesScreen() {
                             <Text style={styles.titleMd}>No games recorded yet</Text>
                             <Text style={styles.muted}>Start a game to see history</Text>
                         </View>
+                    ) : ENABLE_IMPROVED_DATA_VIEWS ? (
+                        games.map((g) => (
+                            <GameListItem
+                                key={g.id}
+                                game={g}
+                                nameMap={nameMap}
+                                onPress={() => setSelectedGame(g)}
+                            />
+                        ))
                     ) : (
-                        games.map((g) => {
-                            const winTeam = resolveWinningTeam(g.teams);
-                            const winners = winTeam?.playerIds?.map(id => nameMap[id] || 'Unknown').join(' & ') || 'Unknown';
-                            const where = (g.location || '').trim() || 'Unknown Location';
-                            const when = g.timestamp ? new Date(g.timestamp).toLocaleString() : 'Unknown time';
-                            const scores = g.teams.map(t => `${t.score ?? '?'}`).join('–');
-                            return (
-                                <View key={g.id} style={styles.listItem}>
-                                    <View style={{ flex: 1 }}>
-                                        <Text style={styles.itemTitle}>{when}</Text>
-                                        <Text style={styles.itemSub}>📍 {where}</Text>
-                                        <Text style={styles.itemSub}>🏆 {winners}</Text>
-                                    </View>
-                                    <View style={styles.scoreBadge}>
-                                        <Text style={styles.scoreText}>{scores}</Text>
-                                    </View>
-                                </View>
-                            );
-                        })
+                        games.map(renderLegacyGameRow)
                     )}
                 </View>
             </ScrollView>
+
+            {ENABLE_IMPROVED_DATA_VIEWS && (
+                <GameDetailModal
+                    visible={selectedGame !== null}
+                    game={selectedGame}
+                    nameMap={nameMap}
+                    onClose={() => setSelectedGame(null)}
+                />
+            )}
         </View>
     );
 }
@@ -196,6 +214,7 @@ const styles = StyleSheet.create({
     titleMd: {
         fontSize: 18,
         fontWeight: '700',
+        marginBottom: 8,
     },
     muted: {
         color: '#666',

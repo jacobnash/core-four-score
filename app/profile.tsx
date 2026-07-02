@@ -3,11 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Button } from '../components/Button';
 import { useAuth } from '../contexts/AuthContext';
+import { useTournament } from '../contexts/TournamentContext';
 import { userService } from '../services/firestore';
 import { webBoxShadow } from '../utils/shadow';
 
 export default function ProfileScreen() {
     const { user, signOut } = useAuth();
+    const { activeTournament } = useTournament();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [profile, setProfile] = useState<any | null>(null);
@@ -20,9 +22,10 @@ export default function ProfileScreen() {
         const load = async () => {
             if (!user) return;
             setLoading(true);
+            const tournamentId = activeTournament?.id;
             const [data, dynamicStats] = await Promise.all([
                 userService.getUser(user.uid),
-                userService.getUserStats(user.uid, 'the-core-four')
+                userService.getUserStats(user.uid, tournamentId)
             ]);
             setProfile(data);
             setEditingName(data?.displayName || '');
@@ -31,7 +34,7 @@ export default function ProfileScreen() {
             setLoading(false);
         };
         load();
-    }, [user]);
+    }, [user, activeTournament?.id]);
 
     if (!user) return null;
 
@@ -61,7 +64,9 @@ export default function ProfileScreen() {
             </View>
 
             <View style={styles.card}>
-                <Text style={styles.title}>Player Stats</Text>
+                <Text style={styles.title}>
+                    Player Stats{activeTournament ? ` — ${activeTournament.name}` : ''}
+                </Text>
                 <View style={styles.row}>
                     <View style={styles.statCol}>
                         <Text style={styles.statNum}>{effectiveStats.wins}</Text>
