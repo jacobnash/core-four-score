@@ -5,12 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
-const ALLOWED_RULE_USERS = [
-  'Ghobb73dkDavNS31eTDeK1n2zBG2',
-  'WDzkjttsK9g4Uobrywwe8o2nbtN2',
-  'SvmJSd43QveWNKw8w1qEh0zulTm1',
-  'lkW4ipmG1FM8MYtWI0JlUpqutzv1'
-];
+import { CORE_FOUR_MEMBER_IDS } from '../../constants/coreFour';
 
 // Simple emoji icon component for tabs
 function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
@@ -20,7 +15,7 @@ function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
 export default function TabLayout() {
   const router = useRouter();
   const { user } = useAuth();
-  const isAllowedUser = user && ALLOWED_RULE_USERS.includes(user.uid);
+  const isAllowedUser = user && (CORE_FOUR_MEMBER_IDS as readonly string[]).includes(user.uid);
 
   return (
     <Tabs

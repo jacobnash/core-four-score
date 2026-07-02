@@ -1,5 +1,6 @@
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { Tournament, User } from '../types';
+import { canAddMemberToTournament, validateTournamentMemberIds } from '../utils/tournamentMembership';
 import { db } from './firebase';
 import { userService } from './userService';
 
@@ -57,6 +58,11 @@ export const tournamentService = {
 
     async createTournament(name: string, memberIds: string[], createdBy?: string): Promise<Tournament> {
         const id = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
+        const validation = validateTournamentMemberIds(id, id, memberIds);
+        if (!validation.ok) {
+            throw new Error(validation.message);
+        }
+
         const payload = {
             tournamentId: id,
             name,
@@ -95,6 +101,12 @@ export const tournamentService = {
     async inviteUser(tournamentId: string, uid: string): Promise<void> {
         const t = await this.getTournament(tournamentId);
         if (!t) throw new Error('Tournament not found');
+        if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
+            throw new Error('This tournament is limited to the original Core Four members.');
+        }
+        if (t.memberIds.includes(uid)) {
+            throw new Error('Player is already a member');
+        }
         if ((t.status || 'active') === 'active') {
             throw new Error('Cannot invite after tournament is started');
         }
@@ -104,11 +116,41 @@ export const tournamentService = {
         });
     },
 
+    async declineInvite(tournamentId: string, uid: string): Promise<void> {
+        await updateDoc(doc(db, 'tournaments', tournamentId), {
+            inviteIds: arrayRemove(uid),
+            updatedAt: Timestamp.now(),
+        });
+    },
+
+    async addMember(tournamentId: string, uid: string): Promise<void> {
+        const t = await this.getTournament(tournamentId);
+        if (!t) throw new Error('Tournament not found');
+        if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
+            throw new Error('This tournament is limited to the original Core Four members.');
+        }
+        if ((t.status || 'active') === 'active') {
+            throw new Error('Cannot add members after tournament is started');
+        }
+        if (t.memberIds.includes(uid)) return;
+        await updateDoc(doc(db, 'tournaments', tournamentId), {
+            memberIds: arrayUnion(uid),
+            inviteIds: arrayRemove(uid),
+            updatedAt: Timestamp.now(),
+        });
+    },
+
     async acceptInvite(tournamentId: string, uid: string): Promise<void> {
         const t = await this.getTournament(tournamentId);
         if (!t) throw new Error('Tournament not found');
+        if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
+            throw new Error('This tournament is limited to the original Core Four members.');
+        }
         if ((t.status || 'active') === 'active') {
             throw new Error('Cannot add members after tournament is started');
+        }
+        if (!t.inviteIds?.includes(uid)) {
+            throw new Error('No pending invite for this tournament');
         }
         await updateDoc(doc(db, 'tournaments', tournamentId), {
             memberIds: arrayUnion(uid),

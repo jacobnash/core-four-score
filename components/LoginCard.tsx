@@ -23,7 +23,7 @@ export function LoginCard({ onSignIn, loading = false, isEmulator = false, devPl
           <View style={styles.authCard}>
             <Text style={styles.eyebrow}>Deer Camp Edition</Text>
             <Text style={styles.titleLg}>🦌 The Core Four Score</Text>
-            <Text style={styles.body}>Track your Euchre glory and shame.</Text>
+            <Text style={styles.body}>Track your Euchre glory and shame — sign in to join or create a tournament.</Text>
             <View style={{ height: 12 }} />
             <Button
               title="Sign In with Google"
