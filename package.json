@@ -10,7 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint .",
-    "build:web": "expo export --platform web",
+    "build:web": "npx expo export --platform web",
     "build:web:copy": "npm run build:web && node ./scripts/copy-thumbnail.js",
     "predeploy": "npm run build:web:copy",
     "deploy": "npm run build:web:copy && npx firebase-tools deploy --only hosting",
