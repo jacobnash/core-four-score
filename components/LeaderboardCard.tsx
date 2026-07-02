@@ -7,9 +7,10 @@ import RenegListModal from './RenegListModal';
 interface LeaderboardCardProps {
     entry: LeaderboardEntry;
     rank: number;
+    variant?: 'default' | 'compact';
 }
 
-export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ entry, rank }) => {
+export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ entry, rank, variant = 'default' }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const getRankBadge = () => {
         if (rank === 1) return '🥇';
@@ -18,8 +19,13 @@ export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ entry, rank })
         return `#${rank}`;
     };
 
+    const isCompact = variant === 'compact';
+
     return (
-        <View style={[styles.card, rank === 1 ? styles.cardTop : null]}>
+        <View style={[
+            isCompact ? styles.cardCompact : styles.card,
+            rank === 1 ? styles.cardTop : null,
+        ]}>
             <View style={styles.left}>
                 <View style={styles.rankBadge}>
                     <Text style={styles.rankText}>{getRankBadge()}</Text>
@@ -70,6 +76,17 @@ const styles = StyleSheet.create({
             shadowRadius: 12,
             elevation: 3,
         }),
+    },
+    cardCompact: {
+        backgroundColor: 'transparent',
+        paddingVertical: 10,
+        paddingHorizontal: 4,
+        marginBottom: 0,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
     },
     cardTop: {
         borderWidth: 1,

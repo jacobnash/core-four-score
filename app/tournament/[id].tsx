@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../components/Button';
 import { LeaderboardCard } from '../../components/LeaderboardCard';
+import { ENABLE_IMPROVED_DATA_VIEWS } from '../../constants/featureFlags';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
-import { gameService, leaderboardService, tournamentService } from '../../services/firestore';
+import { leaderboardService, tournamentService } from '../../services/firestore';
 
 export default function TournamentDetail() {
   const { id } = useLocalSearchParams();
@@ -15,8 +16,6 @@ export default function TournamentDetail() {
   const [players, setPlayers] = useState<any[]>([]);
   const [tournament, setTournament] = useState<any | null>(null);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
-  const [gamesCount, setGamesCount] = useState<number | null>(null);
-  const [gamesSample, setGamesSample] = useState<any | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -28,17 +27,6 @@ export default function TournamentDetail() {
         setPlayers(members);
         const lb = await leaderboardService.getLeaderboard(id as string);
         setLeaderboard(lb);
-        // Diagnostic: fetch games for this tournamentId to verify stored documents
-        try {
-          const games = await gameService.getGames(id as string, 100);
-          setGamesCount(games.length);
-          setGamesSample(games.length > 0 ? games[0] : null);
-          console.log('TournamentDetail: games sample for', id, games.length > 0 ? games[0] : 'no games');
-        } catch (gErr) {
-          console.warn('Failed to fetch games for diagnostic', gErr);
-          setGamesCount(null);
-          setGamesSample(null);
-        }
         // If user navigated directly to this route, make it active if allowed
         if (t && user && t.memberIds?.includes(user.uid)) {
           setActiveTournamentById(id as string);
@@ -101,9 +89,6 @@ export default function TournamentDetail() {
       <View style={styles.card}>
         <Text style={styles.titleLg}>{tournament.name}</Text>
         <Text style={styles.mutedSmall}>{players.length} players</Text>
-        {typeof gamesCount === 'number' && (
-          <Text style={styles.mutedSmall}>{gamesCount} games found for this tournament</Text>
-        )}
 
         <View style={{ height: 12 }} />
         {tournament?.status !== 'active' ? (
@@ -134,7 +119,12 @@ export default function TournamentDetail() {
           </View>
         ) : (
           leaderboard.map((entry, idx) => (
-            <LeaderboardCard key={entry.userId} entry={entry} rank={idx + 1} />
+            <LeaderboardCard
+              key={entry.userId}
+              entry={entry}
+              rank={idx + 1}
+              variant={ENABLE_IMPROVED_DATA_VIEWS ? 'compact' : 'default'}
+            />
           ))
         )}
       </View>

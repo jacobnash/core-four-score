@@ -92,7 +92,7 @@ export default function RenegListModal({ visible, userId, onClose }: Props) {
                             {renegs.length === 0 ? (
                                 <>
                                     <Text style={styles.empty}>No renegs found</Text>
-                                    {recentSample.length > 0 && (
+                                    {__DEV__ && recentSample.length > 0 && (
                                         <View style={{ marginTop: 12 }}>
                                             <Text style={{ fontWeight: '700', marginBottom: 6 }}>Recent renegs sample (id — playerId — date)</Text>
                                             {Array.from(new Map(recentSample.map(s => [s.id + '::' + s.playerId, s])).values()).map(s => (

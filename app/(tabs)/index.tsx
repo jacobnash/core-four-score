@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { Button } from '../../components/Button';
 import { LeaderboardCard } from '../../components/LeaderboardCard';
+import { TournamentBanner } from '../../components/TournamentBanner';
+import { ENABLE_IMPROVED_DATA_VIEWS } from '../../constants/featureFlags';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
 import { leaderboardService, tournamentService } from '../../services/firestore';
@@ -65,7 +67,7 @@ export default function HomeScreen() {
     return () => {
       if (t) clearTimeout(t);
     };
-  }, [user]);
+  }, [user, TOURNAMENT_ID]);
 
   // Auth Loading State
   if (authLoading) {
@@ -99,6 +101,13 @@ export default function HomeScreen() {
           />
         }
       >
+        {ENABLE_IMPROVED_DATA_VIEWS && (
+          <TournamentBanner
+            tournament={activeTournament}
+            memberCount={leaderboard.length > 0 ? undefined : activeTournament?.memberIds?.length}
+          />
+        )}
+
         {showHeader && (
           <View style={styles.headerCard}>
             <View style={styles.headerRow}>
@@ -194,13 +203,24 @@ export default function HomeScreen() {
               <Text style={styles.muted}>Start a game to see stats</Text>
             </View>
           ) : (
-            leaderboard.map((entry, index) => (
-              <LeaderboardCard
-                key={entry.userId}
-                entry={entry}
-                rank={index + 1}
-              />
-            ))
+            <>
+              {ENABLE_IMPROVED_DATA_VIEWS && (
+                <View style={styles.leaderColumns}>
+                  <Text style={[styles.colHeader, { flex: 1 }]}>Player</Text>
+                  <Text style={styles.colHeader}>Wins</Text>
+                  <Text style={[styles.colHeader, { width: 48 }]}>Win%</Text>
+                  <Text style={[styles.colHeader, { width: 36 }]}>Reneg</Text>
+                </View>
+              )}
+              {leaderboard.map((entry, index) => (
+                <LeaderboardCard
+                  key={entry.userId}
+                  entry={entry}
+                  rank={index + 1}
+                  variant={ENABLE_IMPROVED_DATA_VIEWS ? 'compact' : 'default'}
+                />
+              ))}
+            </>
           )}
         </View>
 
@@ -351,5 +371,20 @@ const styles = StyleSheet.create({
   mutedSmall: {
     color: '#999',
     fontSize: 12,
-  }
+  },
+  leaderColumns: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    marginBottom: 4,
+  },
+  colHeader: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#999',
+    textTransform: 'uppercase',
+    textAlign: 'right',
+  },
 });
