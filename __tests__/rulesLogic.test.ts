@@ -1,4 +1,13 @@
-import { APPROVAL_THRESHOLD, APPROVAL_WINDOW_MS, computeNextApprovals, isProposalExpired } from '../utils/rules';
+import {
+    APPROVAL_THRESHOLD,
+    APPROVAL_WINDOW_MS,
+    computeNextApprovals,
+    isAcceptedRule,
+    isHouseRule,
+    isProposalExpired,
+    isVisibleRule,
+    shouldExpireProposal,
+} from '../utils/rules';
 
 function makeDateAgo(ms: number): Date {
     return new Date(1_700_000_000_000 - ms); // fixed anchor for deterministic tests
@@ -18,6 +27,62 @@ describe('isProposalExpired', () => {
     test('keeps proposals within window even if not approved yet', () => {
         const recent = makeDateAgo(APPROVAL_WINDOW_MS - 10_000);
         expect(isProposalExpired(recent, 0, 1_700_000_000_000)).toBe(false);
+    });
+
+    test('never expires pre-agreed house rules', () => {
+        const oldDate = makeDateAgo(APPROVAL_WINDOW_MS + 1_000);
+        expect(isProposalExpired(oldDate, 0, 1_700_000_000_000, 'system')).toBe(false);
+    });
+});
+
+describe('shouldExpireProposal', () => {
+    const oldDate = makeDateAgo(APPROVAL_WINDOW_MS + 1_000);
+
+    test('only expires unapproved user proposals past the window', () => {
+        expect(shouldExpireProposal(oldDate, ['u1'], 1_700_000_000_000, 'user-a')).toBe(true);
+    });
+
+    test('does not expire house rules', () => {
+        expect(shouldExpireProposal(oldDate, [], 1_700_000_000_000, 'system')).toBe(false);
+    });
+
+    test('does not expire accepted proposals', () => {
+        const accepted = Array.from({ length: APPROVAL_THRESHOLD }, (_, i) => `u${i}`);
+        expect(shouldExpireProposal(oldDate, accepted, 1_700_000_000_000, 'user-a')).toBe(false);
+    });
+});
+
+describe('isVisibleRule', () => {
+    test('shows house rules even if status is expired', () => {
+        expect(isVisibleRule({ author: 'system', status: 'expired' })).toBe(true);
+    });
+
+    test('shows accepted proposals even if status is expired', () => {
+        expect(isVisibleRule({
+            author: 'user-a',
+            approvals: ['u1', 'u2', 'u3'],
+            status: 'expired',
+        })).toBe(true);
+    });
+
+    test('hides expired unapproved proposals', () => {
+        expect(isVisibleRule({ author: 'user-a', approvals: ['u1'], status: 'expired' })).toBe(false);
+    });
+
+    test('shows pending proposals still in voting window', () => {
+        expect(isVisibleRule({ author: 'user-a', approvals: ['u1'], status: undefined })).toBe(true);
+    });
+});
+
+describe('isHouseRule / isAcceptedRule', () => {
+    test('isHouseRule identifies system author', () => {
+        expect(isHouseRule('system')).toBe(true);
+        expect(isHouseRule('user-a')).toBe(false);
+    });
+
+    test('isAcceptedRule requires threshold approvals', () => {
+        expect(isAcceptedRule(['a', 'b'])).toBe(false);
+        expect(isAcceptedRule(['a', 'b', 'c'])).toBe(true);
     });
 });
 

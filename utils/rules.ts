@@ -12,11 +12,48 @@ function coerceDate(value: any): Date | null {
     return null;
 }
 
-export function isProposalExpired(createdAt: any, approvalsCount: number, nowMs: number = Date.now()): boolean {
+export function isHouseRule(author?: string): boolean {
+    return author === 'system';
+}
+
+export function isAcceptedRule(approvals?: string[]): boolean {
+    return (approvals?.length ?? 0) >= APPROVAL_THRESHOLD;
+}
+
+/** True only for user proposals that never reached the vote threshold and are past the window. */
+export function isProposalExpired(
+    createdAt: any,
+    approvalsCount: number,
+    nowMs: number = Date.now(),
+    author?: string,
+): boolean {
+    if (isHouseRule(author)) return false;
+    if (approvalsCount >= APPROVAL_THRESHOLD) return false;
     const created = coerceDate(createdAt);
     if (!created) return false;
-    if (approvalsCount >= APPROVAL_THRESHOLD) return false;
     return nowMs - created.getTime() > APPROVAL_WINDOW_MS;
+}
+
+export function shouldExpireProposal(
+    createdAt: any,
+    approvals?: string[],
+    nowMs: number = Date.now(),
+    author?: string,
+): boolean {
+    if (isHouseRule(author)) return false;
+    if (isAcceptedRule(approvals)) return false;
+    return isProposalExpired(createdAt, approvals?.length ?? 0, nowMs, author);
+}
+
+/** House rules and accepted proposals always show; only failed proposals hide. */
+export function isVisibleRule(rule: {
+    author?: string;
+    approvals?: string[];
+    status?: string;
+}): boolean {
+    if (isHouseRule(rule.author)) return true;
+    if (isAcceptedRule(rule.approvals)) return true;
+    return rule.status !== 'expired';
 }
 
 export function computeNextApprovals(rule: { approvals?: string[] }, userId: string): string[] {

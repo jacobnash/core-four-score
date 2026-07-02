@@ -1,10 +1,17 @@
-import { collection, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, deleteField, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../services/firebase';
 import { userService } from '../../services/firestore';
-import { APPROVAL_THRESHOLD, computeNextApprovals, isProposalExpired } from '../../utils/rules';
+import {
+    APPROVAL_THRESHOLD,
+    computeNextApprovals,
+    isAcceptedRule,
+    isHouseRule,
+    isVisibleRule,
+    shouldExpireProposal,
+} from '../../utils/rules';
 
 type RuleDoc = {
     id: string;
@@ -33,7 +40,7 @@ export default function RulesScreen() {
         const fresh = await getDocs(collection(db, 'rules'));
         const arr: RuleDoc[] = fresh.docs
             .map(d => ({ id: d.id, ...(d.data() as any) }))
-            .filter(r => r.status !== 'expired');
+            .filter(r => isVisibleRule(r));
         // Sort to show built-in rules first, then proposals
         arr.sort((a, b) => {
             const aIsBuiltin = a.author === 'system';
@@ -73,10 +80,30 @@ export default function RulesScreen() {
         for (const d of docs) {
             try {
                 const data = d.data();
-                const approvals = data?.approvals || [];
-                if (isProposalExpired(data?.createdAt, approvals.length, now)) {
-                    // No-deletes policy: mark expired instead of deleting
-                    await updateDoc(doc(db, 'rules', d.id), { status: 'expired', expiredAt: new Date() });
+                const author = data?.author;
+                const approvals: string[] = data?.approvals || [];
+
+                // House rules and accepted proposals never expire.
+                if (isHouseRule(author) || isAcceptedRule(approvals)) {
+                    if (data?.status === 'expired') {
+                        await updateDoc(doc(db, 'rules', d.id), {
+                            status: deleteField(),
+                            expiredAt: deleteField(),
+                        });
+                    }
+                    continue;
+                }
+
+                if (shouldExpireProposal(data?.createdAt, approvals, now, author)) {
+                    if (data?.status !== 'expired') {
+                        await updateDoc(doc(db, 'rules', d.id), { status: 'expired', expiredAt: new Date() });
+                    }
+                } else if (data?.status === 'expired') {
+                    // Heal proposals that were wrongly marked expired (e.g. before this fix).
+                    await updateDoc(doc(db, 'rules', d.id), {
+                        status: deleteField(),
+                        expiredAt: deleteField(),
+                    });
                 }
             } catch (err) {
                 console.warn('cleanupOldProposals error for doc', d.id, err);

@@ -20,6 +20,22 @@ export function resolveWinningTeam(teams: Team[]): Team | null {
     return maxTeams.length === 1 ? maxTeams[0] : null;
 }
 
+/** Games are saved with score 1/0 as a win flag, not euchre points — don't show that as a "score". */
+export function isBinaryWinScore(teams: Team[]): boolean {
+    if (!Array.isArray(teams) || teams.length !== 2) return false;
+    const scores = teams.map(t => t.score).filter((s): s is number => typeof s === 'number');
+    if (scores.length !== 2) return false;
+    const sorted = [...scores].sort((a, b) => a - b);
+    return sorted[0] === 0 && sorted[1] === 1;
+}
+
+/** Returns a display score like "10–8", or null when there's nothing meaningful to show. */
+export function formatGameScoreSummary(teams: Team[]): string | null {
+    if (isBinaryWinScore(teams)) return null;
+    if (!Array.isArray(teams) || teams.length === 0) return null;
+    return teams.map(t => `${t.score ?? '?'}`).join('–');
+}
+
 function formatTeamNames(playerIds: string[] | undefined, nameMap: Record<string, string>): string {
     if (!playerIds?.length) return 'Unknown';
     return playerIds.map(id => nameMap[id] || 'Unknown').join(' & ');
@@ -30,7 +46,7 @@ export function GameListItem({ game, nameMap, onPress }: GameListItemProps) {
     const winners = formatTeamNames(winTeam?.playerIds, nameMap);
     const where = (game.location || '').trim() || 'Unknown Location';
     const when = game.timestamp ? getRelativeTime(new Date(game.timestamp)) : 'Unknown time';
-    const scores = game.teams.map(t => `${t.score ?? '?'}`).join('–');
+    const scoreSummary = formatGameScoreSummary(game.teams);
     const tags = game.tags || [];
 
     const content = (
@@ -54,9 +70,11 @@ export function GameListItem({ game, nameMap, onPress }: GameListItemProps) {
                     </View>
                 )}
             </View>
-            <View style={styles.scoreBadge}>
-                <Text style={styles.scoreText}>{scores}</Text>
-            </View>
+            {scoreSummary ? (
+                <View style={styles.scoreBadge}>
+                    <Text style={styles.scoreText}>{scoreSummary}</Text>
+                </View>
+            ) : null}
         </>
     );
 

@@ -40,36 +40,6 @@ export default function TournamentDetail() {
     })();
   }, [id]);
 
-  const startGame = async () => {
-    if (!tournament) return;
-    if (players.length < 2) {
-      Alert.alert('Not enough players', 'Need at least 2 players to start a game');
-      return;
-    }
-
-    // choose up to 4 players
-    let picked = players.map(p => p.uid);
-    if (picked.length > 4) {
-      picked = [...picked].sort(() => Math.random() - 0.5).slice(0, 4);
-    }
-
-    while (picked.length < 4 && players.length >= 2) {
-      // duplicate logic from home
-      const remaining = players.map(p => p.uid).filter(id => !picked.includes(id));
-      if (remaining.length === 0) break;
-      picked.push(remaining.shift()!);
-    }
-
-    const shuffled = [...picked].sort(() => Math.random() - 0.5);
-    const team1 = shuffled.slice(0, 2);
-    const team2 = shuffled.slice(2, 4);
-
-    const playerNames: Record<string, string> = {};
-    players.forEach(m => (playerNames[m.uid] = m.displayName));
-
-    router.push({ pathname: '/game', params: { team1: JSON.stringify(team1), team2: JSON.stringify(team2), playerNames: JSON.stringify(playerNames), tournamentId: String(tournament.id || id) } });
-  };
-
   if (loading) return (
     <View style={[styles.container, styles.centered]}>
       <ActivityIndicator size="large" color="#FF6700" />
@@ -107,7 +77,12 @@ export default function TournamentDetail() {
             <View style={{ height: 8 }} />
           </>
         ) : null}
-        <Button title="Start Game" onPress={startGame} variant="primary" />
+        <Button title="Start Game" onPress={() => {
+          router.push({
+            pathname: '/matchup',
+            params: { tournamentId: String(tournament.id || id) },
+          });
+        }} variant="primary" />
         <View style={{ height: 12 }} />
         <Button title="Back to Tournaments" onPress={() => router.push('/(tabs)/tournaments')} />
 

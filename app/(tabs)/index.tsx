@@ -15,7 +15,7 @@ import { TournamentBanner } from '../../components/TournamentBanner';
 import { ENABLE_IMPROVED_DATA_VIEWS } from '../../constants/featureFlags';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
-import { leaderboardService, tournamentService } from '../../services/firestore';
+import { leaderboardService } from '../../services/firestore';
 import { LeaderboardEntry } from '../../types';
 import { webBoxShadow } from '../../utils/shadow';
 
@@ -125,58 +125,18 @@ export default function HomeScreen() {
         {/* Quick Actions */}
         <View style={styles.card}>
           <View style={{ height: 8 }} />
-          <Button
+            <Button
             title="🎲 START NEW GAME"
-            onPress={async () => {
+            onPress={() => {
               if (!TOURNAMENT_ID) {
                 Alert.alert('No tournament selected', 'Please select a tournament first.');
                 router.push('/(tabs)/tournaments');
                 return;
               }
-
-              try {
-                const members = await tournamentService.getTournamentMembers(TOURNAMENT_ID);
-                if (!members || members.length < 2) {
-                  Alert.alert('Not enough players', 'Need at least 2 tournament members to start a game.');
-                  return;
-                }
-
-                // Pick up to 4 players. If more than 4, randomly select 4.
-                let picked = members.map(m => m.uid);
-                if (picked.length > 4) {
-                  const shuffled = [...picked].sort(() => Math.random() - 0.5);
-                  picked = shuffled.slice(0, 4);
-                }
-
-                // If fewer than 4 but >=2, try to fill from members (already picked from members so this is just a fallback)
-                if (picked.length < 4) {
-                  const remaining = members.map(m => m.uid).filter(id => !picked.includes(id));
-                  while (picked.length < 4 && remaining.length > 0) {
-                    picked.push(remaining.shift()!);
-                  }
-                }
-
-                // Shuffle into teams
-                const shuffled = [...picked].sort(() => Math.random() - 0.5);
-                const team1 = shuffled.slice(0, 2);
-                const team2 = shuffled.slice(2, 4);
-
-                const playerNames: Record<string, string> = {};
-                members.forEach(m => (playerNames[m.uid] = m.displayName));
-
-                router.push({
-                  pathname: '/game',
-                  params: {
-                    team1: JSON.stringify(team1),
-                    team2: JSON.stringify(team2),
-                    playerNames: JSON.stringify(playerNames),
-                    tournamentId: TOURNAMENT_ID,
-                  },
-                });
-              } catch (err) {
-                console.error('Failed to start new game:', err);
-                Alert.alert('Error', 'Failed to start game.');
-              }
+              router.push({
+                pathname: '/matchup',
+                params: { tournamentId: TOURNAMENT_ID },
+              });
             }}
             size="lg"
             variant="primary"

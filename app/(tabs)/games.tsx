@@ -10,7 +10,7 @@ import {
     View
 } from 'react-native';
 import { GameDetailModal } from '../../components/GameDetailModal';
-import { GameListItem, resolveWinningTeam } from '../../components/GameListItem';
+import { formatGameScoreSummary, GameListItem, resolveWinningTeam } from '../../components/GameListItem';
 import { TournamentBanner } from '../../components/TournamentBanner';
 import { ENABLE_IMPROVED_DATA_VIEWS } from '../../constants/featureFlags';
 import { useAuth } from '../../contexts/AuthContext';
@@ -94,7 +94,7 @@ export default function GamesScreen() {
         const winners = winTeam?.playerIds?.map(id => nameMap[id] || 'Unknown').join(' & ') || 'Unknown';
         const where = (g.location || '').trim() || 'Unknown Location';
         const when = g.timestamp ? new Date(g.timestamp).toLocaleString() : 'Unknown time';
-        const scores = g.teams.map(t => `${t.score ?? '?'}`).join('–');
+        const scoreSummary = formatGameScoreSummary(g.teams);
         return (
             <View key={g.id} style={styles.listItem}>
                 <View style={{ flex: 1 }}>
@@ -102,9 +102,11 @@ export default function GamesScreen() {
                     <Text style={styles.itemSub}>📍 {where}</Text>
                     <Text style={styles.itemSub}>🏆 {winners}</Text>
                 </View>
-                <View style={styles.scoreBadge}>
-                    <Text style={styles.scoreText}>{scores}</Text>
-                </View>
+                {scoreSummary ? (
+                    <View style={styles.scoreBadge}>
+                        <Text style={styles.scoreText}>{scoreSummary}</Text>
+                    </View>
+                ) : null}
             </View>
         );
     };

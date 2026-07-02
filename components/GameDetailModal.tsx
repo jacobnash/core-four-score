@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Game } from '../types';
 import { formatDateTime } from '../utils/helpers';
-import { resolveWinningTeam } from './GameListItem';
+import { isBinaryWinScore, resolveWinningTeam } from './GameListItem';
 
 interface GameDetailModalProps {
     visible: boolean;
@@ -38,7 +38,9 @@ export function GameDetailModal({ visible, game, nameMap, onClose }: GameDetailM
                                 <View key={idx} style={[styles.teamCard, isWinner && styles.teamWinner]}>
                                     <Text style={styles.teamLabel}>Team {idx + 1}{isWinner ? ' 🏆' : ''}</Text>
                                     <Text style={styles.teamPlayers}>{formatTeamNames(team.playerIds, nameMap)}</Text>
-                                    <Text style={styles.teamScore}>Score: {team.score ?? '?'}</Text>
+                                    {!isBinaryWinScore(game.teams) && (
+                                        <Text style={styles.teamScore}>Score: {team.score ?? '?'}</Text>
+                                    )}
                                 </View>
                             );
                         })}

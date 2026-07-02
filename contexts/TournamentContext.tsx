@@ -34,11 +34,36 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             const all = await tournamentService.getAllTournaments();
             const mine = all.filter(t => t.memberIds?.includes(user.uid));
             setTournaments(mine);
-            // Auto-select preferred tournament if available and valid
-            if (!activeTournament && user.preferredTournamentId) {
-                const preferred = mine.find(t => t.id === user.preferredTournamentId || t.tournamentId === user.preferredTournamentId);
-                if (preferred) {
-                    setActiveTournament(preferred);
+            
+            // Auto-select tournament based on availability
+            if (!activeTournament) {
+                let selected: Tournament | null = null;
+                
+                // Priority 1: Use preferred tournament if it exists
+                if (user.preferredTournamentId) {
+                    selected = mine.find(t => t.id === user.preferredTournamentId || t.tournamentId === user.preferredTournamentId) || null;
+                }
+                
+                // Priority 2: If only one tournament, auto-select it
+                if (!selected && mine.length === 1) {
+                    selected = mine[0];
+                }
+                
+                // Priority 3: Use first tournament (default for multiple tournaments)
+                if (!selected && mine.length > 0) {
+                    selected = mine[0];
+                }
+                
+                if (selected) {
+                    setActiveTournament(selected);
+                    // Persist as preferred if it wasn't already
+                    if (!user.preferredTournamentId && user.uid) {
+                        try {
+                            await userService.setPreferredTournament(user.uid, selected.id);
+                        } catch (persistErr) {
+                            console.warn('Failed to persist preferred tournament', persistErr);
+                        }
+                    }
                 }
             }
         } catch (err) {

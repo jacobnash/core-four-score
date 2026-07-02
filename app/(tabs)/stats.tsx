@@ -1,13 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Platform, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { VictoryAxis, VictoryChart, VictoryLegend, VictoryLine, VictoryTheme } from 'victory-native';
+import { resolveWinningTeam } from '../../components/GameListItem';
+import { InteractiveStatsChart } from '../../components/InteractiveStatsChart';
 import { StatSummaryRow } from '../../components/StatSummaryRow';
+import { StatsLeaderboard } from '../../components/StatsLeaderboard';
 import { TournamentBanner } from '../../components/TournamentBanner';
 import { ENABLE_IMPROVED_DATA_VIEWS } from '../../constants/featureFlags';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
 import { gameService, renegService, tournamentService } from '../../services/firestore';
 import { Game, Reneg, User } from '../../types';
+import { getRelativeTime } from '../../utils/helpers';
+import {
+    computeMemberStats,
+    computeStatsSummary,
+    computeTagCounts,
+    didMemberWinGame,
+} from '../../utils/playerStats';
 import { webBoxShadow } from '../../utils/shadow';
 
 function toDay(d: Date): Date {
@@ -33,7 +42,7 @@ function uniqueSortedDaysFromDates(dates: Date[]): Date[] {
     return Array.from(set).sort((a, b) => a - b).map(ts => new Date(ts));
 }
 
-const CHART_HEIGHT = 260;
+const CHART_HEIGHT = 240;
 
 export default function StatsScreen() {
     const { user } = useAuth();
@@ -45,6 +54,12 @@ export default function StatsScreen() {
     const [renegs, setRenegs] = useState<Reneg[]>([]);
 
     const tournamentId = activeTournament?.id;
+
+    const nameMap = useMemo(() => {
+        const map: Record<string, string> = {};
+        members.forEach(m => { map[m.uid] = m.displayName; });
+        return map;
+    }, [members]);
 
     const loadData = useCallback(async () => {
         if (!user || !tournamentId) {
@@ -60,7 +75,7 @@ export default function StatsScreen() {
             const [m, g, r] = await Promise.all([
                 tournamentService.getTournamentMembers(tournamentId),
                 gameService.getGames(tournamentId, 0),
-                renegService.getRenegs(0),
+                renegService.getRenegsByTournament(tournamentId, 500),
             ]);
             setMembers(m);
             setGames(g);
@@ -85,6 +100,20 @@ export default function StatsScreen() {
         setRefreshing(false);
     };
 
+    const memberStats = useMemo(
+        () => computeMemberStats(members, games, renegs),
+        [members, games, renegs],
+    );
+
+    const summary = useMemo(() => computeStatsSummary(memberStats), [memberStats]);
+
+    const tagCounts = useMemo(() => computeTagCounts(games), [games]);
+
+    const recentGames = useMemo(
+        () => [...games].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()).slice(0, 5),
+        [games],
+    );
+
     const winsSeries = useMemo(() => {
         if (games.length === 0 || members.length === 0) return {} as Record<string, { x: Date; y: number }[]>;
         const allDates = uniqueSortedDaysFromDates(games.map(g => g.timestamp));
@@ -94,9 +123,9 @@ export default function StatsScreen() {
             const counts = new Map<number, number>();
             for (const g of games) {
                 const dayTs = toDay(g.timestamp).getTime();
-                const winningTeam = g.teams.find(t => t.isWinner);
-                const didWin = winningTeam?.playerIds.includes(member.uid) || false;
-                if (didWin) counts.set(dayTs, (counts.get(dayTs) || 0) + 1);
+                if (didMemberWinGame(g, member.uid)) {
+                    counts.set(dayTs, (counts.get(dayTs) || 0) + 1);
+                }
             }
             byUser[member.uid] = buildCumulativeSeries(allDates, counts);
         }
@@ -126,32 +155,27 @@ export default function StatsScreen() {
         return map;
     }, [members]);
 
-    const summary = useMemo(() => {
-        const winsByMember = members.map(m => {
-            let wins = 0;
-            for (const g of games) {
-                const winningTeam = g.teams.find(t => t.isWinner);
-                if (winningTeam?.playerIds.includes(m.uid)) wins++;
-            }
-            return { name: m.displayName, wins };
-        });
-        const leader = winsByMember.sort((a, b) => b.wins - a.wins)[0];
-        const renegLeader = members
-            .map(m => ({ name: m.displayName, count: renegs.filter(r => r.playerId === m.uid).length }))
-            .sort((a, b) => b.count - a.count)[0];
+    const chartSeries = useMemo(
+        () =>
+            members.map(m => ({
+                id: m.uid,
+                name: m.displayName,
+                color: memberColors[m.uid],
+                data: winsSeries[m.uid] || [],
+            })),
+        [members, memberColors, winsSeries],
+    );
 
-        return {
-            totalGames: games.length,
-            totalRenegs: renegs.length,
-            leader: leader?.wins ? `${leader.name} (${leader.wins})` : '—',
-            topReneg: renegLeader?.count ? `${renegLeader.name} (${renegLeader.count})` : '—',
-        };
-    }, [games, renegs, members]);
-
-    const formatTick = (t: number | string) => {
-        const d = new Date(t);
-        return `${d.getMonth() + 1}/${d.getDate()}`;
-    };
+    const renegChartSeries = useMemo(
+        () =>
+            members.map(m => ({
+                id: m.uid,
+                name: m.displayName,
+                color: memberColors[m.uid],
+                data: renegsSeries[m.uid] || [],
+            })),
+        [members, memberColors, renegsSeries],
+    );
 
     if (!user) {
         return (
@@ -174,18 +198,76 @@ export default function StatsScreen() {
                 <TournamentBanner tournament={activeTournament} memberCount={members.length} />
             )}
 
+            {!loading && tournamentId && games.length > 0 && (
+                <>
+                    <View style={styles.card}>
+                        <Text style={styles.titleMd}>📊 Overview</Text>
+                        <StatSummaryRow
+                            items={[
+                                { label: 'Games', value: String(games.length) },
+                                { label: 'Leader', value: summary.leaderLabel, accent: true },
+                                { label: 'Best Win %', value: summary.bestWinPctLabel },
+                                { label: 'Hot Streak', value: summary.hottestStreakLabel },
+                                { label: 'Renegs', value: String(summary.totalRenegs) },
+                                { label: 'Top Reneg', value: summary.topRenegLabel },
+                            ]}
+                        />
+                    </View>
+
+                    <View style={styles.card}>
+                        <StatsLeaderboard stats={memberStats} currentUserId={user.uid} />
+                    </View>
+
+                    {tagCounts.length > 0 && (
+                        <View style={styles.card}>
+                            <Text style={styles.titleMd}>🏷️ Notable Games</Text>
+                            <View style={styles.tagGrid}>
+                                {tagCounts.map(({ tag, count }) => (
+                                    <View key={tag} style={styles.tagChip}>
+                                        <Text style={styles.tagCount}>{count}</Text>
+                                        <Text style={styles.tagLabel}>{tag}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        </View>
+                    )}
+
+                    <View style={styles.card}>
+                        <Text style={styles.titleMd}>🕐 Recent Results</Text>
+                        {recentGames.map(game => {
+                            const winTeam = resolveWinningTeam(game.teams);
+                            const winners = winTeam?.playerIds?.map(id => nameMap[id] || '?').join(' & ') || 'Unknown';
+                            const when = getRelativeTime(new Date(game.timestamp));
+                            const where = (game.location || '').trim() || 'Unknown';
+                            const notes = (game.notes || '').trim();
+                            return (
+                                <View key={game.id} style={styles.recentRow}>
+                                    <View style={styles.recentMain}>
+                                        <Text style={styles.recentWhen}>{when}</Text>
+                                        <Text style={styles.recentSub}>🏆 {winners}</Text>
+                                        <Text style={styles.recentMeta}>📍 {where}</Text>
+                                        {notes ? (
+                                            <Text style={styles.recentNotes} numberOfLines={2}>
+                                                📝 {notes}
+                                            </Text>
+                                        ) : null}
+                                    </View>
+                                    {game.tags?.length ? (
+                                        <View style={styles.recentTags}>
+                                            {game.tags.slice(0, 2).map(tag => (
+                                                <Text key={tag} style={styles.recentTag}>{tag}</Text>
+                                            ))}
+                                        </View>
+                                    ) : null}
+                                </View>
+                            );
+                        })}
+                    </View>
+                </>
+            )}
+
             <View style={styles.card}>
                 <Text style={styles.titleMd}>🏆 Wins Over Time</Text>
-                {ENABLE_IMPROVED_DATA_VIEWS && !loading && games.length > 0 && (
-                    <StatSummaryRow
-                        items={[
-                            { label: 'Games', value: String(summary.totalGames) },
-                            { label: 'Leader', value: summary.leader, accent: true },
-                            { label: 'Renegs', value: String(summary.totalRenegs) },
-                            { label: 'Top Reneg', value: summary.topReneg },
-                        ]}
-                    />
-                )}
                 {loading && !refreshing ? (
                     <ActivityIndicator size="large" color="#FF6700" />
                 ) : !tournamentId ? (
@@ -193,36 +275,12 @@ export default function StatsScreen() {
                 ) : games.length === 0 ? (
                     <Text style={styles.muted}>No games recorded yet.</Text>
                 ) : (
-                    <View style={styles.chartWrap}>
-                        <VictoryChart
-                            theme={VictoryTheme.material}
-                            height={CHART_HEIGHT}
-                            domainPadding={{ x: 10, y: 10 }}
-                        >
-                            <VictoryAxis
-                                tickFormat={formatTick}
-                                style={{ tickLabels: { fontSize: 9, angle: -35 } }}
-                                tickCount={5}
-                            />
-                            <VictoryAxis dependentAxis />
-                            {members.map(m => (
-                                <VictoryLine
-                                    key={m.uid}
-                                    data={winsSeries[m.uid] || []}
-                                    style={{ data: { stroke: memberColors[m.uid], strokeWidth: 2 } }}
-                                />
-                            ))}
-                        </VictoryChart>
-                        <VictoryLegend
-                            x={0}
-                            y={0}
-                            gutter={12}
-                            orientation="horizontal"
-                            itemsPerRow={2}
-                            style={{ labels: { fontSize: 11 } }}
-                            data={members.map(m => ({ name: m.displayName, symbol: { fill: memberColors[m.uid] } }))}
-                        />
-                    </View>
+                    <InteractiveStatsChart
+                        series={chartSeries}
+                        height={CHART_HEIGHT}
+                        emptyMessage="No wins data yet."
+                        valueLabel="wins"
+                    />
                 )}
             </View>
 
@@ -235,36 +293,12 @@ export default function StatsScreen() {
                 ) : renegs.length === 0 ? (
                     <Text style={styles.muted}>No renegs recorded yet.</Text>
                 ) : (
-                    <View style={styles.chartWrap}>
-                        <VictoryChart
-                            theme={VictoryTheme.material}
-                            height={CHART_HEIGHT}
-                            domainPadding={{ x: 10, y: 10 }}
-                        >
-                            <VictoryAxis
-                                tickFormat={formatTick}
-                                style={{ tickLabels: { fontSize: 9, angle: -35 } }}
-                                tickCount={5}
-                            />
-                            <VictoryAxis dependentAxis />
-                            {members.map(m => (
-                                <VictoryLine
-                                    key={m.uid}
-                                    data={renegsSeries[m.uid] || []}
-                                    style={{ data: { stroke: memberColors[m.uid], strokeWidth: 2 } }}
-                                />
-                            ))}
-                        </VictoryChart>
-                        <VictoryLegend
-                            x={0}
-                            y={0}
-                            gutter={12}
-                            orientation="horizontal"
-                            itemsPerRow={2}
-                            style={{ labels: { fontSize: 11 } }}
-                            data={members.map(m => ({ name: m.displayName, symbol: { fill: memberColors[m.uid] } }))}
-                        />
-                    </View>
+                    <InteractiveStatsChart
+                        series={renegChartSeries}
+                        height={CHART_HEIGHT}
+                        emptyMessage="No renegs recorded yet."
+                        valueLabel="renegs"
+                    />
                 )}
             </View>
         </ScrollView>
@@ -274,11 +308,64 @@ export default function StatsScreen() {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#F7F7F8' },
     centered: { alignItems: 'center', justifyContent: 'center' },
-    content: { padding: 16, paddingBottom: 56, gap: 20 },
-    card: { backgroundColor: '#fff', padding: 12, borderRadius: 12, ...(Platform.OS === 'web' ? { boxShadow: webBoxShadow('rgba(0,0,0,0.06)', 6, 12) } : { shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 12, elevation: 3 }) },
-    titleMd: { fontSize: 18, fontWeight: '700', marginBottom: 8 },
+    content: { padding: 16, paddingBottom: 56, gap: 16 },
+    card: {
+        backgroundColor: '#fff',
+        padding: 14,
+        borderRadius: 12,
+        ...(Platform.OS === 'web'
+            ? { boxShadow: webBoxShadow('rgba(0,0,0,0.06)', 6, 12) }
+            : { shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 12, elevation: 3 }),
+    },
+    titleMd: { fontSize: 18, fontWeight: '700', marginBottom: 10 },
     muted: { color: '#666' },
-    chartWrap: {
-        minHeight: CHART_HEIGHT + 48,
+    tagGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+    },
+    tagChip: {
+        backgroundColor: '#FFF4E6',
+        borderRadius: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        alignItems: 'center',
+        minWidth: 88,
+    },
+    tagCount: {
+        fontSize: 20,
+        fontWeight: '800',
+        color: '#FF6700',
+    },
+    tagLabel: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: '#666',
+        marginTop: 2,
+        textAlign: 'center',
+    },
+    recentRow: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+    },
+    recentMain: { flex: 1 },
+    recentWhen: { fontSize: 15, fontWeight: '700' },
+    recentSub: { color: '#333', marginTop: 2, fontSize: 13 },
+    recentMeta: { color: '#888', fontSize: 12, marginTop: 2 },
+    recentNotes: { color: '#555', fontSize: 12, marginTop: 4, fontStyle: 'italic', lineHeight: 17 },
+    recentTags: { alignItems: 'flex-end', gap: 4, marginLeft: 8 },
+    recentTag: {
+        fontSize: 10,
+        fontWeight: '700',
+        color: '#FF6700',
+        backgroundColor: '#FFF4E6',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+        overflow: 'hidden',
     },
 });
