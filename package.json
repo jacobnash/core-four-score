@@ -21,7 +21,11 @@
     "backup:auth": "INCLUDE_AUTH=true node ./scripts/export/export-firestore.js",
     "backup:lite": "STRIP_PHOTOS=true node ./scripts/export/export-firestore.js",
     "restore": "node ./scripts/export/restore-firestore.js",
-    "restore:dry": "DRY_RUN=true node ./scripts/export/restore-firestore.js"
+    "restore:dry": "DRY_RUN=true node ./scripts/export/restore-firestore.js",
+    "emulators": "npx firebase-tools emulators:start --only firestore,auth",
+    "dev:seed": "USE_EMULATOR=true node ./scripts/dev/seed-emulator.js",
+    "dev:web": "EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true expo start --web",
+    "dev:local": "bash ./scripts/dev/start-local.sh"
   },
   "importScripts": {
     "import:dry": "DRY_RUN=true node ./scripts/import/import-data.js",

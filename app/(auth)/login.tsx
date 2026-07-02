@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { LoginCard } from '../../components/LoginCard';
+import { DEV_PLAYERS } from '../../constants/devConfig';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginScreen() {
-  const { loading, signInWithGoogle } = useAuth();
+  const { loading, signInWithGoogle, signInAsDevUser, isEmulator } = useAuth();
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -14,7 +15,12 @@ export default function LoginScreen() {
           <Text style={{ marginTop: 16, color: '#666' }}>Loading...</Text>
         </View>
       ) : (
-        <LoginCard onSignIn={signInWithGoogle} />
+        <LoginCard
+          onSignIn={signInWithGoogle}
+          isEmulator={isEmulator}
+          devPlayers={isEmulator ? [...DEV_PLAYERS] : []}
+          onDevSignIn={signInAsDevUser}
+        />
       )}
     </View>
   );

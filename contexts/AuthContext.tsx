@@ -10,11 +10,13 @@ import {
     inMemoryPersistence,
     onAuthStateChanged,
     setPersistence,
+    signInWithEmailAndPassword,
     signInWithPopup,
     signInWithRedirect
 } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import { DEV_AUTH_PASSWORD, USE_FIREBASE_EMULATOR } from '../constants/devConfig';
 import { auth } from '../services/firebase';
 import { userService } from '../services/firestore';
 import { User } from '../types';
@@ -26,7 +28,9 @@ interface AuthContextType {
     user: User | null;
     loading: boolean;
     signInWithGoogle: () => Promise<void>;
+    signInAsDevUser: (email: string) => Promise<void>;
     signOut: () => Promise<void>;
+    isEmulator: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -149,6 +153,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
+    const signInAsDevUser = async (email: string) => {
+        if (!USE_FIREBASE_EMULATOR) {
+            throw new Error('Dev sign-in is only available with the Firebase Emulator');
+        }
+        const result = await signInWithEmailAndPassword(auth, email, DEV_AUTH_PASSWORD);
+        await handleFirebaseUser(result.user);
+    };
+
     const signOut = async () => {
         try {
             await firebaseSignOut(auth);
@@ -160,7 +172,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut }}>
+        <AuthContext.Provider value={{ user, loading, signInWithGoogle, signInAsDevUser, signOut, isEmulator: USE_FIREBASE_EMULATOR }}>
             {children}
         </AuthContext.Provider>
     );

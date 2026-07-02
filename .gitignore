@@ -40,6 +40,12 @@ serviceAccountKey.json
 # Local Firestore backups (may contain PII)
 backups/
 
+# Firebase Emulator logs
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+emulator-data/
+
 # typescript
 *.tsbuildinfo
 

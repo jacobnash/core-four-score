@@ -9,15 +9,22 @@ const fs = require('fs');
 const admin = require('firebase-admin');
 const { Timestamp } = require('firebase-admin/firestore');
 
-const serviceAccountPath = process.env.SERVICE_ACCOUNT || './serviceAccountKey.json';
-if (!fs.existsSync(serviceAccountPath)) {
-    console.error(`Service account file not found at ${serviceAccountPath}. Set SERVICE_ACCOUNT or place serviceAccountKey.json at project root.`);
-    process.exit(1);
-}
+const USE_EMULATOR = String(process.env.USE_EMULATOR || 'false').toLowerCase() === 'true';
 
-admin.initializeApp({
-    credential: admin.credential.cert(require(serviceAccountPath)),
-});
+if (USE_EMULATOR) {
+    const { initAdminForEmulator } = require('./scripts/dev/emulator-env');
+    initAdminForEmulator(admin);
+} else {
+    const serviceAccountPath = process.env.SERVICE_ACCOUNT || './serviceAccountKey.json';
+    if (!fs.existsSync(serviceAccountPath)) {
+        console.error(`Service account file not found at ${serviceAccountPath}. Set SERVICE_ACCOUNT or place serviceAccountKey.json at project root.`);
+        console.error('For local emulator seeding, use: USE_EMULATOR=true node import-data.js');
+        process.exit(1);
+    }
+    admin.initializeApp({
+        credential: admin.credential.cert(require(serviceAccountPath)),
+    });
+}
 
 const db = admin.firestore();
 

@@ -1,15 +1,14 @@
 /**
  * Firestore restore script — import a local backup into Firebase.
  *
- * ⚠️  DESTRUCTIVE when used with --replace: overwrites docs in target collections.
- *     Only run against a DEV project unless you know exactly what you're doing.
- *
  * Usage:
  *   npm run restore -- backups/2026-07-02T143022
- *   npm run restore:dry -- backups/2026-07-02T143022   # preview only
+ *   npm run restore:dry -- backups/2026-07-02T143022
+ *   USE_EMULATOR=true npm run restore -- backups/...   # local emulator
  *
  * Environment variables:
- *   SERVICE_ACCOUNT   Path to service account JSON
+ *   USE_EMULATOR      Target local Firebase Emulator (no service account needed)
+ *   SERVICE_ACCOUNT   Path to service account JSON (production/cloud)
  *   DRY_RUN           Set to "true" to preview without writing
  *   REPLACE           Set to "true" to overwrite existing docs (default: merge/set)
  */
@@ -19,13 +18,7 @@ const path = require('path');
 const admin = require('firebase-admin');
 const { deserializeValue } = require('./serialize');
 
-const serviceAccountPath = process.env.SERVICE_ACCOUNT || path.resolve(__dirname, '../../serviceAccountKey.json');
-if (!fs.existsSync(serviceAccountPath)) {
-    console.error(`Service account file not found at ${serviceAccountPath}`);
-    process.exit(1);
-}
-
-const serviceAccount = require(serviceAccountPath);
+const USE_EMULATOR = String(process.env.USE_EMULATOR || 'false').toLowerCase() === 'true';
 const DRY_RUN = String(process.env.DRY_RUN || 'false').toLowerCase() === 'true';
 const REPLACE = String(process.env.REPLACE || 'false').toLowerCase() === 'true';
 
@@ -41,10 +34,26 @@ if (!fs.existsSync(resolvedBackup)) {
     process.exit(1);
 }
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    projectId: serviceAccount.project_id,
-});
+let projectId = 'core-four-score';
+
+if (USE_EMULATOR) {
+    const { initAdminForEmulator, PROJECT_ID } = require('../dev/emulator-env');
+    initAdminForEmulator(admin);
+    projectId = PROJECT_ID;
+} else {
+    const serviceAccountPath = process.env.SERVICE_ACCOUNT || path.resolve(__dirname, '../../serviceAccountKey.json');
+    if (!fs.existsSync(serviceAccountPath)) {
+        console.error(`Service account file not found at ${serviceAccountPath}`);
+        console.error('For local emulator: USE_EMULATOR=true npm run restore -- backups/...');
+        process.exit(1);
+    }
+    const serviceAccount = require(serviceAccountPath);
+    projectId = serviceAccount.project_id;
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        projectId,
+    });
+}
 
 const db = admin.firestore();
 
@@ -107,7 +116,8 @@ async function main() {
     }
 
     console.log('\n=== Core Four Score — Firestore Restore ===\n');
-    console.log(`Project:  ${serviceAccount.project_id}`);
+    console.log(`Target:   ${USE_EMULATOR ? 'Local Emulator' : 'Cloud'}`);
+    console.log(`Project:  ${projectId}`);
     console.log(`Backup:   ${resolvedBackup}`);
     console.log(`Mode:     ${DRY_RUN ? 'DRY RUN (no writes)' : REPLACE ? 'REPLACE (overwrite)' : 'MERGE (set with merge)'}`);
     if (manifest) {
@@ -115,9 +125,9 @@ async function main() {
     }
     console.log('');
 
-    if (!DRY_RUN && serviceAccount.project_id === 'core-four-score') {
+    if (!DRY_RUN && !USE_EMULATOR && projectId === 'core-four-score') {
         console.warn('⚠️  WARNING: You are restoring to the LIVE project (core-four-score).');
-        console.warn('   Consider using a dev project: SERVICE_ACCOUNT=/path/to/dev-key.json npm run restore -- ...\n');
+        console.warn('   For local dev use: USE_EMULATOR=true npm run restore -- ...\n');
     }
 
     const collectionFiles = fs.readdirSync(resolvedBackup)
@@ -133,7 +143,7 @@ async function main() {
     const authPath = path.join(resolvedBackup, 'auth-users.json');
     if (fs.existsSync(authPath)) {
         console.log('  Note: auth-users.json is exported for reference only.');
-        console.log('        Auth restore is not automated — use Firebase Console or firebase auth:import.\n');
+        console.log('        For emulator auth, run: npm run dev:seed\n');
     }
 
     console.log(`\n✅ Restore ${DRY_RUN ? 'preview' : 'complete'}: ${total} documents\n`);
