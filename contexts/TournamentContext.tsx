@@ -1,13 +1,17 @@
 import { router } from 'expo-router';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useLayoutEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { tournamentService, userService } from '../services/firestore';
 import { Tournament } from '../types';
+import { resolveAutoSelectTournament } from '../utils/tournamentSelection';
 import { useAuth } from './AuthContext';
 
 interface TournamentContextType {
     tournaments: Tournament[];
+    /** True while the current user's tournaments are being fetched. */
     loading: boolean;
+    /** True once tournament startup logic has finished for the signed-in user. */
+    startupReady: boolean;
     activeTournament: Tournament | null;
     loadTournaments: () => Promise<void>;
     setActiveTournamentById: (id: string) => Promise<void>;
@@ -25,52 +29,56 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const { user } = useAuth();
     const [tournaments, setTournaments] = useState<Tournament[]>([]);
     const [activeTournament, setActiveTournament] = useState<Tournament | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [fetchState, setFetchState] = useState<'idle' | 'loading' | 'done'>('idle');
+    const activeTournamentRef = useRef<Tournament | null>(null);
+    const startupNavHandledRef = useRef(false);
+
+    activeTournamentRef.current = activeTournament;
+
+    const startupReady = !user || fetchState === 'done';
+    const loading = !!user && fetchState === 'loading';
 
     const loadTournaments = async () => {
-        if (!user) return;
-        setLoading(true);
+        if (!user) {
+            setFetchState('idle');
+            return;
+        }
+
+        setFetchState('loading');
         try {
             const all = await tournamentService.getAllTournaments();
             const mine = all.filter(t => t.memberIds?.includes(user.uid));
             setTournaments(mine);
-            
-            // Auto-select tournament based on availability
-            if (!activeTournament) {
-                let selected: Tournament | null = null;
-                
-                // Priority 1: Use preferred tournament if it exists
-                if (user.preferredTournamentId) {
-                    selected = mine.find(t => t.id === user.preferredTournamentId || t.tournamentId === user.preferredTournamentId) || null;
-                }
-                
-                // Priority 2: If only one tournament, auto-select it
-                if (!selected && mine.length === 1) {
-                    selected = mine[0];
-                }
-                
-                // Priority 3: Use first tournament (default for multiple tournaments)
-                if (!selected && mine.length > 0) {
-                    selected = mine[0];
-                }
-                
+
+            let selected: Tournament | null = null;
+            if (!activeTournamentRef.current) {
+                selected = resolveAutoSelectTournament(mine, user.preferredTournamentId);
                 if (selected) {
                     setActiveTournament(selected);
-                    // Persist as preferred if it wasn't already
+                    activeTournamentRef.current = selected;
                     if (!user.preferredTournamentId && user.uid) {
-                        try {
-                            await userService.setPreferredTournament(user.uid, selected.id);
-                        } catch (persistErr) {
+                        userService.setPreferredTournament(user.uid, selected.id).catch(persistErr => {
                             console.warn('Failed to persist preferred tournament', persistErr);
-                        }
+                        });
                     }
+                }
+            } else {
+                selected = activeTournamentRef.current;
+            }
+
+            if (!startupNavHandledRef.current) {
+                startupNavHandledRef.current = true;
+                if (selected) {
+                    router.replace('/');
+                } else if (mine.length !== 1) {
+                    router.replace('/(tabs)/tournaments');
                 }
             }
         } catch (err) {
             console.error('Failed to load tournaments', err);
             Alert.alert('Error', 'Failed to load tournaments');
         } finally {
-            setLoading(false);
+            setFetchState('done');
         }
     };
 
@@ -78,13 +86,12 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         try {
             const t = await tournamentService.getTournament(id);
             if (!t) throw new Error('Tournament not found');
-            // Ensure current user is a member
             if (!t.memberIds.includes(user?.uid || '')) {
                 Alert.alert('Access denied', 'You are not a member of that tournament');
                 return;
             }
             setActiveTournament(t);
-            // Persist preferred + last active tournament for this user
+            activeTournamentRef.current = t;
             if (user?.uid) {
                 try {
                     await userService.setPreferredTournament(user.uid, t.id);
@@ -93,7 +100,6 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                     console.warn('Failed to persist preferred/last active tournament', persistErr);
                 }
             }
-            // Navigate to home (OpeLand)
             router.replace('/');
         } catch (err) {
             console.error('Failed to set active tournament', err);
@@ -101,17 +107,30 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
     };
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (user) {
+            startupNavHandledRef.current = false;
             loadTournaments();
         } else {
             setTournaments([]);
             setActiveTournament(null);
+            activeTournamentRef.current = null;
+            startupNavHandledRef.current = false;
+            setFetchState('idle');
         }
-    }, [user]);
+    }, [user?.uid]);
 
     return (
-        <TournamentContext.Provider value={{ tournaments, loading, activeTournament, loadTournaments, setActiveTournamentById }}>
+        <TournamentContext.Provider
+            value={{
+                tournaments,
+                loading,
+                startupReady,
+                activeTournament,
+                loadTournaments,
+                setActiveTournamentById,
+            }}
+        >
             {children}
         </TournamentContext.Provider>
     );

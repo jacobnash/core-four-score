@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { useRedirectToTournamentsIfNeeded } from '../../hooks/useRedirectToTournamentsIfNeeded';
 import {
   ActivityIndicator,
   Alert,
@@ -26,13 +27,8 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { activeTournament } = useTournament();
-  // If no active tournament, send user to tournaments selection
-  useEffect(() => {
-    if (!activeTournament && user) {
-      router.replace('/(tabs)/tournaments');
-    }
-  }, [activeTournament, user]);
+  const { activeTournament, startupReady } = useTournament();
+  useRedirectToTournamentsIfNeeded();
 
   const TOURNAMENT_ID = activeTournament?.id || '';
 
@@ -85,6 +81,15 @@ export default function HomeScreen() {
     return (
       <View style={[styles.container, styles.centered]}>
         <Text>Please sign in to view this content.</Text>
+      </View>
+    );
+  }
+
+  if (!startupReady) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color="#FF6700" />
+        <Text style={styles.loadingText}>Loading tournament...</Text>
       </View>
     );
   }

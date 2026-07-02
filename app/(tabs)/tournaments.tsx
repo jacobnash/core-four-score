@@ -6,9 +6,18 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
 import { tournamentService, userService } from '../../services/firestore';
 
+function isPreferredTournament(
+  tournamentId: string,
+  tournamentDocId?: string,
+  preferredTournamentId?: string | null
+) {
+  if (!preferredTournamentId) return false;
+  return preferredTournamentId === tournamentId || preferredTournamentId === tournamentDocId;
+}
+
 export default function TournamentsScreen(props: { initialUsers?: any[] } = {}) {
   const { user } = useAuth();
-  const { tournaments, loading, loadTournaments, setActiveTournamentById } = useTournament();
+  const { tournaments, loading, loadTournaments, setActiveTournamentById, activeTournament } = useTournament();
 
   const [users, setUsers] = useState<any[]>(props.initialUsers ?? []);
   const [selected, setSelected] = useState<Record<string, boolean>>(() => {
@@ -25,11 +34,7 @@ export default function TournamentsScreen(props: { initialUsers?: any[] } = {}) 
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    loadTournaments();
-  }, [user]);
-
-  useEffect(() => {
-    if (props.initialUsers) return; // already initialized synchronously in tests
+    if (props.initialUsers) return;
     (async () => {
       try {
         const all = await userService.getAllUsers();
@@ -91,7 +96,9 @@ export default function TournamentsScreen(props: { initialUsers?: any[] } = {}) 
     <View style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.titleMd}>🏆🎯 Tournaments</Text>
-        <Text style={styles.mutedSmall}>Create a tournament and pick players below.</Text>
+        <Text style={styles.mutedSmall}>
+          Tap Start on your tournament to open Ope&apos;Land. ⭐ marks your default tournament.
+        </Text>
         <View style={{ height: 12 }} />
 
         <View style={{ marginBottom: 12 }}>
@@ -178,15 +185,27 @@ export default function TournamentsScreen(props: { initialUsers?: any[] } = {}) 
           <FlatList
             data={tournaments}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
+            renderItem={({ item }) => {
+              const preferred = isPreferredTournament(item.id, item.tournamentId, user?.preferredTournamentId);
+              const isActive = activeTournament?.id === item.id;
+              return (
               <View style={styles.tourRow}>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.tourName}>{item.name}</Text>
-                  <Text style={styles.mutedSmall}>{item.memberIds.length} players</Text>
+                  <Text style={styles.tourName}>
+                    {preferred ? '⭐ ' : ''}{item.name}
+                  </Text>
+                  <Text style={styles.mutedSmall}>
+                    {item.memberIds.length} players
+                    {preferred ? ' · default' : ''}
+                    {isActive ? ' · active' : ''}
+                  </Text>
                 </View>
-                <Button title="Select" onPress={() => setActiveTournamentById(item.id)} />
+                <Button
+                  title={isActive ? 'Continue' : preferred ? 'Start' : 'Select'}
+                  onPress={() => setActiveTournamentById(item.id)}
+                />
               </View>
-            )}
+            );}}
           />
         )}
       </View>

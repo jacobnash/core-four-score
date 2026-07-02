@@ -1,5 +1,5 @@
-import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useRedirectToTournamentsIfNeeded } from '../../hooks/useRedirectToTournamentsIfNeeded';
 import {
     ActivityIndicator,
     Platform,
@@ -21,7 +21,8 @@ import { webBoxShadow } from '../../utils/shadow';
 
 export default function GamesScreen() {
     const { user, loading: authLoading } = useAuth();
-    const { activeTournament } = useTournament();
+    const { activeTournament, startupReady } = useTournament();
+    useRedirectToTournamentsIfNeeded();
 
     const TOURNAMENT_ID = activeTournament?.id || '';
 
@@ -30,12 +31,6 @@ export default function GamesScreen() {
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [selectedGame, setSelectedGame] = useState<Game | null>(null);
-
-    useEffect(() => {
-        if (!activeTournament && user) {
-            router.replace('/(tabs)/tournaments');
-        }
-    }, [activeTournament, user]);
 
     const nameMap = useMemo(() => {
         const m: Record<string, string> = {};
@@ -85,6 +80,15 @@ export default function GamesScreen() {
         return (
             <View style={[styles.container, styles.centered]}>
                 <Text style={styles.muted}>Please sign in to view games.</Text>
+            </View>
+        );
+    }
+
+    if (!startupReady) {
+        return (
+            <View style={[styles.container, styles.centered]}>
+                <ActivityIndicator size="large" color="#FF6700" />
+                <Text style={styles.loadingText}>Loading tournament...</Text>
             </View>
         );
     }
