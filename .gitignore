@@ -37,6 +37,9 @@ yarn-error.*
 # Firebase service account
 serviceAccountKey.json
 
+# Local Firestore backups (may contain PII)
+backups/
+
 # typescript
 *.tsbuildinfo
 

@@ -16,7 +16,12 @@
     "deploy": "npm run build:web:copy && npx firebase-tools deploy --only hosting",
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean",
-    "backfill:tournaments": "node ./scripts/backfill-tournaments.js"
+    "backfill:tournaments": "node ./scripts/backfill-tournaments.js",
+    "backup": "node ./scripts/export/export-firestore.js",
+    "backup:auth": "INCLUDE_AUTH=true node ./scripts/export/export-firestore.js",
+    "backup:lite": "STRIP_PHOTOS=true node ./scripts/export/export-firestore.js",
+    "restore": "node ./scripts/export/restore-firestore.js",
+    "restore:dry": "DRY_RUN=true node ./scripts/export/restore-firestore.js"
   },
   "importScripts": {
     "import:dry": "DRY_RUN=true node ./scripts/import/import-data.js",
