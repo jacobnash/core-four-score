@@ -10,9 +10,12 @@ import { Button } from './Button';
 interface LoginCardProps {
   onSignIn: () => void;
   loading?: boolean;
+  isEmulator?: boolean;
+  devPlayers?: Array<{ displayName: string; email: string }>;
+  onDevSignIn?: (email: string) => void;
 }
 
-export function LoginCard({ onSignIn, loading = false }: LoginCardProps) {
+export function LoginCard({ onSignIn, loading = false, isEmulator = false, devPlayers = [], onDevSignIn }: LoginCardProps) {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -29,6 +32,22 @@ export function LoginCard({ onSignIn, loading = false }: LoginCardProps) {
               variant="primary"
               disabled={loading}
             />
+            {isEmulator && devPlayers.length > 0 && onDevSignIn && (
+              <>
+                <View style={{ height: 16 }} />
+                <Text style={styles.devLabel}>Local dev — pick a player</Text>
+                {devPlayers.map((player) => (
+                  <View key={player.email} style={{ marginTop: 8 }}>
+                    <Button
+                      title={`Sign in as ${player.displayName}`}
+                      onPress={() => onDevSignIn(player.email)}
+                      size="md"
+                      disabled={loading}
+                    />
+                  </View>
+                ))}
+              </>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -83,5 +102,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     lineHeight: 22,
+  },
+  devLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#013220',
+    textAlign: 'center',
   },
 });

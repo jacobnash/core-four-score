@@ -1,15 +1,20 @@
 import { initializeApp } from 'firebase/app';
 import {
     Auth,
+    connectAuthEmulator,
     getAuth,
     initializeAuth
 } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { Platform } from 'react-native';
+import {
+    AUTH_EMULATOR_PORT,
+    EMULATOR_HOST,
+    FIRESTORE_EMULATOR_PORT,
+    USE_FIREBASE_EMULATOR,
+} from '../constants/devConfig';
 
-// TODO: Replace with your Firebase configuration
-// Get this from Firebase Console -> Project Settings -> General -> Your apps
 const firebaseConfig = {
     apiKey: "AIzaSyA2hN4pECNQfFEkXXjMHBSd1vwZ1ZCxvlY",
     authDomain: "core-four-score.firebaseapp.com",
@@ -19,23 +24,24 @@ const firebaseConfig = {
     appId: "1:605611128312:web:3a723fa2f74aa9cc18920d"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore
 export const db = getFirestore(app);
-
-// Initialize Storage
 export const storage = getStorage(app);
 
-// Initialize Auth with proper persistence
 let auth: Auth;
 if (Platform.OS === 'web') {
     auth = getAuth(app);
 } else {
-    // Some firebase versions include getReactNativePersistence, others do not.
-    // Use initializeAuth without explicit persistence here; platform will default.
     auth = initializeAuth(app);
+}
+
+if (USE_FIREBASE_EMULATOR) {
+    connectFirestoreEmulator(db, EMULATOR_HOST, FIRESTORE_EMULATOR_PORT);
+    connectAuthEmulator(auth, `http://${EMULATOR_HOST}:${AUTH_EMULATOR_PORT}`, { disableWarnings: true });
+    if (__DEV__) {
+        console.log(`[dev] Firebase Emulator — Firestore ${EMULATOR_HOST}:${FIRESTORE_EMULATOR_PORT}, Auth :${AUTH_EMULATOR_PORT}`);
+    }
 }
 
 export { auth };
