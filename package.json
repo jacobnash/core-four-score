@@ -17,6 +17,9 @@
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean",
     "backfill:tournaments": "node ./scripts/backfill-tournaments.js",
+    "backfill:rules": "node ./scripts/backfill-rules-tournament.js",
+    "audit:data": "node ./scripts/audit-production-data.js",
+    "audit:data:backup": "node ./scripts/audit-production-data.js backups/20260701T212256",
     "backup": "node ./scripts/export/export-firestore.js",
     "backup:auth": "INCLUDE_AUTH=true node ./scripts/export/export-firestore.js",
     "backup:lite": "STRIP_PHOTOS=true node ./scripts/export/export-firestore.js",
@@ -24,6 +27,8 @@
     "restore:dry": "DRY_RUN=true node ./scripts/export/restore-firestore.js",
     "emulators": "npx firebase-tools emulators:start --only firestore,auth",
     "dev:seed": "USE_EMULATOR=true node ./scripts/dev/seed-emulator.js",
+    "dev:seed:mock": "USE_EMULATOR=true node ./scripts/dev/seed-mock-only.js",
+    "dev:test:visibility": "USE_EMULATOR=true node ./scripts/dev/test-tournament-visibility.js",
     "dev:web": "EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true expo start --web",
     "dev:local": "bash ./scripts/dev/start-local.sh"
   },

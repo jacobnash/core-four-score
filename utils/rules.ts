@@ -1,3 +1,5 @@
+import { CORE_FOUR_TOURNAMENT_ID } from '../constants/coreFour';
+
 const APPROVAL_THRESHOLD = 3;
 const APPROVAL_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -69,6 +71,51 @@ export function computeNextApprovals(rule: { approvals?: string[] }, userId: str
 
     // Below threshold, allow toggle behavior.
     return has ? current.filter(a => a !== userId) : [...current, userId];
+}
+
+/** Rules without tournamentId are treated as Core Four legacy documents. */
+export function resolveRuleTournamentId(rule: { tournamentId?: string | null }): string {
+    return rule.tournamentId?.trim() || CORE_FOUR_TOURNAMENT_ID;
+}
+
+export function ruleBelongsToTournament(
+    rule: { tournamentId?: string | null },
+    tournamentId: string,
+): boolean {
+    return resolveRuleTournamentId(rule) === tournamentId;
+}
+
+export function isBulkSeedRule(rule: { seedMethod?: string | null }): boolean {
+    return rule.seedMethod === 'bulk';
+}
+
+/** Split a bulk-add textarea into non-empty rule lines. */
+export function parseBulkRuleLines(text: string): string[] {
+    return text
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+}
+
+/** Pre-accept bulk rules using tournament members (at least APPROVAL_THRESHOLD approvals). */
+export function buildBulkRuleApprovals(memberIds: string[], authorUid: string): string[] {
+    const unique = Array.from(new Set(memberIds.filter(Boolean)));
+    const ordered = [authorUid, ...unique.filter(id => id !== authorUid)];
+    const deduped = ordered.filter((id, index) => ordered.indexOf(id) === index);
+    if (deduped.length >= APPROVAL_THRESHOLD) {
+        return deduped.slice(0, APPROVAL_THRESHOLD);
+    }
+    return deduped;
+}
+
+export function getRuleSourceLabel(
+    rule: { author?: string; seedMethod?: string | null },
+    uidToName: Record<string, string> = {}
+): string {
+    if (isHouseRule(rule.author)) return 'House rule (pre-agreed)';
+    if (isBulkSeedRule(rule)) return 'Group rule (added at setup)';
+    if (rule.author) return `Proposed by ${uidToName[rule.author] || rule.author}`;
+    return 'Proposed rule';
 }
 
 export { APPROVAL_THRESHOLD, APPROVAL_WINDOW_MS };

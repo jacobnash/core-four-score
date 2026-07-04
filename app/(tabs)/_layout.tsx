@@ -5,8 +5,6 @@ import { useAuth } from '../../contexts/AuthContext';
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
-import { CORE_FOUR_MEMBER_IDS } from '../../constants/coreFour';
-
 // Simple emoji icon component for tabs
 function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
   return <Text style={{ fontSize: 24, color }}>{emoji}</Text>;
@@ -15,7 +13,6 @@ function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
 export default function TabLayout() {
   const router = useRouter();
   const { user } = useAuth();
-  const isAllowedUser = user && (CORE_FOUR_MEMBER_IDS as readonly string[]).includes(user.uid);
 
   return (
     <Tabs
@@ -60,15 +57,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon emoji="📈" color={color} />,
         }}
       />
-      {isAllowedUser && (
-        <Tabs.Screen
-          name="rules"
-          options={{
-            title: 'Rules',
-            tabBarIcon: ({ color }) => <TabBarIcon emoji="📜" color={color} />,
-          }}
-        />
-      )}
+      <Tabs.Screen
+        name="rules"
+        options={{
+          title: 'Rules',
+          tabBarIcon: ({ color }) => <TabBarIcon emoji="📜" color={color} />,
+          href: user ? undefined : null,
+        }}
+      />
       <Tabs.Screen
         name="games"
         options={{

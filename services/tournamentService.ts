@@ -1,6 +1,6 @@
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { Tournament, User } from '../types';
-import { canAddMemberToTournament, validateTournamentMemberIds } from '../utils/tournamentMembership';
+import { canAddMemberToTournament, validateTournamentMemberIds, assertTournamentAcceptsInvites } from '../utils/tournamentMembership';
 import { db } from './firebase';
 import { userService } from './userService';
 
@@ -56,12 +56,19 @@ export const tournamentService = {
         });
     },
 
-    async createTournament(name: string, memberIds: string[], createdBy?: string): Promise<Tournament> {
+    async createTournament(
+        name: string,
+        memberIds: string[],
+        createdBy?: string,
+        inviteIds: string[] = []
+    ): Promise<Tournament> {
         const id = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
         const validation = validateTournamentMemberIds(id, id, memberIds);
         if (!validation.ok) {
             throw new Error(validation.message);
         }
+
+        const pendingInvites = inviteIds.filter(uid => !memberIds.includes(uid));
 
         const payload = {
             tournamentId: id,
@@ -72,7 +79,7 @@ export const tournamentService = {
             status: 'draft',
             createdBy: createdBy ?? null,
             visibility: 'private',
-            inviteIds: [],
+            inviteIds: pendingInvites,
             schemaVersion: 1,
         };
         await setDoc(doc(db, 'tournaments', id), payload);
@@ -86,7 +93,7 @@ export const tournamentService = {
             status: 'draft',
             createdBy: createdBy ?? null,
             visibility: 'private',
-            inviteIds: [],
+            inviteIds: pendingInvites,
             schemaVersion: 1,
         } as Tournament;
     },
@@ -101,6 +108,7 @@ export const tournamentService = {
     async inviteUser(tournamentId: string, uid: string): Promise<void> {
         const t = await this.getTournament(tournamentId);
         if (!t) throw new Error('Tournament not found');
+        assertTournamentAcceptsInvites(t.id, t.tournamentId);
         if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
             throw new Error('This tournament is limited to the original Core Four members.');
         }
@@ -126,6 +134,7 @@ export const tournamentService = {
     async addMember(tournamentId: string, uid: string): Promise<void> {
         const t = await this.getTournament(tournamentId);
         if (!t) throw new Error('Tournament not found');
+        assertTournamentAcceptsInvites(t.id, t.tournamentId);
         if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
             throw new Error('This tournament is limited to the original Core Four members.');
         }
@@ -143,6 +152,7 @@ export const tournamentService = {
     async acceptInvite(tournamentId: string, uid: string): Promise<void> {
         const t = await this.getTournament(tournamentId);
         if (!t) throw new Error('Tournament not found');
+        assertTournamentAcceptsInvites(t.id, t.tournamentId);
         if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
             throw new Error('This tournament is limited to the original Core Four members.');
         }
@@ -157,5 +167,32 @@ export const tournamentService = {
             inviteIds: arrayRemove(uid),
             updatedAt: Timestamp.now(),
         });
-    }
+    },
+
+    /**
+     * Join a draft tournament via shared invite link.
+     * Adds an invite if needed, then accepts — or accepts an existing invite.
+     */
+    async joinViaInviteLink(
+        tournamentId: string,
+        uid: string
+    ): Promise<'joined' | 'already_member'> {
+        const t = await this.getTournament(tournamentId);
+        if (!t) throw new Error('Tournament not found');
+        assertTournamentAcceptsInvites(t.id, t.tournamentId);
+        if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
+            throw new Error('This tournament is not open for new members.');
+        }
+        if (t.memberIds.includes(uid)) return 'already_member';
+        if ((t.status || 'active') === 'active') {
+            throw new Error('This tournament has already started — roster is locked.');
+        }
+        if (t.inviteIds?.includes(uid)) {
+            await this.acceptInvite(tournamentId, uid);
+            return 'joined';
+        }
+        await this.inviteUser(tournamentId, uid);
+        await this.acceptInvite(tournamentId, uid);
+        return 'joined';
+    },
 };

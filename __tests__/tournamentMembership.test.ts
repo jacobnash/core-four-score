@@ -1,7 +1,9 @@
 import { CORE_FOUR_MEMBER_IDS } from '../constants/coreFour';
 import {
+    assertTournamentAcceptsInvites,
     canAddMemberToTournament,
     isLegacyCoreFourTournament,
+    tournamentAcceptsInvites,
     validateTournamentMemberIds,
 } from '../utils/tournamentMembership';
 
@@ -27,7 +29,12 @@ describe('tournamentMembership', () => {
         expect(isLegacyCoreFourTournament('weekend-123')).toBe(false);
     });
 
-    it('allows only Core Four members on the legacy tournament', () => {
+    it('Core Four tournament never accepts invites', () => {
+        expect(tournamentAcceptsInvites('the-core-four')).toBe(false);
+        expect(() => assertTournamentAcceptsInvites('the-core-four')).toThrow(/no one can be invited/i);
+    });
+
+    it('allows only Core Four members on the legacy tournament roster check', () => {
         expect(canAddMemberToTournament('the-core-four', 'the-core-four', CORE_FOUR_MEMBER_IDS[0])).toBe(true);
         expect(canAddMemberToTournament('the-core-four', 'the-core-four', 'random-new-user')).toBe(false);
         expect(canAddMemberToTournament('camp-weekend-1', 'camp-weekend-1', 'random-new-user')).toBe(true);
@@ -57,9 +64,9 @@ describe('tournamentService membership guards', () => {
         jest.clearAllMocks();
     });
 
-    it('blocks inviting outsiders to the Core Four tournament', async () => {
+    it('blocks all invites to the Core Four tournament including from members', async () => {
         const { getDoc } = require('firebase/firestore');
-        getDoc.mockResolvedValueOnce({
+        const coreFourDoc = {
             exists: () => true,
             id: 'the-core-four',
             data: () => ({
@@ -68,11 +75,16 @@ describe('tournamentService membership guards', () => {
                 inviteIds: [],
                 status: 'draft',
             }),
-        });
-
+        };
+        getDoc.mockResolvedValueOnce(coreFourDoc);
         await expect(tournamentService.inviteUser('the-core-four', 'outsider-uid')).rejects.toThrow(
-            /original Core Four/i
+            /no one can be invited/i
         );
+
+        getDoc.mockResolvedValueOnce(coreFourDoc);
+        await expect(
+            tournamentService.inviteUser('the-core-four', CORE_FOUR_MEMBER_IDS[0])
+        ).rejects.toThrow(/no one can be invited/i);
     });
 
     it('allows inviting outsiders to open tournaments', async () => {

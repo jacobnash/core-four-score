@@ -21,6 +21,8 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+const CORE_FOUR_TOURNAMENT_ID = 'the-core-four';
+
 const BUILT_IN_RULES = [
     { id: 'builtin-1', text: "Thou shall'nt re nor neg; and when thou shall re or neg or re and neg, thou shall't alloweth the opponent" },
     { id: 'builtin-2', text: 'Rules for the farmer: 3 of a kind of 9 or 10. Whoever calls it first gets to swap' },
@@ -58,6 +60,8 @@ async function importRules() {
                 author: 'system',
                 approvals: [],
                 createdAt: Timestamp.now(),
+                tournamentId: CORE_FOUR_TOURNAMENT_ID,
+                schemaVersion: 1,
             });
 
             console.log(`✓ Imported rule: ${rule.id}`);

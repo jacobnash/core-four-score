@@ -3,11 +3,15 @@ import React, { createContext, useContext, useLayoutEffect, useRef, useState } f
 import { Alert } from 'react-native';
 import { tournamentService, userService } from '../services/firestore';
 import { Tournament } from '../types';
+import { partitionTournamentsForUser } from '../utils/tournamentVisibility';
 import { resolveAutoSelectTournament } from '../utils/tournamentSelection';
 import { useAuth } from './AuthContext';
 
 interface TournamentContextType {
+    /** Tournaments the signed-in user belongs to. */
     tournaments: Tournament[];
+    /** Tournaments with a pending invite (not yet a member). */
+    invitedTournaments: Tournament[];
     /** True while the current user's tournaments are being fetched. */
     loading: boolean;
     /** True once tournament startup logic has finished for the signed-in user. */
@@ -28,6 +32,7 @@ export const useTournament = () => {
 export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
     const [tournaments, setTournaments] = useState<Tournament[]>([]);
+    const [invitedTournaments, setInvitedTournaments] = useState<Tournament[]>([]);
     const [activeTournament, setActiveTournament] = useState<Tournament | null>(null);
     const [fetchState, setFetchState] = useState<'idle' | 'loading' | 'done'>('idle');
     const activeTournamentRef = useRef<Tournament | null>(null);
@@ -47,12 +52,16 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setFetchState('loading');
         try {
             const all = await tournamentService.getAllTournaments();
-            const mine = all.filter(t => t.memberIds?.includes(user.uid));
-            setTournaments(mine);
+            const { memberTournaments, invitedTournaments: invited } = partitionTournamentsForUser(
+                all,
+                user.uid
+            );
+            setTournaments(memberTournaments);
+            setInvitedTournaments(invited);
 
             let selected: Tournament | null = null;
             if (!activeTournamentRef.current) {
-                selected = resolveAutoSelectTournament(mine, user.preferredTournamentId);
+                selected = resolveAutoSelectTournament(memberTournaments, user.preferredTournamentId);
                 if (selected) {
                     setActiveTournament(selected);
                     activeTournamentRef.current = selected;
@@ -70,7 +79,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 startupNavHandledRef.current = true;
                 if (selected) {
                     router.replace('/');
-                } else if (mine.length !== 1) {
+                } else if (memberTournaments.length !== 1) {
                     router.replace('/(tabs)/tournaments');
                 }
             }
@@ -113,6 +122,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             loadTournaments();
         } else {
             setTournaments([]);
+            setInvitedTournaments([]);
             setActiveTournament(null);
             activeTournamentRef.current = null;
             startupNavHandledRef.current = false;
@@ -124,6 +134,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         <TournamentContext.Provider
             value={{
                 tournaments,
+                invitedTournaments,
                 loading,
                 startupReady,
                 activeTournament,

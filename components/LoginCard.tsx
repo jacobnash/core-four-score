@@ -12,10 +12,18 @@ interface LoginCardProps {
   loading?: boolean;
   isEmulator?: boolean;
   devPlayers?: Array<{ displayName: string; email: string }>;
+  mockDevPlayers?: Array<{ displayName: string; email: string }>;
   onDevSignIn?: (email: string) => void;
 }
 
-export function LoginCard({ onSignIn, loading = false, isEmulator = false, devPlayers = [], onDevSignIn }: LoginCardProps) {
+export function LoginCard({
+  onSignIn,
+  loading = false,
+  isEmulator = false,
+  devPlayers = [],
+  mockDevPlayers = [],
+  onDevSignIn,
+}: LoginCardProps) {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -32,20 +40,39 @@ export function LoginCard({ onSignIn, loading = false, isEmulator = false, devPl
               variant="primary"
               disabled={loading}
             />
-            {isEmulator && devPlayers.length > 0 && onDevSignIn && (
+            {isEmulator && onDevSignIn && (devPlayers.length > 0 || mockDevPlayers.length > 0) && (
               <>
                 <View style={{ height: 16 }} />
-                <Text style={styles.devLabel}>Local dev — pick a player</Text>
-                {devPlayers.map((player) => (
-                  <View key={player.email} style={{ marginTop: 8 }}>
-                    <Button
-                      title={`Sign in as ${player.displayName}`}
-                      onPress={() => onDevSignIn(player.email)}
-                      size="md"
-                      disabled={loading}
-                    />
-                  </View>
-                ))}
+                {devPlayers.length > 0 && (
+                  <>
+                    <Text style={styles.devLabel}>Core Four</Text>
+                    {devPlayers.map((player) => (
+                      <View key={player.email} style={{ marginTop: 8 }}>
+                        <Button
+                          title={`Sign in as ${player.displayName}`}
+                          onPress={() => onDevSignIn(player.email)}
+                          size="md"
+                          disabled={loading}
+                        />
+                      </View>
+                    ))}
+                  </>
+                )}
+                {mockDevPlayers.length > 0 && (
+                  <>
+                    <Text style={[styles.devLabel, { marginTop: 12 }]}>Mock guests (multiplayer testing)</Text>
+                    {mockDevPlayers.map((player) => (
+                      <View key={player.email} style={{ marginTop: 8 }}>
+                        <Button
+                          title={player.displayName}
+                          onPress={() => onDevSignIn(player.email)}
+                          size="md"
+                          disabled={loading}
+                        />
+                      </View>
+                    ))}
+                  </>
+                )}
               </>
             )}
           </View>

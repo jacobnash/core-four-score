@@ -11,4 +11,7 @@ export const LEGACY_CORE_FOUR_TOURNAMENT_IDS = [
     'the-core-four',
 ] as const;
 
+/** Primary Core Four tournament id (house rules, legacy stats). */
+export const CORE_FOUR_TOURNAMENT_ID = LEGACY_CORE_FOUR_TOURNAMENT_IDS[0];
+
 export type CoreFourMemberId = (typeof CORE_FOUR_MEMBER_IDS)[number];

@@ -20,14 +20,10 @@ const path = require('path');
 const { execSync } = require('child_process');
 const admin = require('firebase-admin');
 const { initAdminForEmulator } = require('./emulator-env');
+const { ALL_DEV_PLAYERS } = require('./mock-multiplayer-data');
+const { seedMockMultiplayerData } = require('./seed-multiplayer-mock');
 
 const DEV_PASSWORD = 'core-four-dev';
-const DEV_PLAYERS = [
-    { uid: 'SvmJSd43QveWNKw8w1qEh0zulTm1', displayName: 'Cait', email: 'caitlynn.nash@gmail.com' },
-    { uid: 'Ghobb73dkDavNS31eTDeK1n2zBG2', displayName: 'Dylan', email: 'dylan.studden@gmail.com' },
-    { uid: 'WDzkjttsK9g4Uobrywwe8o2nbtN2', displayName: 'Grace', email: 'grace.studden@gmail.com' },
-    { uid: 'lkW4ipmG1FM8MYtWI0JlUpqutzv1', displayName: 'Jacob', email: 'jacobloydnash@gmail.com' },
-];
 
 async function waitForEmulator(retries = 10) {
     const db = admin.firestore();
@@ -47,7 +43,7 @@ async function waitForEmulator(retries = 10) {
 async function seedAuthUsers() {
     console.log('Creating Auth emulator users...');
     const auth = admin.auth();
-    for (const player of DEV_PLAYERS) {
+    for (const player of ALL_DEV_PLAYERS) {
         try {
             await auth.getUser(player.uid);
             await auth.updateUser(player.uid, {
@@ -124,12 +120,24 @@ async function main() {
         }
     }
 
+    await seedMockMultiplayerData(admin.firestore(), admin);
+
+    const { backfillRulesTournamentId } = require('../backfill-rules-tournament');
+    console.log('\nBackfilling rules.tournamentId (Core Four)...');
+    const rulesResult = await backfillRulesTournamentId(admin.firestore());
+    console.log(`  ✓ ${rulesResult.updated} rules tagged, ${rulesResult.skipped} already set`);
+
     console.log('\n✅ Emulator seeded!\n');
-    console.log('Dev sign-in (any player):');
-    for (const p of DEV_PLAYERS) {
+    console.log('Dev sign-in — Core Four:');
+    for (const p of ALL_DEV_PLAYERS.filter(x => x.group === 'core-four')) {
         console.log(`  • ${p.displayName} — ${p.email}`);
     }
-    console.log(`  Password: ${DEV_PASSWORD}\n`);
+    console.log('\nDev sign-in — Mock guests:');
+    for (const p of ALL_DEV_PLAYERS.filter(x => x.group === 'mock')) {
+        console.log(`  • ${p.displayName} — ${p.email}`);
+    }
+    console.log(`\n  Password (all): ${DEV_PASSWORD}\n`);
+    console.log('Mock tournaments: Deer Camp Alumni, Friday Progressive, Lake House Open, Speed Night');
     console.log('Start the app: npm run dev:web');
     console.log('Emulator UI:  http://localhost:4000\n');
 }

@@ -1,13 +1,20 @@
 import {
     APPROVAL_THRESHOLD,
     APPROVAL_WINDOW_MS,
+    buildBulkRuleApprovals,
     computeNextApprovals,
+    getRuleSourceLabel,
     isAcceptedRule,
+    isBulkSeedRule,
     isHouseRule,
     isProposalExpired,
     isVisibleRule,
+    parseBulkRuleLines,
+    resolveRuleTournamentId,
+    ruleBelongsToTournament,
     shouldExpireProposal,
 } from '../utils/rules';
+import { CORE_FOUR_TOURNAMENT_ID } from '../constants/coreFour';
 
 function makeDateAgo(ms: number): Date {
     return new Date(1_700_000_000_000 - ms); // fixed anchor for deterministic tests
@@ -83,6 +90,44 @@ describe('isHouseRule / isAcceptedRule', () => {
     test('isAcceptedRule requires threshold approvals', () => {
         expect(isAcceptedRule(['a', 'b'])).toBe(false);
         expect(isAcceptedRule(['a', 'b', 'c'])).toBe(true);
+    });
+});
+
+describe('ruleBelongsToTournament', () => {
+    test('matches explicit tournamentId', () => {
+        expect(ruleBelongsToTournament({ tournamentId: 'lake-house-open' }, 'lake-house-open')).toBe(true);
+        expect(ruleBelongsToTournament({ tournamentId: 'lake-house-open' }, 'the-core-four')).toBe(false);
+    });
+
+    test('legacy rules without tournamentId map to Core Four', () => {
+        expect(resolveRuleTournamentId({})).toBe(CORE_FOUR_TOURNAMENT_ID);
+        expect(ruleBelongsToTournament({}, CORE_FOUR_TOURNAMENT_ID)).toBe(true);
+        expect(ruleBelongsToTournament({}, 'lake-house-open')).toBe(false);
+    });
+});
+
+describe('parseBulkRuleLines / buildBulkRuleApprovals', () => {
+    test('parseBulkRuleLines splits on newlines and drops blanks', () => {
+        expect(parseBulkRuleLines('Screw the dealer\n\nBraveheart\n  ')).toEqual([
+            'Screw the dealer',
+            'Braveheart',
+        ]);
+    });
+
+    test('buildBulkRuleApprovals picks three distinct members', () => {
+        const members = ['u1', 'u2', 'u3', 'u4'];
+        expect(buildBulkRuleApprovals(members, 'u2')).toEqual(['u2', 'u1', 'u3']);
+    });
+
+    test('isBulkSeedRule identifies setup rules', () => {
+        expect(isBulkSeedRule({ seedMethod: 'bulk' })).toBe(true);
+        expect(isBulkSeedRule({ seedMethod: 'proposal' })).toBe(false);
+    });
+
+    test('getRuleSourceLabel distinguishes Core Four house vs bulk vs proposal', () => {
+        expect(getRuleSourceLabel({ author: 'system' })).toBe('House rule (pre-agreed)');
+        expect(getRuleSourceLabel({ author: 'u1', seedMethod: 'bulk' })).toBe('Group rule (added at setup)');
+        expect(getRuleSourceLabel({ author: 'u1' }, { u1: 'Sam' })).toBe('Proposed by Sam');
     });
 });
 

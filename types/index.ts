@@ -102,11 +102,19 @@ export interface TeamMatchup {
     team2: string[];
 }
 
-// Rules Types
-export interface Rule {
+// Rules Types (Firestore `rules` collection)
+export interface TournamentRule {
     id: string;
-    title: string;
-    description: string;
-    category: 'Gameplay' | 'Etiquette' | 'Scoring';
-    order: number;
+    text: string;
+    author: string;
+    approvals: string[];
+    createdAt: Date;
+    lockedAt?: Date | null;
+    status?: string;
+    expiredAt?: Date | null;
+    /** Tournament these rules belong to; legacy docs omit this and map to Core Four. */
+    tournamentId?: string;
+    schemaVersion?: number;
+    /** bulk = added at draft setup; proposal = normal vote flow (default). */
+    seedMethod?: 'bulk' | 'proposal';
 }

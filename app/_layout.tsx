@@ -59,16 +59,18 @@ function RootLayoutNav() {
 
   // Handle auth state changes and redirect accordingly
   useEffect(() => {
-    if (loading) return; // Wait for auth to load
+    if (loading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
+    const inJoinRoute = segments[0] === 'join';
 
     if (!user && !inAuthGroup) {
-      // Not logged in and not in auth group, redirect to login
-      router.replace('/(auth)/login');
-    } else if (user && inAuthGroup) {
-      // Logged in and in auth group, redirect to home
-      router.replace('/(tabs)');
+      if (inJoinRoute) {
+        const joinPath = `/${segments.join('/')}`;
+        router.replace(`/(auth)/login?returnTo=${encodeURIComponent(joinPath)}`);
+      } else {
+        router.replace('/(auth)/login');
+      }
     }
   }, [user, loading, segments]);
 
@@ -80,6 +82,8 @@ function RootLayoutNav() {
       >
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="join/[id]" options={{ title: 'Join Tournament', headerShown: true }} />
+        <Stack.Screen name="tournament/[id]" options={{ title: 'Tournament' }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>

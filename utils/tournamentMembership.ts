@@ -18,6 +18,25 @@ export function isLegacyCoreFourTournament(tournamentId?: string | null, tournam
     );
 }
 
+/** Whether this tournament allows any invite or join-link flow. Core Four never does. */
+export function tournamentAcceptsInvites(
+    tournamentId?: string | null,
+    tournamentDocId?: string | null
+): boolean {
+    return !isLegacyCoreFourTournament(tournamentId, tournamentDocId);
+}
+
+export function assertTournamentAcceptsInvites(
+    tournamentId: string,
+    tournamentDocId?: string | null
+): void {
+    if (!tournamentAcceptsInvites(tournamentId, tournamentDocId)) {
+        throw new Error(
+            'The Core Four tournament is closed — no one can be invited. Create a new tournament for your group.'
+        );
+    }
+}
+
 /** Whether a uid may join or be invited to this tournament. */
 export function canAddMemberToTournament(
     tournamentId: string,
