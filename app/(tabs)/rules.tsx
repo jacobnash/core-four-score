@@ -5,7 +5,8 @@ import { ActivityIndicator, FlatList, Modal, Platform, StyleSheet, Text, TextInp
 import { Button } from '../../components/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
-import { db } from '../../services/firebase';
+import { useTournamentAccess } from '../../hooks/useTournamentAccess';
+import { getDb } from '../../services/firebase';
 import { userService } from '../../services/firestore';
 import { TournamentRule } from '../../types';
 import {
@@ -21,7 +22,6 @@ import {
     ruleBelongsToTournament,
     shouldExpireProposal,
 } from '../../utils/rules';
-import { isLegacyCoreFourTournament } from '../../utils/tournamentMembership';
 
 type RuleDoc = TournamentRule & { createdAt: any; lockedAt?: any };
 
@@ -39,13 +39,8 @@ export default function RulesScreen() {
     const [bulkText, setBulkText] = useState('');
     const [bulkSaving, setBulkSaving] = useState(false);
 
-    const isCoreFourTournament = isLegacyCoreFourTournament(
-        activeTournament?.id,
-        activeTournament?.tournamentId
-    );
-    const isDraft = activeTournament?.status !== 'active';
-    const isMember = !!(user && activeTournament?.memberIds?.includes(user.uid));
-    const canBulkAddRules = isMember && isDraft && !isCoreFourTournament;
+    const { isMember, isDraft, isCoreFourLocked } = useTournamentAccess(activeTournament, user?.uid);
+    const canBulkAddRules = isMember && isDraft && !isCoreFourLocked;
     const canProposeRules = isMember;
 
     const fetchRules = useCallback(async () => {
@@ -57,9 +52,9 @@ export default function RulesScreen() {
 
         setLoading(true);
         try {
-            const snap = await getDocs(collection(db, 'rules'));
+            const snap = await getDocs(collection(getDb(), 'rules'));
             await cleanupOldProposals(snap.docs, tournamentId);
-            const fresh = await getDocs(collection(db, 'rules'));
+            const fresh = await getDocs(collection(getDb(), 'rules'));
             const arr: RuleDoc[] = fresh.docs
                 .map(d => ({ id: d.id, ...(d.data() as Omit<RuleDoc, 'id'>) }))
                 .filter(r => ruleBelongsToTournament(r, tournamentId))
@@ -119,7 +114,7 @@ export default function RulesScreen() {
 
                 if (isHouseRule(author) || isAcceptedRule(approvals)) {
                     if (data?.status === 'expired') {
-                        await updateDoc(doc(db, 'rules', d.id), {
+                        await updateDoc(doc(getDb(), 'rules', d.id), {
                             status: deleteField(),
                             expiredAt: deleteField(),
                         });
@@ -129,10 +124,10 @@ export default function RulesScreen() {
 
                 if (shouldExpireProposal(data?.createdAt, approvals, now, author)) {
                     if (data?.status !== 'expired') {
-                        await updateDoc(doc(db, 'rules', d.id), { status: 'expired', expiredAt: new Date() });
+                        await updateDoc(doc(getDb(), 'rules', d.id), { status: 'expired', expiredAt: new Date() });
                     }
                 } else if (data?.status === 'expired') {
-                    await updateDoc(doc(db, 'rules', d.id), {
+                    await updateDoc(doc(getDb(), 'rules', d.id), {
                         status: deleteField(),
                         expiredAt: deleteField(),
                     });
@@ -158,7 +153,7 @@ export default function RulesScreen() {
             const now = new Date();
             for (const text of lines) {
                 const id = encodeURIComponent(text).slice(0, 80) + '-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
-                await setDoc(doc(db, 'rules', id), {
+                await setDoc(doc(getDb(), 'rules', id), {
                     text,
                     author: user.uid,
                     approvals,
@@ -181,7 +176,7 @@ export default function RulesScreen() {
         if (!user || !tournamentId) return;
         if (!proposal.trim()) return;
         const id = encodeURIComponent(proposal.trim()).slice(0, 80) + '-' + Date.now();
-        const ref = doc(db, 'rules', id);
+        const ref = doc(getDb(), 'rules', id);
         await setDoc(ref, {
             text: proposal.trim(),
             author: user.uid,
@@ -199,7 +194,7 @@ export default function RulesScreen() {
 
     async function toggleApprove(rule: RuleDoc) {
         if (!user) return;
-        const ref = doc(db, 'rules', rule.id);
+        const ref = doc(getDb(), 'rules', rule.id);
         const currentApprovals = rule.approvals || [];
         const wasAccepted = currentApprovals.length >= APPROVAL_THRESHOLD;
         const next = computeNextApprovals(rule, user.uid);
