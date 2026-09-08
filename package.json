@@ -28,8 +28,12 @@
     "emulators": "npx firebase-tools emulators:start --only firestore,auth",
     "dev:seed": "USE_EMULATOR=true node ./scripts/dev/seed-emulator.js",
     "dev:seed:mock": "USE_EMULATOR=true node ./scripts/dev/seed-mock-only.js",
+    "dev:auth-helper": "node ./scripts/dev/dev-auth-server.js",
     "dev:test:visibility": "USE_EMULATOR=true node ./scripts/dev/test-tournament-visibility.js",
+    "dev:test:create-tournament": "USE_EMULATOR=true node ./scripts/dev/test-create-tournament.js",
+    "dev:test:alex-kim": "USE_EMULATOR=true node ./scripts/dev/test-alex-kim-flow.js",
     "dev:web": "EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true expo start --web",
+    "dev:web:full": "bash ./scripts/dev/start-local.sh",
     "dev:local": "bash ./scripts/dev/start-local.sh"
   },
   "importScripts": {
@@ -58,6 +62,7 @@
     "expo-web-browser": "~15.0.10",
     "firebase": "^12.7.0",
     "firebase-admin": "^13.6.0",
+    "fuse.js": "^6.6.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
@@ -67,17 +72,21 @@
     "react-native-svg": "^15.15.1",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.5.1",
-    "victory-native": "^36.9.2",
-    "fuse.js": "^6.6.2"
+    "victory-native": "^36.9.2"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "29.5.14",
     "@types/react": "~19.1.0",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~10.0.0",
     "jest": "~29.7.0",
     "jest-expo": "^54.0.16",
+    "jscpd": "^5.1.2",
+    "madge": "^8.0.0",
     "react-test-renderer": "^19.1.0",
     "sharp": "^0.34.5",
+    "ts-prune": "^0.10.3",
     "typescript": "~5.9.2"
   },
   "private": true
