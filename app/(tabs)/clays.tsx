@@ -50,6 +50,7 @@ export default function ClaysScreen() {
         pairType,
         setPairType,
         shooterIndex,
+        sequencePosition,
         birdResultsSoFar,
         station,
         setStation,
@@ -219,6 +220,7 @@ export default function ClaysScreen() {
                     {CLAY_DISCIPLINE_LABELS[activeMatch.discipline]} · {activeTournament?.name}
                 </Text>
                 <Text style={styles.matchProgress}>
+                    {sequencePosition ? `${sequencePosition.stationLabel} · ` : ''}
                     Presentation {presentationNumber} · {birdsScored}/{expectedTargets} birds
                 </Text>
                 <Text style={styles.shooterName}>{currentShooter?.displayName}</Text>
@@ -238,21 +240,29 @@ export default function ClaysScreen() {
                     </>
                 )}
 
-                <Text style={styles.sectionLabel}>How</Text>
-                <View style={styles.chipRow}>
-                    {CLAY_PAIR_TYPES.map(t => (
-                        <TouchableOpacity
-                            key={t}
-                            style={[styles.chip, pairType === t && styles.chipActive]}
-                            onPress={() => setPairType(t)}
-                        >
-                            <Text style={[styles.chipText, pairType === t && styles.chipTextActive]}>
-                                {CLAY_PAIR_LABELS[t]}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-                <Text style={styles.hint}>{CLAY_PAIR_HINTS[pairType]}</Text>
+                {sequencePosition ? (
+                    <Text style={styles.hint}>
+                        {sequencePosition.stationLabel} — {CLAY_PAIR_LABELS[pairType]} ({CLAY_PAIR_HINTS[pairType]})
+                    </Text>
+                ) : (
+                    <>
+                        <Text style={styles.sectionLabel}>How</Text>
+                        <View style={styles.chipRow}>
+                            {CLAY_PAIR_TYPES.map(t => (
+                                <TouchableOpacity
+                                    key={t}
+                                    style={[styles.chip, pairType === t && styles.chipActive]}
+                                    onPress={() => setPairType(t)}
+                                >
+                                    <Text style={[styles.chipText, pairType === t && styles.chipTextActive]}>
+                                        {CLAY_PAIR_LABELS[t]}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                        <Text style={styles.hint}>{CLAY_PAIR_HINTS[pairType]}</Text>
+                    </>
+                )}
 
                 <Text style={styles.birdPrompt}>
                     {currentBirdLabel
@@ -288,8 +298,12 @@ export default function ClaysScreen() {
                 </View>
 
                 <View style={styles.secondaryRow}>
-                    <Button title="Skip" onPress={skipShooter} />
-                    <View style={{ width: 8 }} />
+                    {!sequencePosition && (
+                        <>
+                            <Button title="Skip" onPress={skipShooter} />
+                            <View style={{ width: 8 }} />
+                        </>
+                    )}
                     <Button title="Undo" onPress={undoLast} />
                     <View style={{ width: 8 }} />
                     <Button title="End match" onPress={endMatch} />

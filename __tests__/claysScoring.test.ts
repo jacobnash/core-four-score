@@ -8,7 +8,9 @@ import {
     defaultExpectedTargets,
     filterRecordsSince,
     hitsFromBirdResults,
+    fixedSequenceDiscipline,
     nextPresentationNumber,
+    nextSequencePosition,
     nextShooterIndex,
     sumBirdsScored,
 } from '../utils/claysScoring';
@@ -48,6 +50,57 @@ describe('claysScoring', () => {
             expect(CLAY_PAIR_LABELS[t].length).toBeGreaterThan(0);
             expect(CLAY_PAIR_HINTS[t].length).toBeGreaterThan(0);
         }
+    });
+
+    test('fixedSequenceDiscipline: only trap and skeet follow one fixed rulebook', () => {
+        expect(fixedSequenceDiscipline('trap')).toBe(true);
+        expect(fixedSequenceDiscipline('skeet')).toBe(true);
+        expect(fixedSequenceDiscipline('sporting')).toBe(false);
+        expect(fixedSequenceDiscipline('5stand')).toBe(false);
+    });
+
+    test('nextSequencePosition: trap rotates one shot at a time, 5 singles per post', () => {
+        const squad = 3;
+        expect(nextSequencePosition('trap', 0, squad)).toEqual({
+            station: 1,
+            stationLabel: 'Post 1',
+            pairType: 'single',
+            shooterIndex: 0,
+        });
+        // Still post 1 for all 5 rounds through a 3-person squad (15 shots).
+        expect(nextSequencePosition('trap', 14, squad)?.station).toBe(1);
+        expect(nextSequencePosition('trap', 14, squad)?.shooterIndex).toBe(2);
+        // 15th shot at this post rotates the whole squad to post 2.
+        expect(nextSequencePosition('trap', 15, squad)).toEqual({
+            station: 2,
+            stationLabel: 'Post 2',
+            pairType: 'single',
+            shooterIndex: 0,
+        });
+    });
+
+    test('nextSequencePosition: skeet gives one shooter their whole station before the next shooter goes', () => {
+        const squad = 2;
+        // Station 1: high house, low house, true pair (double) — 3 presentations.
+        expect(nextSequencePosition('skeet', 0, squad)).toEqual({
+            station: 1,
+            stationLabel: 'Station 1',
+            pairType: 'single',
+            shooterIndex: 0,
+        });
+        expect(nextSequencePosition('skeet', 2, squad)?.pairType).toBe('true');
+        expect(nextSequencePosition('skeet', 2, squad)?.shooterIndex).toBe(0);
+        // Shooter 0 just finished station 1 — shooter 1 starts it fresh.
+        expect(nextSequencePosition('skeet', 3, squad)).toEqual({
+            station: 1,
+            stationLabel: 'Station 1',
+            pairType: 'single',
+            shooterIndex: 1,
+        });
+        // Station 3 has no true pair — just high house / low house singles.
+        const station3Start = 2 /* stations 1-2 */ * 3 * squad;
+        expect(nextSequencePosition('skeet', station3Start, squad)?.station).toBe(3);
+        expect(nextSequencePosition('skeet', station3Start, squad)?.pairType).toBe('single');
     });
 
     test('discipline defaults are separate for trap/skeet vs sporting', () => {

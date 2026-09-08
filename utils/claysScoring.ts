@@ -61,6 +61,88 @@ export function isSportingDiscipline(discipline: ClayDiscipline): boolean {
     return discipline === 'sporting';
 }
 
+/**
+ * Trap and skeet are shot to one fixed, internationally standardized sequence —
+ * unlike sporting clays and 5-stand, whose station "menus" (what's thrown, and
+ * in what mix of single/report/true/following) are set by the course/club and
+ * have no universal rule to encode. For those two, the shooter picks presentation
+ * type by hand each shot, as the app already does.
+ */
+export function fixedSequenceDiscipline(discipline: ClayDiscipline): boolean {
+    return discipline === 'trap' || discipline === 'skeet';
+}
+
+export interface ClaySequencePosition {
+    /** 1-based station/post number. */
+    station: number;
+    stationLabel: string;
+    pairType: ClayPairType;
+    /** Index into the present-shooters array whose turn it is. */
+    shooterIndex: number;
+}
+
+/** ATA trap: 5 posts, squad rotates one shot at a time, 5 singles per shooter per post. */
+const TRAP_STATIONS = 5;
+const TRAP_SHOTS_PER_STATION = 5;
+
+/**
+ * NSSA skeet: at each station a shooter takes the high-house single, the
+ * low-house single, and — at stations 1, 2, 6 and 7 only — a true (simultaneous)
+ * pair. Station 8 has no double. Each shooter shoots their whole station before
+ * the next shooter starts (unlike trap's one-shot-at-a-time rotation).
+ * Regulation skeet adds one optional 25th shot (repeat the round's first miss,
+ * or an extra low-house look if none); simplified here as a 3rd single at
+ * station 8 so the 24-target sequence still totals a clean 25.
+ */
+const SKEET_STATION_PLANS: ClayPairType[][] = [
+    ['single', 'single', 'true'],
+    ['single', 'single', 'true'],
+    ['single', 'single'],
+    ['single', 'single'],
+    ['single', 'single'],
+    ['single', 'single', 'true'],
+    ['single', 'single', 'true'],
+    ['single', 'single', 'single'],
+];
+
+/**
+ * Given how many presentations the squad has already completed this match,
+ * derive whose turn it is, what they're shooting, and what station/post
+ * they're on — so trap and skeet never need manual station or pair-type entry.
+ */
+export function nextSequencePosition(
+    discipline: ClayDiscipline,
+    completedPresentations: number,
+    squadSize: number
+): ClaySequencePosition | null {
+    if (squadSize <= 0) return null;
+
+    if (discipline === 'trap') {
+        const perStation = squadSize * TRAP_SHOTS_PER_STATION;
+        const station = Math.min(TRAP_STATIONS - 1, Math.floor(completedPresentations / perStation)) + 1;
+        const shooterIndex = completedPresentations % squadSize;
+        return { station, stationLabel: `Post ${station}`, pairType: 'single', shooterIndex };
+    }
+
+    if (discipline === 'skeet') {
+        let remaining = completedPresentations;
+        for (let i = 0; i < SKEET_STATION_PLANS.length; i++) {
+            const plan = SKEET_STATION_PLANS[i];
+            const stationTotal = plan.length * squadSize;
+            const isLastStation = i === SKEET_STATION_PLANS.length - 1;
+            if (remaining < stationTotal || isLastStation) {
+                const clamped = isLastStation ? remaining % stationTotal : remaining;
+                const shooterIndex = Math.floor(clamped / plan.length) % squadSize;
+                const stepIndex = clamped % plan.length;
+                return { station: i + 1, stationLabel: `Station ${i + 1}`, pairType: plan[stepIndex], shooterIndex };
+            }
+            remaining -= stationTotal;
+        }
+    }
+
+    return null;
+}
+
 export function filterRecordsSince<T extends { timestamp: Date }>(
     records: T[],
     months: number

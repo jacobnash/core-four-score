@@ -11,9 +11,12 @@ import {
     aggregateClayTotals,
     birdsInPresentation,
     CLAY_PAIR_TYPES,
+    ClaySequencePosition,
     defaultExpectedTargets,
+    fixedSequenceDiscipline,
     isSportingDiscipline,
     nextPresentationNumber,
+    nextSequencePosition,
     nextShooterIndex,
     PAIR_BIRD_LABELS,
     sumBirdsScored,
@@ -41,9 +44,10 @@ export function useClaysScreenData(
     const [expectedTargetsInput, setExpectedTargetsInput] = useState('100');
     const [matchNotes, setMatchNotes] = useState('');
 
-    // Scoring state
-    const [pairType, setPairType] = useState<(typeof CLAY_PAIR_TYPES)[number]>('report');
-    const [shooterIndex, setShooterIndex] = useState(0);
+    // Scoring state — used only for sporting/5-stand, whose station "menus" are
+    // course-defined and picked by hand each shot.
+    const [manualPairType, setManualPairType] = useState<(typeof CLAY_PAIR_TYPES)[number]>('report');
+    const [manualShooterIndex, setManualShooterIndex] = useState(0);
     const [birdResultsSoFar, setBirdResultsSoFar] = useState<boolean[]>([]);
     const [station, setStation] = useState('');
     const [matchRecords, setMatchRecords] = useState<Awaited<ReturnType<typeof claysService.getScoresForMatch>>>([]);
@@ -53,6 +57,17 @@ export function useClaysScreenData(
         () => shooters.filter(s => presentIds.has(s.uid)),
         [shooters, presentIds]
     );
+
+    // Trap and skeet follow one fixed, standardized shot sequence, so who's up
+    // and what they're shooting is derived from shots-so-far rather than picked.
+    const sequencePosition: ClaySequencePosition | null = useMemo(() => {
+        if (!activeMatch || !fixedSequenceDiscipline(activeMatch.discipline)) return null;
+        return nextSequencePosition(activeMatch.discipline, matchRecords.length, presentShooters.length);
+    }, [activeMatch, matchRecords.length, presentShooters.length]);
+
+    const pairType = sequencePosition?.pairType ?? manualPairType;
+    const shooterIndex = sequencePosition?.shooterIndex ?? manualShooterIndex;
+    const setPairType = setManualPairType;
 
     const birdCount = birdsInPresentation(pairType);
     const currentShooter = presentShooters[shooterIndex] ?? null;
@@ -105,9 +120,6 @@ export function useClaysScreenData(
             if (match) {
                 const records = await claysService.getScoresForMatch(match.id);
                 setMatchRecords(records);
-                if (!isSportingDiscipline(match.discipline)) {
-                    setPairType('single');
-                }
             } else {
                 setMatchRecords([]);
             }
@@ -130,14 +142,11 @@ export function useClaysScreenData(
     }, [pairType, shooterIndex, presentationNumber]);
 
     useEffect(() => {
-        if (shooterIndex >= presentShooters.length) setShooterIndex(0);
-    }, [presentShooters.length, shooterIndex]);
+        if (!sequencePosition && manualShooterIndex >= presentShooters.length) setManualShooterIndex(0);
+    }, [sequencePosition, presentShooters.length, manualShooterIndex]);
 
     useEffect(() => {
         setExpectedTargetsInput(String(defaultExpectedTargets(discipline)));
-        if (!isSportingDiscipline(discipline)) {
-            setPairType('single');
-        }
     }, [discipline]);
 
     const togglePresent = (uid: string) => {
@@ -172,7 +181,7 @@ export function useClaysScreenData(
             setActiveMatch(match);
             setMatchRecords([]);
             setStation('');
-            setShooterIndex(0);
+            setManualShooterIndex(0);
             setBirdResultsSoFar([]);
         } catch (err) {
             console.error(err);
@@ -232,13 +241,17 @@ export function useClaysScreenData(
                 shooterId: currentShooter.uid,
                 pairType,
                 discipline: activeMatch.discipline,
-                station: station.trim() || null,
+                station: sequencePosition ? sequencePosition.stationLabel : station.trim() || null,
                 birdResults: nextResults,
                 birdLabels,
                 recordedBy: user.uid,
             });
             setBirdResultsSoFar([]);
-            setShooterIndex(nextShooterIndex(shooterIndex, presentShooters.length));
+            // Trap/skeet: next shooter and station are derived from the reloaded
+            // record count, not tracked here.
+            if (!sequencePosition) {
+                setManualShooterIndex(nextShooterIndex(manualShooterIndex, presentShooters.length));
+            }
             await load();
         } catch (err) {
             console.error(err);
@@ -269,8 +282,9 @@ export function useClaysScreenData(
     };
 
     const skipShooter = () => {
+        if (sequencePosition) return; // fixed order for trap/skeet — nothing to skip to
         setBirdResultsSoFar([]);
-        setShooterIndex(nextShooterIndex(shooterIndex, presentShooters.length));
+        setManualShooterIndex(nextShooterIndex(manualShooterIndex, presentShooters.length));
     };
 
     const currentBirdLabel =
@@ -291,6 +305,7 @@ export function useClaysScreenData(
         pairType,
         setPairType,
         shooterIndex,
+        sequencePosition,
         birdResultsSoFar,
         station,
         setStation,

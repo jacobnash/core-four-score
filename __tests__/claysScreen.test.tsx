@@ -187,11 +187,12 @@ describe('ClaysScreen', () => {
     it('starts a match and saves a completed 2-bird presentation (default pair type)', async () => {
         mockUseTournament.mockReturnValue({ activeTournament: makeTournament(), startupReady: true });
         mockGetTournamentMembers.mockResolvedValue([makeUser()]);
-        // Non-sporting discipline so the "Where" station field isn't required to score.
+        // 5-stand: non-sporting (so "Where" isn't required) but still a manual,
+        // course-defined pair-type menu — unlike trap/skeet's fixed sequence.
         mockCreateMatch.mockResolvedValue({
             id: 'match-1',
             tournamentId: CLAYS_TOURNAMENT_ID,
-            discipline: 'skeet',
+            discipline: '5stand',
             expectedTargets: 25,
             status: 'active',
         });
