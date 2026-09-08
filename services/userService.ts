@@ -9,23 +9,27 @@ import {
     where
 } from 'firebase/firestore';
 import { User, UserStats } from '../types';
-import { db } from './firebase';
+import { findUsersForTournamentInvite } from '../utils/tournamentInviteLookup';
+import { getDb } from './firebase';
+
+function mapUserDoc(uid: string, data: Record<string, unknown>): User {
+    return {
+        uid,
+        displayName: data.displayName as string,
+        email: data.email as string,
+        photoURL: data.photoURL as string | undefined,
+        stats: { wins: 0, renegs: 0, gamesPlayed: 0 }, // Stats calculated dynamically via getUserStats
+        preferredTournamentId: (data.preferredTournamentId as string | null | undefined) ?? null,
+        lastActiveTournamentId: (data.lastActiveTournamentId as string | null | undefined) ?? null,
+    };
+}
 
 export const userService = {
     async getUser(uid: string): Promise<User | null> {
-        const userDoc = await getDoc(doc(db, 'users', uid));
+        const userDoc = await getDoc(doc(getDb(), 'users', uid));
         if (!userDoc.exists()) return null;
 
-        const data = userDoc.data();
-        return {
-            uid: userDoc.id,
-            displayName: data.displayName,
-            email: data.email,
-            photoURL: data.photoURL,
-            stats: { wins: 0, renegs: 0, gamesPlayed: 0 }, // Stats calculated dynamically via getUserStats
-            preferredTournamentId: data.preferredTournamentId ?? null,
-            lastActiveTournamentId: data.lastActiveTournamentId ?? null,
-        };
+        return mapUserDoc(userDoc.id, userDoc.data());
     },
 
     async createUser(uid: string, displayName: string, email: string, photoURL?: string): Promise<User> {
@@ -39,7 +43,7 @@ export const userService = {
             lastActiveTournamentId: null,
         };
 
-        await setDoc(doc(db, 'users', uid), {
+        await setDoc(doc(getDb(), 'users', uid), {
             displayName,
             email,
             photoURL,
@@ -52,20 +56,23 @@ export const userService = {
         return newUser;
     },
 
+    async findUserByEmail(email: string): Promise<User | null> {
+        const normalized = email.trim().toLowerCase();
+        if (!normalized) return null;
+        const snap = await getDocs(query(collection(getDb(), 'users'), where('email', '==', normalized)));
+        if (snap.empty) return null;
+        const d = snap.docs[0];
+        return mapUserDoc(d.id, d.data());
+    },
+
+    async searchUsers(queryText: string, excludeMemberIds: string[] = []): Promise<User[]> {
+        const all = await this.getAllUsers();
+        return findUsersForTournamentInvite(all, queryText, excludeMemberIds);
+    },
+
     async getAllUsers(): Promise<User[]> {
-        const snap = await getDocs(collection(db, 'users'));
-        return snap.docs.map(d => {
-            const data: any = d.data();
-            return {
-                uid: d.id,
-                displayName: data.displayName,
-                email: data.email,
-                photoURL: data.photoURL,
-                stats: { wins: 0, renegs: 0, gamesPlayed: 0 },
-                preferredTournamentId: data.preferredTournamentId ?? null,
-                lastActiveTournamentId: data.lastActiveTournamentId ?? null,
-            } as User;
-        });
+        const snap = await getDocs(collection(getDb(), 'users'));
+        return snap.docs.map(d => mapUserDoc(d.id, d.data()));
     },
 
     async updateUser(uid: string, displayName?: string, photoURL?: string): Promise<void> {
@@ -76,18 +83,18 @@ export const userService = {
         if (typeof displayName === 'string') payload.displayName = displayName;
         if (typeof photoURL === 'string') payload.photoURL = photoURL;
 
-        await setDoc(doc(db, 'users', uid), payload, { merge: true });
+        await setDoc(doc(getDb(), 'users', uid), payload, { merge: true });
     },
 
     async setPreferredTournament(uid: string, tournamentId: string | null): Promise<void> {
-        await setDoc(doc(db, 'users', uid), {
+        await setDoc(doc(getDb(), 'users', uid), {
             preferredTournamentId: tournamentId,
             updatedAt: Timestamp.now(),
         }, { merge: true });
     },
 
     async setLastActiveTournament(uid: string, tournamentId: string | null): Promise<void> {
-        await setDoc(doc(db, 'users', uid), {
+        await setDoc(doc(getDb(), 'users', uid), {
             lastActiveTournamentId: tournamentId,
             updatedAt: Timestamp.now(),
         }, { merge: true });
@@ -95,10 +102,10 @@ export const userService = {
 
     async getUserStats(uid: string, tournamentId?: string): Promise<UserStats> {
         // Calculate stats from actual games and renegs filtered by tournament if provided
-        let gamesQuery = query(collection(db, 'games'));
+        let gamesQuery = query(collection(getDb(), 'games'));
 
         if (tournamentId) {
-            gamesQuery = query(collection(db, 'games'), where('tournamentId', '==', tournamentId));
+            gamesQuery = query(collection(getDb(), 'games'), where('tournamentId', '==', tournamentId));
         }
 
         const gamesSnapshot = await getDocs(gamesQuery);
@@ -139,11 +146,11 @@ export const userService = {
 
 
         // Count renegs for this user
-        let renegsQuery = query(collection(db, 'renegs'), where('playerId', '==', uid));
+        let renegsQuery = query(collection(getDb(), 'renegs'), where('playerId', '==', uid));
 
         if (tournamentId) {
             renegsQuery = query(
-                collection(db, 'renegs'),
+                collection(getDb(), 'renegs'),
                 where('playerId', '==', uid),
                 where('tournamentId', '==', tournamentId)
             );
