@@ -7,16 +7,13 @@ import { LeaderboardCard } from '../../components/LeaderboardCard';
 import { ENABLE_CLAYS_SCORING, ENABLE_IMPROVED_DATA_VIEWS } from '../../constants/featureFlags';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
+import { useTournamentAccess } from '../../hooks/useTournamentAccess';
 import { claysLeaderboardService, leaderboardService, tournamentService } from '../../services/firestore';
 import { ClaysMemberStats, Tournament, User } from '../../types';
 import { CLAYS_ROLLING_MONTHS } from '../../utils/claysScoring';
 import { isLegacyCoreFourTournament } from '../../utils/tournamentMembership';
-import {
-    getTournamentHomeRoute,
-    isClaysTournament,
-    TOURNAMENT_ACTIVITY_LABELS,
-} from '../../utils/tournamentNavigation';
-import { canUserAccessTournament, isTournamentMember } from '../../utils/tournamentVisibility';
+import { getTournamentHomeRoute, TOURNAMENT_ACTIVITY_LABELS } from '../../utils/tournamentNavigation';
+import { canUserAccessTournament } from '../../utils/tournamentVisibility';
 
 export default function TournamentDetail() {
   const { id } = useLocalSearchParams();
@@ -75,13 +72,9 @@ export default function TournamentDetail() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, user?.uid]);
 
-  const isMember = !!(user && tournament && isTournamentMember(tournament, user.uid));
+  const { isMember, isDraft, isCoreFourLocked, isClays, canShareLink, showClays } =
+    useTournamentAccess(tournament, user?.uid);
   const hasAccess = isMember;
-  const isDraft = tournament?.status !== 'active';
-  const isCoreFourLocked = isLegacyCoreFourTournament(tournament?.id, tournament?.tournamentId);
-  const canShareLink = isMember && !isCoreFourLocked;
-  const isClays = isClaysTournament(tournament);
-  const showClays = ENABLE_CLAYS_SCORING && isClays && !isCoreFourLocked;
 
   if (loading) {
     return (
