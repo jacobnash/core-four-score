@@ -1,28 +1,52 @@
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
-import { Tournament, User } from '../types';
-import { canAddMemberToTournament, validateTournamentMemberIds, assertTournamentAcceptsInvites } from '../utils/tournamentMembership';
-import { db } from './firebase';
+import { Tournament, TournamentActivityType, User } from '../types';
+import {
+    assertTournamentAcceptsInvites,
+    canAddMemberToTournament,
+    isRosterLocked,
+    validateTournamentMemberIds,
+} from '../utils/tournamentMembership';
+import { connectFirebaseEmulators, getDb } from './firebase';
 import { userService } from './userService';
+
+function mapTournamentDoc(id: string, data: Record<string, unknown>): Tournament {
+    return {
+        id,
+        tournamentId: (data.tournamentId as string) || id,
+        name: data.name as string,
+        memberIds: (data.memberIds as string[]) || [],
+        createdAt: (data.createdAt as { toDate?: () => Date })?.toDate?.() ?? new Date(),
+        updatedAt: (data.updatedAt as { toDate?: () => Date })?.toDate?.() ?? new Date(),
+        status: (data.status as Tournament['status']) || 'active',
+        activityType: data.activityType === 'clays' ? 'clays' : 'euchre',
+        createdBy: (data.createdBy as string | null) ?? null,
+        visibility: (data.visibility as Tournament['visibility']) || 'private',
+        inviteIds: (data.inviteIds as string[]) || [],
+        schemaVersion: typeof data.schemaVersion === 'number' ? data.schemaVersion : 1,
+    };
+}
+
+/**
+ * Shared guard for every "add uid to this tournament" entry point: fetches the
+ * tournament, then asserts it's found, still accepting invites, and open to `uid`.
+ * Callers layer their own additional checks (already-a-member, roster-locked,
+ * pending-invite) on top, in whatever order matches their existing behavior.
+ */
+async function assertJoinable(tournamentId: string, uid: string, notOpenMessage: string): Promise<Tournament> {
+    const t = await tournamentService.getTournament(tournamentId);
+    if (!t) throw new Error('Tournament not found');
+    assertTournamentAcceptsInvites(t.id, t.tournamentId);
+    if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
+        throw new Error(notOpenMessage);
+    }
+    return t;
+}
 
 export const tournamentService = {
     async getTournament(id: string): Promise<Tournament | null> {
-        const tournamentDoc = await getDoc(doc(db, 'tournaments', id));
+        const tournamentDoc = await getDoc(doc(getDb(), 'tournaments', id));
         if (!tournamentDoc.exists()) return null;
-
-        const data = tournamentDoc.data();
-        return {
-            id: tournamentDoc.id,
-            tournamentId: data.tournamentId || tournamentDoc.id,
-            name: data.name,
-            memberIds: data.memberIds || [],
-            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
-            updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
-            status: data.status || 'active',
-            createdBy: data.createdBy ?? null,
-            visibility: data.visibility || 'private',
-            inviteIds: data.inviteIds || [],
-            schemaVersion: typeof data.schemaVersion === 'number' ? data.schemaVersion : 1,
-        };
+        return mapTournamentDoc(tournamentDoc.id, tournamentDoc.data());
     },
 
     async getTournamentMembers(tournamentId: string): Promise<User[]> {
@@ -37,31 +61,18 @@ export const tournamentService = {
     },
 
     async getAllTournaments(): Promise<Tournament[]> {
-        const snap = await getDocs(collection(db, 'tournaments'));
-        return snap.docs.map(d => {
-            const data = d.data();
-            return {
-                id: d.id,
-                tournamentId: data.tournamentId || d.id,
-                name: data.name,
-                memberIds: data.memberIds || [],
-                createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
-                updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
-                status: data.status || 'active',
-                createdBy: data.createdBy ?? null,
-                visibility: data.visibility || 'private',
-                inviteIds: data.inviteIds || [],
-                schemaVersion: typeof data.schemaVersion === 'number' ? data.schemaVersion : 1,
-            } as Tournament;
-        });
+        const snap = await getDocs(collection(getDb(), 'tournaments'));
+        return snap.docs.map(d => mapTournamentDoc(d.id, d.data()));
     },
 
     async createTournament(
         name: string,
         memberIds: string[],
         createdBy?: string,
-        inviteIds: string[] = []
+        inviteIds: string[] = [],
+        activityType: TournamentActivityType = 'euchre'
     ): Promise<Tournament> {
+        connectFirebaseEmulators();
         const id = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
         const validation = validateTournamentMemberIds(id, id, memberIds);
         if (!validation.ok) {
@@ -77,12 +88,13 @@ export const tournamentService = {
             createdAt: Timestamp.now(),
             updatedAt: Timestamp.now(),
             status: 'draft',
+            activityType,
             createdBy: createdBy ?? null,
             visibility: 'private',
             inviteIds: pendingInvites,
             schemaVersion: 1,
         };
-        await setDoc(doc(db, 'tournaments', id), payload);
+        await setDoc(doc(getDb(), 'tournaments', id), payload);
         return {
             id,
             tournamentId: id,
@@ -91,6 +103,7 @@ export const tournamentService = {
             createdAt: new Date(),
             updatedAt: new Date(),
             status: 'draft',
+            activityType,
             createdBy: createdBy ?? null,
             visibility: 'private',
             inviteIds: pendingInvites,
@@ -99,50 +112,40 @@ export const tournamentService = {
     },
 
     async startTournament(id: string): Promise<void> {
-        await updateDoc(doc(db, 'tournaments', id), {
+        await updateDoc(doc(getDb(), 'tournaments', id), {
             status: 'active',
             updatedAt: Timestamp.now(),
         });
     },
 
     async inviteUser(tournamentId: string, uid: string): Promise<void> {
-        const t = await this.getTournament(tournamentId);
-        if (!t) throw new Error('Tournament not found');
-        assertTournamentAcceptsInvites(t.id, t.tournamentId);
-        if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
-            throw new Error('This tournament is limited to the original Core Four members.');
-        }
+        const t = await assertJoinable(tournamentId, uid, 'This tournament is limited to the original Core Four members.');
         if (t.memberIds.includes(uid)) {
             throw new Error('Player is already a member');
         }
-        if ((t.status || 'active') === 'active') {
-            throw new Error('Cannot invite after tournament is started');
+        if (isRosterLocked(t.id, t.tournamentId)) {
+            throw new Error('This tournament roster is locked.');
         }
-        await updateDoc(doc(db, 'tournaments', tournamentId), {
+        await updateDoc(doc(getDb(), 'tournaments', tournamentId), {
             inviteIds: arrayUnion(uid),
             updatedAt: Timestamp.now(),
         });
     },
 
     async declineInvite(tournamentId: string, uid: string): Promise<void> {
-        await updateDoc(doc(db, 'tournaments', tournamentId), {
+        await updateDoc(doc(getDb(), 'tournaments', tournamentId), {
             inviteIds: arrayRemove(uid),
             updatedAt: Timestamp.now(),
         });
     },
 
     async addMember(tournamentId: string, uid: string): Promise<void> {
-        const t = await this.getTournament(tournamentId);
-        if (!t) throw new Error('Tournament not found');
-        assertTournamentAcceptsInvites(t.id, t.tournamentId);
-        if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
-            throw new Error('This tournament is limited to the original Core Four members.');
-        }
-        if ((t.status || 'active') === 'active') {
-            throw new Error('Cannot add members after tournament is started');
+        const t = await assertJoinable(tournamentId, uid, 'This tournament is limited to the original Core Four members.');
+        if (isRosterLocked(t.id, t.tournamentId)) {
+            throw new Error('This tournament roster is locked.');
         }
         if (t.memberIds.includes(uid)) return;
-        await updateDoc(doc(db, 'tournaments', tournamentId), {
+        await updateDoc(doc(getDb(), 'tournaments', tournamentId), {
             memberIds: arrayUnion(uid),
             inviteIds: arrayRemove(uid),
             updatedAt: Timestamp.now(),
@@ -150,19 +153,14 @@ export const tournamentService = {
     },
 
     async acceptInvite(tournamentId: string, uid: string): Promise<void> {
-        const t = await this.getTournament(tournamentId);
-        if (!t) throw new Error('Tournament not found');
-        assertTournamentAcceptsInvites(t.id, t.tournamentId);
-        if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
-            throw new Error('This tournament is limited to the original Core Four members.');
-        }
-        if ((t.status || 'active') === 'active') {
-            throw new Error('Cannot add members after tournament is started');
+        const t = await assertJoinable(tournamentId, uid, 'This tournament is limited to the original Core Four members.');
+        if (isRosterLocked(t.id, t.tournamentId)) {
+            throw new Error('This tournament roster is locked.');
         }
         if (!t.inviteIds?.includes(uid)) {
             throw new Error('No pending invite for this tournament');
         }
-        await updateDoc(doc(db, 'tournaments', tournamentId), {
+        await updateDoc(doc(getDb(), 'tournaments', tournamentId), {
             memberIds: arrayUnion(uid),
             inviteIds: arrayRemove(uid),
             updatedAt: Timestamp.now(),
@@ -177,15 +175,10 @@ export const tournamentService = {
         tournamentId: string,
         uid: string
     ): Promise<'joined' | 'already_member'> {
-        const t = await this.getTournament(tournamentId);
-        if (!t) throw new Error('Tournament not found');
-        assertTournamentAcceptsInvites(t.id, t.tournamentId);
-        if (!canAddMemberToTournament(t.id, t.tournamentId, uid)) {
-            throw new Error('This tournament is not open for new members.');
-        }
+        const t = await assertJoinable(tournamentId, uid, 'This tournament is not open for new members.');
         if (t.memberIds.includes(uid)) return 'already_member';
-        if ((t.status || 'active') === 'active') {
-            throw new Error('This tournament has already started — roster is locked.');
+        if (isRosterLocked(t.id, t.tournamentId)) {
+            throw new Error('This tournament roster is locked.');
         }
         if (t.inviteIds?.includes(uid)) {
             await this.acceptInvite(tournamentId, uid);
