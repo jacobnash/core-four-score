@@ -49,6 +49,9 @@ emulator-data/
 # typescript
 *.tsbuildinfo
 
+# test coverage output
+coverage/
+
 # generated native folders
 /ios
 /android
