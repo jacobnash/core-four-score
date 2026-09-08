@@ -67,10 +67,6 @@ function resolveRuleTournamentId(rule) {
     return (rule.tournamentId && String(rule.tournamentId).trim()) || CORE_FOUR_TOURNAMENT_ID;
 }
 
-function tournamentDocIds(t) {
-    return new Set([t.id, t.tournamentId].filter(Boolean));
-}
-
 function audit(data) {
     const { users, tournaments, games, renegs, rules } = data;
     const errors = [];

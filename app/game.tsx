@@ -51,7 +51,6 @@ export default function GameScreen() {
 
         setSaving(true);
         let newGameId: string | null = null;
-        let newRenegId: string | null = null;
 
         try {
             const team1IsWinner = winnerTeam === 'team1';
@@ -103,7 +102,7 @@ export default function GameScreen() {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.content}>
                 <View style={styles.card}>
-                    <Text style={[styles.titleMd, styles.centerText]}>Today's Matchup</Text>
+                    <Text style={[styles.titleMd, styles.centerText]}>Today&apos;s Matchup</Text>
 
                     <View style={[styles.team, styles.teamPrimary, styles.centeredTeam]}>
                         <Text style={[styles.teamTitle, styles.centerText]}>{team1Names}</Text>

@@ -1,8 +1,6 @@
-jest.mock('../services/firebase', () => ({ db: {} }));
+jest.mock('../services/firebase', () => ({ getDb: () => ({}) }));
 
 describe('renegService edge cases', () => {
-    const mockDocs = (items: any[]) => ({ docs: items.map((it, idx) => ({ id: `r${idx}`, data: () => it })), });
-
     beforeEach(() => {
         jest.resetModules();
     });

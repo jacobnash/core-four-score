@@ -15,10 +15,13 @@ const NativeZoomVoronoiContainer = createContainer('zoom', 'voronoi');
 function getZoomVoronoiContainerClass() {
     if (Platform.OS !== 'web') return NativeZoomVoronoiContainer;
 
+    // Web-only bundles: kept as require() so native builds never pull these in.
+    /* eslint-disable @typescript-eslint/no-require-imports */
     const { makeCreateContainerFunction } = require('victory-create-container') as typeof import('victory-create-container');
     const { zoomContainerMixin } = require('victory-zoom-container') as typeof import('victory-zoom-container');
     const { voronoiContainerMixin } = require('victory-voronoi-container') as typeof import('victory-voronoi-container');
     const { VictoryContainer } = require('victory-native') as typeof import('victory-native');
+    /* eslint-enable @typescript-eslint/no-require-imports */
 
     return makeCreateContainerFunction(
         { zoom: [zoomContainerMixin], voronoi: [voronoiContainerMixin] },

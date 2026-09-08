@@ -12,12 +12,13 @@ import {
     setPersistence,
     signInWithEmailAndPassword,
     signInWithPopup,
-    signInWithRedirect
+    signInWithRedirect,
+    signInWithCustomToken,
 } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { DEV_AUTH_PASSWORD, USE_FIREBASE_EMULATOR } from '../constants/devConfig';
-import { auth } from '../services/firebase';
+import { DEV_AUTH_PASSWORD, DEV_AUTH_HELPER_URL, DEV_PLAYERS, MOCK_DEV_PLAYERS, USE_FIREBASE_EMULATOR } from '../constants/devConfig';
+import { connectFirebaseEmulators, getAuthInstance } from '../services/firebase';
 import { userService } from '../services/firestore';
 import { User } from '../types';
 
@@ -43,12 +44,16 @@ export const useAuth = () => {
     return context;
 };
 
+const KNOWN_DEV_BY_UID = Object.fromEntries(
+    [...DEV_PLAYERS, ...MOCK_DEV_PLAYERS].map(p => [p.uid, p])
+);
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
     // Google Auth for mobile (Expo)
-    const [request, response, promptAsync] = Google.useAuthRequest({
+    const [, response, promptAsync] = Google.useAuthRequest({
         webClientId: '605611128312-pklemnjv3thmsmqv3kurcgv51t4ufd23.apps.googleusercontent.com',
         iosClientId: 'YOUR_IOS_CLIENT_ID',
         androidClientId: 'YOUR_ANDROID_CLIENT_ID',
@@ -64,7 +69,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen to auth state changes
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        connectFirebaseEmulators();
+        const unsubscribe = onAuthStateChanged(getAuthInstance(), async (firebaseUser) => {
             if (firebaseUser) {
                 await handleFirebaseUser(firebaseUser);
             } else {
@@ -81,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (Platform.OS === 'web') {
             (async () => {
                 try {
-                    const cred = await getRedirectResult(auth);
+                    const cred = await getRedirectResult(getAuthInstance());
                     if (cred?.user) {
                         await handleFirebaseUser(cred.user);
                     }
@@ -93,18 +99,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, []);
 
-    const handleFirebaseUser = async (firebaseUser: FirebaseUser) => {
-        // Check if user exists in Firestore
-        let userData = await userService.getUser(firebaseUser.uid);
+    const handleFirebaseUser = async (
+        firebaseUser: FirebaseUser,
+        devHint?: { email: string; displayName: string }
+    ) => {
+        connectFirebaseEmulators();
+        let userData: User | null = null;
 
-        // If not, create the user
-        if (!userData && firebaseUser.email && firebaseUser.displayName) {
-            userData = await userService.createUser(
-                firebaseUser.uid,
-                firebaseUser.displayName,
-                firebaseUser.email,
-                firebaseUser.photoURL || undefined
-            );
+        try {
+            userData = await userService.getUser(firebaseUser.uid);
+
+            if (!userData && firebaseUser.email && firebaseUser.displayName) {
+                userData = await userService.createUser(
+                    firebaseUser.uid,
+                    firebaseUser.displayName,
+                    firebaseUser.email,
+                    firebaseUser.photoURL || undefined
+                );
+            }
+
+            if (!userData && USE_FIREBASE_EMULATOR) {
+                const known =
+                    KNOWN_DEV_BY_UID[firebaseUser.uid] ??
+                    (devHint
+                        ? {
+                              uid: firebaseUser.uid,
+                              displayName: devHint.displayName,
+                              email: devHint.email,
+                          }
+                        : null);
+                if (known) {
+                    userData = await userService.createUser(
+                        known.uid,
+                        known.displayName,
+                        known.email
+                    );
+                }
+            }
+        } catch (err: unknown) {
+            const code = (err as { code?: string })?.code;
+            console.error('Failed to load Firestore profile for', firebaseUser.uid, err);
+            if (code === 'permission-denied') {
+                throw new Error(
+                    USE_FIREBASE_EMULATOR
+                        ? 'Firestore permission denied — hard refresh (Cmd+Shift+R) and ensure emulators are running (npm run dev:local).'
+                        : 'Firestore permission denied — this account may not exist in production yet.'
+                );
+            }
+            throw err;
+        }
+
+        if (!userData) {
+            console.warn('Signed in but no Firestore profile for', firebaseUser.uid);
         }
 
         setUser(userData);
@@ -121,24 +167,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (Platform.OS === 'web') {
                 // Web: configure persistence, then try popup with graceful fallbacks
                 try {
-                    await setPersistence(auth, browserLocalPersistence);
+                    await setPersistence(getAuthInstance(), browserLocalPersistence);
                 } catch {
                     try {
-                        await setPersistence(auth, browserSessionPersistence);
+                        await setPersistence(getAuthInstance(), browserSessionPersistence);
                     } catch {
-                        await setPersistence(auth, inMemoryPersistence);
+                        await setPersistence(getAuthInstance(), inMemoryPersistence);
                     }
                 }
                 const provider = new GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
                 try {
-                    const result = await signInWithPopup(auth, provider);
+                    const result = await signInWithPopup(getAuthInstance(), provider);
                     await handleFirebaseUser(result.user);
                 } catch (err: any) {
                     // If popup is blocked or storage unsupported, fallback to redirect
                     const code = err?.code as string | undefined;
                     if (code === 'auth/popup-blocked' || code === 'auth/web-storage-unsupported' || code === 'auth/operation-not-supported-in-this-environment') {
-                        await signInWithRedirect(auth, provider);
+                        await signInWithRedirect(getAuthInstance(), provider);
                         return;
                     }
                     throw err;
@@ -157,13 +203,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!USE_FIREBASE_EMULATOR) {
             throw new Error('Dev sign-in is only available with the Firebase Emulator');
         }
-        const result = await signInWithEmailAndPassword(auth, email, DEV_AUTH_PASSWORD);
-        await handleFirebaseUser(result.user);
+        connectFirebaseEmulators();
+
+        const normalizedEmail = email.trim().toLowerCase();
+
+        try {
+            const result = await signInWithEmailAndPassword(getAuthInstance(), normalizedEmail, DEV_AUTH_PASSWORD);
+            await handleFirebaseUser(result.user);
+            return;
+        } catch (err: unknown) {
+            const code = (err as { code?: string })?.code;
+            if (code !== 'auth/user-not-found' && code !== 'auth/invalid-credential') {
+                throw err;
+            }
+        }
+
+        // Admin-seeded emulator users need a custom token (email/password index is unreliable).
+        let tokenResponse: Response;
+        try {
+            tokenResponse = await fetch(
+                `${DEV_AUTH_HELPER_URL}/dev-token?email=${encodeURIComponent(normalizedEmail)}`
+            );
+        } catch {
+            throw new Error(
+                'Dev auth helper is not running. Start it with: node scripts/dev/dev-auth-server.js (or npm run dev:local)'
+            );
+        }
+
+        if (!tokenResponse.ok) {
+            throw new Error(
+                'Dev account not found. Run npm run dev:seed with emulators running, then try again.'
+            );
+        }
+
+        const { token, displayName } = (await tokenResponse.json()) as {
+            token: string;
+            displayName?: string;
+            uid?: string;
+            email?: string;
+        };
+        const result = await signInWithCustomToken(getAuthInstance(), token);
+        await handleFirebaseUser(result.user, {
+            email: normalizedEmail,
+            displayName: displayName || normalizedEmail.split('@')[0],
+        });
     };
 
     const signOut = async () => {
         try {
-            await firebaseSignOut(auth);
+            await firebaseSignOut(getAuthInstance());
             setUser(null);
         } catch (error) {
             console.error('Error signing out:', error);

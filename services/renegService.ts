@@ -10,11 +10,11 @@ import {
     where
 } from 'firebase/firestore';
 import { Reneg } from '../types';
-import { db } from './firebase';
+import { getDb } from './firebase';
 
 export const renegService = {
     async createReneg(reneg: Omit<Reneg, 'id'>): Promise<string> {
-        const renegRef = doc(collection(db, 'renegs'));
+        const renegRef = doc(collection(getDb(), 'renegs'));
 
         await setDoc(renegRef, {
             playerId: reneg.playerId,
@@ -36,14 +36,14 @@ export const renegService = {
 
     async getRenegs(maxResults: number = 1000): Promise<Reneg[]> {
         let q = query(
-            collection(db, 'renegs'),
+            collection(getDb(), 'renegs'),
             orderBy('timestamp', 'desc')
         );
 
         // Apply limit if specified (0 means no limit)
         if (maxResults > 0) {
             q = query(
-                collection(db, 'renegs'),
+                collection(getDb(), 'renegs'),
                 orderBy('timestamp', 'desc'),
                 limit(maxResults)
             );
@@ -64,7 +64,7 @@ export const renegService = {
         try {
             // First try: simple where query without orderBy (doesn't need composite index)
             const q = query(
-                collection(db, 'renegs'),
+                collection(getDb(), 'renegs'),
                 where('playerId', '==', playerId)
             );
 
@@ -93,7 +93,7 @@ export const renegService = {
                 if (m && m[0]) {
                     console.warn('Create the recommended composite index here:', m[0]);
                 }
-            } catch (extractErr) {
+            } catch {
                 // ignore
             }
 
@@ -106,8 +106,8 @@ export const renegService = {
     async getRenegsByTournament(tournamentId: string, max: number = 200): Promise<Reneg[]> {
         const base = [where('tournamentId', '==', tournamentId), orderBy('timestamp', 'desc')];
         const q = max > 0
-            ? query(collection(db, 'renegs'), ...base, limit(max))
-            : query(collection(db, 'renegs'), ...base);
+            ? query(collection(getDb(), 'renegs'), ...base, limit(max))
+            : query(collection(getDb(), 'renegs'), ...base);
 
         try {
             const snapshot = await getDocs(q);

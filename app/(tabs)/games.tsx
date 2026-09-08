@@ -65,6 +65,8 @@ export default function GamesScreen() {
         if (user && TOURNAMENT_ID) {
             loadData();
         }
+        // loadData isn't memoized; including it here would re-run this on every render.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, TOURNAMENT_ID]);
 
     if (authLoading) {

@@ -2,14 +2,20 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../components/Button';
-import { InviteLinkButton } from '../../components/InviteLinkButton';
+import { TournamentInvitePanel } from '../../components/TournamentInvitePanel';
 import { LeaderboardCard } from '../../components/LeaderboardCard';
-import { ENABLE_IMPROVED_DATA_VIEWS } from '../../constants/featureFlags';
+import { ENABLE_CLAYS_SCORING, ENABLE_IMPROVED_DATA_VIEWS } from '../../constants/featureFlags';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
-import { leaderboardService, tournamentService } from '../../services/firestore';
-import { Tournament, User } from '../../types';
+import { claysLeaderboardService, leaderboardService, tournamentService } from '../../services/firestore';
+import { ClaysMemberStats, Tournament, User } from '../../types';
+import { CLAYS_ROLLING_MONTHS } from '../../utils/claysScoring';
 import { isLegacyCoreFourTournament } from '../../utils/tournamentMembership';
+import {
+    getTournamentHomeRoute,
+    isClaysTournament,
+    TOURNAMENT_ACTIVITY_LABELS,
+} from '../../utils/tournamentNavigation';
 import { canUserAccessTournament, isTournamentMember } from '../../utils/tournamentVisibility';
 
 export default function TournamentDetail() {
@@ -20,6 +26,7 @@ export default function TournamentDetail() {
   const [players, setPlayers] = useState<User[]>([]);
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [claysLeaderboard, setClaysLeaderboard] = useState<ClaysMemberStats[]>([]);
 
   const reload = async () => {
     if (!id) return;
@@ -29,6 +36,12 @@ export default function TournamentDetail() {
     setPlayers(members);
     const lb = await leaderboardService.getLeaderboard(id as string);
     setLeaderboard(lb);
+    if (ENABLE_CLAYS_SCORING && t && !isLegacyCoreFourTournament(t.id, t.tournamentId)) {
+      const claysLb = await claysLeaderboardService.getClaysLeaderboard(id as string);
+      setClaysLeaderboard(claysLb);
+    } else {
+      setClaysLeaderboard([]);
+    }
   };
 
   useEffect(() => {
@@ -57,13 +70,18 @@ export default function TournamentDetail() {
         setLoading(false);
       }
     })();
+    // Deliberately keyed on user?.uid (not `user`) and excludes reload/setActiveTournamentById
+    // (unmemoized) to avoid re-running this on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, user?.uid]);
 
   const isMember = !!(user && tournament && isTournamentMember(tournament, user.uid));
   const hasAccess = isMember;
   const isDraft = tournament?.status !== 'active';
   const isCoreFourLocked = isLegacyCoreFourTournament(tournament?.id, tournament?.tournamentId);
-  const canShareLink = isMember && isDraft && !isCoreFourLocked;
+  const canShareLink = isMember && !isCoreFourLocked;
+  const isClays = isClaysTournament(tournament);
+  const showClays = ENABLE_CLAYS_SCORING && isClays && !isCoreFourLocked;
 
   if (loading) {
     return (
@@ -104,20 +122,18 @@ export default function TournamentDetail() {
         <Text style={styles.titleLg}>{tournament.name}</Text>
         <Text style={styles.mutedSmall}>
           {players.length} players
-          {isCoreFourLocked ? ' · Core Four exclusive' : ''}
-          {tournament.status === 'active' ? ' · roster locked' : ' · draft'}
+          · {TOURNAMENT_ACTIVITY_LABELS[tournament.activityType === 'clays' ? 'clays' : 'euchre']}
+          {isCoreFourLocked ? ' · Core Four exclusive' : ' · open roster'}
+          {isDraft ? ' · draft' : ' · active'}
         </Text>
 
         {canShareLink && (
-          <View style={styles.linkBox}>
-            <Text style={{ fontWeight: '700' }}>Share link to invite players</Text>
-            <InviteLinkButton
-              tournamentId={String(id)}
-              tournamentName={tournament.name}
-              variant="primary"
-              showUrl
-            />
-          </View>
+          <TournamentInvitePanel
+            tournamentId={String(id)}
+            tournamentName={tournament.name}
+            memberIds={tournament.memberIds}
+            onMemberAdded={reload}
+          />
         )}
 
         {isCoreFourLocked && (
@@ -135,7 +151,7 @@ export default function TournamentDetail() {
                 try {
                   await tournamentService.startTournament(String(id));
                   await reload();
-                  Alert.alert('Tournament started', 'Roster is locked. Share the link before starting next time.');
+                  Alert.alert('Tournament started', 'You can still add shooters anytime via link or email.');
                 } catch (err) {
                   console.error('Failed to start tournament', err);
                   Alert.alert('Error', 'Failed to start tournament');
@@ -145,16 +161,43 @@ export default function TournamentDetail() {
             <View style={{ height: 8 }} />
           </>
         ) : null}
-        <Button
-          title="Start Game"
-          onPress={() => {
-            router.push({
-              pathname: '/matchup',
-              params: { tournamentId: String(tournament.id || id) },
-            });
-          }}
-          variant="primary"
-        />
+        {!isClays && (
+          <Button
+            title="Start Game"
+            onPress={() => {
+              router.push({
+                pathname: '/matchup',
+                params: { tournamentId: String(tournament.id || id) },
+              });
+            }}
+            variant="primary"
+          />
+        )}
+        {showClays && (
+          <>
+            <View style={{ height: isClays ? 0 : 8 }} />
+            <Button
+              title={isClays ? 'Open clays scoring' : 'Score clays'}
+              variant={isClays ? 'primary' : undefined}
+              onPress={async () => {
+                await setActiveTournamentById(String(id));
+                router.push(getTournamentHomeRoute(tournament));
+              }}
+            />
+          </>
+        )}
+        {!isClays && !isCoreFourLocked && (
+          <>
+            <View style={{ height: 8 }} />
+            <Button
+              title="Open tournament home"
+              onPress={async () => {
+                await setActiveTournamentById(String(id));
+                router.push(getTournamentHomeRoute(tournament));
+              }}
+            />
+          </>
+        )}
         <View style={{ height: 12 }} />
         <Button title="Back to Tournaments" onPress={() => router.push('/(tabs)/tournaments')} />
 
@@ -180,6 +223,27 @@ export default function TournamentDetail() {
             />
           ))
         )}
+
+        {showClays && (
+          <>
+            <View style={{ height: 12 }} />
+            <Text style={{ fontWeight: '700' }}>Clays (last {CLAYS_ROLLING_MONTHS} months)</Text>
+            {claysLeaderboard.length === 0 ? (
+              <Text style={styles.mutedSmall}>No clays scores yet.</Text>
+            ) : (
+              claysLeaderboard.map((entry, idx) => (
+                <View key={entry.userId} style={styles.claysRow}>
+                  <Text style={styles.mutedSmall}>
+                    {idx + 1}. {entry.displayName}
+                  </Text>
+                  <Text style={styles.claysPct}>
+                    {entry.percentage != null ? `${entry.percentage}%` : '—'} ({entry.hits}/{entry.possible})
+                  </Text>
+                </View>
+              ))
+            )}
+          </>
+        )}
       </View>
     </View>
   );
@@ -198,5 +262,7 @@ const styles = StyleSheet.create({
   },
   titleLg: { fontSize: 20, fontWeight: '800' },
   mutedSmall: { color: '#999', fontSize: 12 },
+  claysRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
+  claysPct: { fontWeight: '700', color: '#013220', fontSize: 12 },
   centered: { alignItems: 'center', justifyContent: 'center' },
 });

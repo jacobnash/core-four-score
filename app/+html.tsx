@@ -13,7 +13,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="apple-mobile-web-app-title" content="Ope'land" />
         <meta name="application-name" content="Ope'land" />
-        <title>Ope'land</title>
+        <title>Ope&apos;land</title>
 
         {/* 
           Disable body scrolling on web. This makes ScrollView components work closer to how they do on native. 

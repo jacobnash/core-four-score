@@ -72,7 +72,7 @@ function RootLayoutNav() {
         router.replace('/(auth)/login');
       }
     }
-  }, [user, loading, segments]);
+  }, [user, loading, segments, router]);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -84,6 +84,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="join/[id]" options={{ title: 'Join Tournament', headerShown: true }} />
         <Stack.Screen name="tournament/[id]" options={{ title: 'Tournament' }} />
+        <Stack.Screen name="profile" options={{ title: 'Profile', headerShown: true }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>

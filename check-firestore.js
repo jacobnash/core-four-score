@@ -4,7 +4,7 @@
  */
 
 const { initializeApp } = require('firebase/app');
-const { getFirestore, enableNetwork, connectFirestoreEmulator } = require('firebase/firestore');
+const { getFirestore } = require('firebase/firestore');
 
 const firebaseConfig = {
     apiKey: "AIzaSyA2hN4pECNQfFEkXXjMHBSd1vwZ1ZCxvlY",
@@ -19,7 +19,7 @@ console.log('=== FIRESTORE CONNECTION TEST ===\n');
 
 try {
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    getFirestore(app);
 
     console.log('✓ Firebase initialized');
     console.log('✓ Firestore instance created');

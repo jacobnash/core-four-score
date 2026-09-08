@@ -4,6 +4,7 @@ import { Alert } from 'react-native';
 import { tournamentService, userService } from '../services/firestore';
 import { Tournament } from '../types';
 import { partitionTournamentsForUser } from '../utils/tournamentVisibility';
+import { getTournamentHomeRoute } from '../utils/tournamentNavigation';
 import { resolveAutoSelectTournament } from '../utils/tournamentSelection';
 import { useAuth } from './AuthContext';
 
@@ -19,6 +20,8 @@ interface TournamentContextType {
     activeTournament: Tournament | null;
     loadTournaments: () => Promise<void>;
     setActiveTournamentById: (id: string) => Promise<void>;
+    /** Select a tournament already loaded (e.g. right after create). */
+    activateTournament: (tournament: Tournament, options?: { navigate?: boolean }) => Promise<void>;
 }
 
 const TournamentContext = createContext<TournamentContextType | undefined>(undefined);
@@ -78,7 +81,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             if (!startupNavHandledRef.current) {
                 startupNavHandledRef.current = true;
                 if (selected) {
-                    router.replace('/');
+                    router.replace(getTournamentHomeRoute(selected));
                 } else if (memberTournaments.length !== 1) {
                     router.replace('/(tabs)/tournaments');
                 }
@@ -91,6 +94,22 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
     };
 
+    const activateTournament = async (t: Tournament, options?: { navigate?: boolean }) => {
+        setActiveTournament(t);
+        activeTournamentRef.current = t;
+        if (user?.uid) {
+            try {
+                await userService.setPreferredTournament(user.uid, t.id);
+                await userService.setLastActiveTournament(user.uid, t.id);
+            } catch (persistErr) {
+                console.warn('Failed to persist preferred/last active tournament', persistErr);
+            }
+        }
+        if (options?.navigate !== false) {
+            router.replace(getTournamentHomeRoute(t));
+        }
+    };
+
     const setActiveTournamentById = async (id: string) => {
         try {
             const t = await tournamentService.getTournament(id);
@@ -99,17 +118,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 Alert.alert('Access denied', 'You are not a member of that tournament');
                 return;
             }
-            setActiveTournament(t);
-            activeTournamentRef.current = t;
-            if (user?.uid) {
-                try {
-                    await userService.setPreferredTournament(user.uid, t.id);
-                    await userService.setLastActiveTournament(user.uid, t.id);
-                } catch (persistErr) {
-                    console.warn('Failed to persist preferred/last active tournament', persistErr);
-                }
-            }
-            router.replace('/');
+            await activateTournament(t);
         } catch (err) {
             console.error('Failed to set active tournament', err);
             Alert.alert('Error', 'Failed to select tournament');
@@ -128,6 +137,9 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             startupNavHandledRef.current = false;
             setFetchState('idle');
         }
+        // Deliberately keyed on user?.uid (not `user`) and excludes the unmemoized
+        // loadTournaments to avoid re-running this on every context re-render.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.uid]);
 
     return (
@@ -140,6 +152,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 activeTournament,
                 loadTournaments,
                 setActiveTournamentById,
+                activateTournament,
             }}
         >
             {children}

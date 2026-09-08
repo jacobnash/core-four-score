@@ -10,11 +10,11 @@ import {
     where
 } from 'firebase/firestore';
 import { Game } from '../types';
-import { db } from './firebase';
+import { getDb } from './firebase';
 
 export const gameService = {
     async createGame(game: Omit<Game, 'id'>): Promise<string> {
-        const gameRef = doc(collection(db, 'games'));
+        const gameRef = doc(collection(getDb(), 'games'));
 
         await setDoc(gameRef, {
             timestamp: Timestamp.fromDate(game.timestamp),
@@ -40,8 +40,8 @@ export const gameService = {
         const baseQuery = [where('tournamentId', '==', tournamentId), orderBy('timestamp', 'desc')];
 
         const q = max > 0
-            ? query(collection(db, 'games'), ...baseQuery, limit(max))
-            : query(collection(db, 'games'), ...baseQuery);
+            ? query(collection(getDb(), 'games'), ...baseQuery, limit(max))
+            : query(collection(getDb(), 'games'), ...baseQuery);
 
         const snapshot = await getDocs(q);
         return snapshot.docs.map(doc => {
@@ -62,8 +62,8 @@ export const gameService = {
         const baseQuery = [orderBy('timestamp', 'desc')];
 
         const q = max > 0
-            ? query(collection(db, 'games'), ...baseQuery, limit(max))
-            : query(collection(db, 'games'), ...baseQuery);
+            ? query(collection(getDb(), 'games'), ...baseQuery, limit(max))
+            : query(collection(getDb(), 'games'), ...baseQuery);
 
         const snapshot = await getDocs(q);
         return snapshot.docs.map(doc => {
@@ -114,7 +114,7 @@ export const gameService = {
                 if (m && m[0]) {
                     console.warn('Create the recommended composite index here:', m[0]);
                 }
-            } catch (extractErr) {
+            } catch {
                 // ignore
             }
             // Re-throw so caller can decide how to handle it (we removed the heavy client-side fallback now the index exists)

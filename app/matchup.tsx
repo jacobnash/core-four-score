@@ -90,7 +90,7 @@ export default function MatchupScreen() {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.content}>
                 <View style={styles.card}>
-                    <Text style={styles.title}>Today's Matchup</Text>
+                    <Text style={styles.title}>Today&apos;s Matchup</Text>
                     <Text style={styles.subtitle}>
                         Pull the lever — the slots spin a few times, then lock in your teams.
                     </Text>

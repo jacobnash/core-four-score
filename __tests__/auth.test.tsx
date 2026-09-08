@@ -4,15 +4,19 @@ import { AuthProvider, useAuth } from '../contexts/AuthContext';
 
 // Mock Firebase
 jest.mock('../services/firebase', () => ({
-    auth: {
+    getAuthInstance: () => ({
         currentUser: null,
-    },
-    db: {},
+    }),
+    getDb: () => ({}),
+    connectFirebaseEmulators: jest.fn(),
+    isFirebaseEmulatorConnected: () => true,
 }));
 
 jest.mock('firebase/auth', () => ({
     GoogleAuthProvider: jest.fn(),
     signInWithPopup: jest.fn(),
+    signInWithEmailAndPassword: jest.fn(),
+    signInWithCustomToken: jest.fn(),
     signOut: jest.fn(),
     onAuthStateChanged: jest.fn((auth, callback) => {
         // Simulate no user initially
@@ -43,6 +47,8 @@ jest.mock('../services/firestore', () => ({
 describe('Authentication Flow', () => {
     it('should start with loading state', () => {
         const TestComponent = () => {
+            // Destructuring alone verifies these fields exist without throwing.
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { loading, user } = useAuth();
             return null;
         };
@@ -83,9 +89,9 @@ describe('Authentication Flow', () => {
 });
 
 describe('Firebase Configuration', () => {
-    it('should have valid Firebase config', () => {
+    it('should export client firebase helpers', () => {
         const firebase = require('../services/firebase');
-        expect(firebase.auth).toBeDefined();
-        expect(firebase.db).toBeDefined();
+        expect(firebase.getAuthInstance).toBeDefined();
+        expect(firebase.getDb).toBeDefined();
     });
 });

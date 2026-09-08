@@ -50,10 +50,8 @@ async function clearData() {
         console.log('Clearing tournaments...');
         const tournamentSnapshot = await db.collection('tournaments').get();
         console.log(`Found ${tournamentSnapshot.size} tournaments to delete`);
-        let deletedTournaments = 0;
         for (const doc of tournamentSnapshot.docs) {
             await doc.ref.delete();
-            deletedTournaments++;
         }
         console.log(`✓ Deleted ${tournamentSnapshot.size} tournaments\n`);
 

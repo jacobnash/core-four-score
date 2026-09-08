@@ -344,6 +344,7 @@ async function importData() {
         console.log(`\n=== IMPORT SUMMARY ===`);
         console.log(`Imported: ${importCount}${DRY_RUN ? ' (dry-run: not written)' : ''}`);
         console.log(`Invalid/skipped: ${invalidCount}`);
+        if (DRY_RUN) console.log(`Would-be-written (dry-run): ${skippedCount}`);
         console.log(`Profiles: ${Object.keys(players).length} ${SKIP_USER_STATS ? '(stats skipped)' : ''}`);
         console.log('');
 

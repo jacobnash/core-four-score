@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useRedirectToTournamentsIfNeeded } from '../../hooks/useRedirectToTournamentsIfNeeded';
+import { useTournamentHomeRedirect } from '../../hooks/useTournamentHomeRedirect';
 import {
   ActivityIndicator,
   Alert,
@@ -21,7 +22,7 @@ import { LeaderboardEntry } from '../../types';
 import { webBoxShadow } from '../../utils/shadow';
 
 export default function HomeScreen() {
-  const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [showHeader, setShowHeader] = useState(true);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -29,6 +30,7 @@ export default function HomeScreen() {
 
   const { activeTournament, startupReady } = useTournament();
   useRedirectToTournamentsIfNeeded();
+  useTournamentHomeRedirect('tournament');
 
   const TOURNAMENT_ID = activeTournament?.id || '';
 
@@ -63,6 +65,8 @@ export default function HomeScreen() {
     return () => {
       if (t) clearTimeout(t);
     };
+    // loadLeaderboard isn't memoized; including it here would re-run this on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, TOURNAMENT_ID]);
 
   // Auth Loading State
@@ -118,7 +122,7 @@ export default function HomeScreen() {
             <View style={styles.headerRow}>
               <View style={styles.headerLeft}>
                 <Text style={styles.eyebrow}>Deer Camp Edition</Text>
-                <Text style={styles.titleLg}>🦌 Ope'Land</Text>
+                <Text style={styles.titleLg}>🃏 Tournament</Text>
                 <Text style={styles.welcome}>Welcome back, {user.displayName}!</Text>
               </View>
 
