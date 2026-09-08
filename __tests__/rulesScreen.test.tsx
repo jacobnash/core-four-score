@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react-native';
 import React from 'react';
-import RulesScreen from '../app/(tabs)/rules.tsx';
+import RulesScreen from '../app/(tabs)/rules';
 import { Tournament } from '../types';
 
 // Characterization tests for app/(tabs)/rules.tsx (complexity 27, was 0% covered).

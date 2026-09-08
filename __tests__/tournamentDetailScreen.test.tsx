@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react-native';
 import React from 'react';
-import TournamentDetail from '../app/tournament/[id].tsx';
+import TournamentDetail from '../app/tournament/[id]';
 import { Tournament } from '../types';
 
 // Characterization tests for app/tournament/[id].tsx, the highest-complexity (29),

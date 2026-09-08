@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react-native';
 import React from 'react';
-import ClaysScreen from '../app/(tabs)/clays.tsx';
+import ClaysScreen from '../app/(tabs)/clays';
 import { Tournament } from '../types';
 
 // Characterization tests for app/(tabs)/clays.tsx (complexity 34, was 0% covered).
