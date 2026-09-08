@@ -13,6 +13,7 @@ import { Button } from '../../components/Button';
 import { TournamentInvitePanel } from '../../components/TournamentInvitePanel';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
+import { useTournamentAccess } from '../../hooks/useTournamentAccess';
 import { useTournamentHomeRedirect } from '../../hooks/useTournamentHomeRedirect';
 import {
     claysLeaderboardService,
@@ -21,8 +22,6 @@ import {
     tournamentService,
 } from '../../services/firestore';
 import { ClayDiscipline, ClaysMatch, ClaysMemberStats, User } from '../../types';
-import { isLegacyCoreFourTournament } from '../../utils/tournamentMembership';
-import { isClaysTournament } from '../../utils/tournamentNavigation';
 import {
     aggregateClayTotals,
     birdsInPresentation,
@@ -45,8 +44,8 @@ export default function ClaysScreen() {
     const { activeTournament, startupReady } = useTournament();
     useTournamentHomeRedirect('clays');
     const tournamentId = activeTournament?.id || '';
-    const isCoreFour = isLegacyCoreFourTournament(activeTournament?.id, activeTournament?.tournamentId);
-    const isEuchreTournament = activeTournament && !isClaysTournament(activeTournament);
+    const { isCoreFourLocked: isCoreFour, isClays } = useTournamentAccess(activeTournament, user?.uid);
+    const isEuchreTournament = !!activeTournament && !isClays;
 
     const [shooters, setShooters] = useState<User[]>([]);
     const [presentIds, setPresentIds] = useState<Set<string>>(new Set());
