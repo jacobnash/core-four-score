@@ -6,13 +6,14 @@ import {
     View
 } from 'react-native';
 import { Button } from './Button';
+import { isFirebaseEmulatorConnected } from '../services/firebase';
 
 interface LoginCardProps {
   onSignIn: () => void;
   loading?: boolean;
   isEmulator?: boolean;
-  devPlayers?: Array<{ displayName: string; email: string }>;
-  mockDevPlayers?: Array<{ displayName: string; email: string }>;
+  devPlayers?: { displayName: string; email: string }[];
+  mockDevPlayers?: { displayName: string; email: string }[];
   onDevSignIn?: (email: string) => void;
 }
 
@@ -40,6 +41,13 @@ export function LoginCard({
               variant="primary"
               disabled={loading}
             />
+            {isEmulator && (
+              <Text style={styles.emulatorBadge}>
+                {isFirebaseEmulatorConnected()
+                  ? '🟢 Local emulator (Firestore + Auth)'
+                  : '🟡 Emulator mode — hard refresh if sign-in fails'}
+              </Text>
+            )}
             {isEmulator && onDevSignIn && (devPlayers.length > 0 || mockDevPlayers.length > 0) && (
               <>
                 <View style={{ height: 16 }} />
@@ -135,5 +143,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#013220',
     textAlign: 'center',
+  },
+  emulatorBadge: {
+    fontSize: 12,
+    color: '#013220',
+    textAlign: 'center',
+    marginTop: 4,
+    fontWeight: '600',
   },
 });

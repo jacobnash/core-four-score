@@ -70,6 +70,7 @@ const MOCK_TOURNAMENTS = [
         data: {
             tournamentId: 'lake-house-open',
             name: 'Lake House Open',
+            activityType: 'clays',
             memberIds: [m.morgan, m.casey, m.taylor, m.quinn],
             inviteIds: [jacob, cait, m.alex],
             status: 'draft',

@@ -1,7 +1,7 @@
 // Prevent services/firebase from importing the real firebase ESM during tests
-jest.mock('../services/firebase', () => ({ db: {} }));
-
 import { leaderboardService, userService } from '../services/firestore';
+
+jest.mock('../services/firebase', () => ({ getDb: () => ({}) }));
 
 // Mock the firebase/firestore functions
 jest.mock('firebase/firestore', () => {

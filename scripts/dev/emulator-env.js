@@ -4,8 +4,8 @@
  */
 
 const EMULATOR_HOST = process.env.EMULATOR_HOST || '127.0.0.1';
-const FIRESTORE_PORT = process.env.FIRESTORE_EMULATOR_PORT || '8080';
-const AUTH_PORT = process.env.AUTH_EMULATOR_PORT || '9099';
+const FIRESTORE_PORT = process.env.FIRESTORE_EMULATOR_PORT || '8088';
+const AUTH_PORT = process.env.AUTH_EMULATOR_PORT || '9098';
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'core-four-score';
 
 function configureEmulatorEnv() {

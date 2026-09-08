@@ -22,7 +22,7 @@ describe('tournamentInvite', () => {
 });
 
 describe('tournamentService.joinViaInviteLink', () => {
-    jest.mock('../services/firebase', () => ({ db: {} }));
+    jest.mock('../services/firebase', () => ({ getDb: () => ({}) }));
 
     jest.mock('firebase/firestore', () => ({
         collection: jest.fn(() => ({})),

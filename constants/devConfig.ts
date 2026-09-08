@@ -4,13 +4,24 @@
  */
 
 export const USE_FIREBASE_EMULATOR =
-    process.env.EXPO_PUBLIC_USE_FIREBASE_EMULATOR === 'true';
+    process.env.EXPO_PUBLIC_USE_FIREBASE_EMULATOR === 'true' ||
+    (typeof __DEV__ !== 'undefined' &&
+        __DEV__ &&
+        process.env.EXPO_PUBLIC_USE_FIREBASE_EMULATOR !== 'false') ||
+    (typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
 
 export const EMULATOR_HOST =
     process.env.EXPO_PUBLIC_EMULATOR_HOST || '127.0.0.1';
 
-export const FIRESTORE_EMULATOR_PORT = 8080;
-export const AUTH_EMULATOR_PORT = 9099;
+export const FIRESTORE_EMULATOR_PORT = 8088;
+export const AUTH_EMULATOR_PORT = 9098;
+
+/** Local helper for emulator dev sign-in (custom tokens). */
+export const DEV_AUTH_HELPER_PORT = 9199;
+export const DEV_AUTH_HELPER_URL =
+    process.env.EXPO_PUBLIC_DEV_AUTH_HELPER_URL ||
+    `http://${EMULATOR_HOST}:${DEV_AUTH_HELPER_PORT}`;
 
 /** Shared password for all seeded dev accounts (emulator only) */
 export const DEV_AUTH_PASSWORD = 'core-four-dev';

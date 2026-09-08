@@ -67,5 +67,13 @@ export function validateTournamentMemberIds(
     return { ok: true };
 }
 
+/** Core Four roster never grows; all other tournaments stay open for new shooters. */
+export function isRosterLocked(
+    tournamentId?: string | null,
+    tournamentDocId?: string | null
+): boolean {
+    return isLegacyCoreFourTournament(tournamentId, tournamentDocId);
+}
+
 /** Minimum players for a standard 4-seat euchre table. */
 export const MIN_EUCHRE_TOURNAMENT_PLAYERS = 4;

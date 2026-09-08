@@ -1,6 +1,6 @@
-jest.mock('../services/firebase', () => ({ db: {} }));
-
 import { gameService } from '../services/gameService';
+
+jest.mock('../services/firebase', () => ({ getDb: () => ({}) }));
 
 jest.mock('firebase/firestore', () => {
     // Simple mock with getDocs returning a set of games

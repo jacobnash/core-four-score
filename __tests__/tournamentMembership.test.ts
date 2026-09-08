@@ -7,7 +7,9 @@ import {
     validateTournamentMemberIds,
 } from '../utils/tournamentMembership';
 
-jest.mock('../services/firebase', () => ({ db: {} }));
+import { tournamentService } from '../services/tournamentService';
+
+jest.mock('../services/firebase', () => ({ getDb: () => ({}) }));
 
 jest.mock('firebase/firestore', () => ({
     collection: jest.fn(() => ({})),
@@ -20,8 +22,6 @@ jest.mock('firebase/firestore', () => ({
     arrayRemove: jest.fn((...args: unknown[]) => args),
     Timestamp: { now: () => ({}) },
 }));
-
-import { tournamentService } from '../services/tournamentService';
 
 describe('tournamentMembership', () => {
     it('detects the legacy Core Four tournament', () => {
@@ -102,6 +102,22 @@ describe('tournamentService membership guards', () => {
 
         const { updateDoc } = require('firebase/firestore');
         await tournamentService.inviteUser('camp-weekend-99', 'outsider-uid');
+        expect(updateDoc).toHaveBeenCalled();
+    });
+
+    it('allows adding members to active open tournaments', async () => {
+        const { getDoc, updateDoc } = require('firebase/firestore');
+        getDoc.mockResolvedValueOnce({
+            exists: () => true,
+            id: 'camp-weekend-active',
+            data: () => ({
+                name: 'Camp Weekend',
+                memberIds: [CORE_FOUR_MEMBER_IDS[0]],
+                inviteIds: [],
+                status: 'active',
+            }),
+        });
+        await tournamentService.addMember('camp-weekend-active', 'outsider-uid');
         expect(updateDoc).toHaveBeenCalled();
     });
 });

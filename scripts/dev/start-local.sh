@@ -6,6 +6,11 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 cleanup() {
+  if [[ -n "${AUTH_HELPER_PID:-}" ]] && kill -0 "$AUTH_HELPER_PID" 2>/dev/null; then
+    echo ""
+    echo "Stopping dev auth helper (pid $AUTH_HELPER_PID)..."
+    kill "$AUTH_HELPER_PID" 2>/dev/null || true
+  fi
   if [[ -n "${EMU_PID:-}" ]] && kill -0 "$EMU_PID" 2>/dev/null; then
     echo ""
     echo "Stopping Firebase Emulator (pid $EMU_PID)..."
@@ -33,6 +38,11 @@ sleep 6
 
 echo ""
 npm run dev:seed
+
+echo ""
+echo "Starting dev auth helper (custom tokens for seeded accounts)..."
+node ./scripts/dev/dev-auth-server.js &
+AUTH_HELPER_PID=$!
 
 echo ""
 echo "Starting Expo web (emulator mode)..."

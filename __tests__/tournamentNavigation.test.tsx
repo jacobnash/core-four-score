@@ -114,11 +114,11 @@ describe('resolveAutoSelectTournament startup scenarios', () => {
         updatedAt: new Date(),
     };
 
-    it('opens OpeLand for a single-tournament user', () => {
+    it('opens tournament home for a single-tournament user', () => {
         expect(resolveAutoSelectTournament([t1])).toEqual(t1);
     });
 
-    it('opens OpeLand when preferred tournament is set among many', () => {
+    it('opens tournament home when preferred tournament is set among many', () => {
         expect(resolveAutoSelectTournament([t1, t2], 't2')).toEqual(t2);
     });
 

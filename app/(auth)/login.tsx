@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Text, View } from 'react-native';
 import { LoginCard } from '../../components/LoginCard';
 import { DEV_PLAYERS, MOCK_DEV_PLAYERS } from '../../constants/devConfig';
 import { useAuth } from '../../contexts/AuthContext';
@@ -33,7 +33,14 @@ export default function LoginScreen() {
           isEmulator={isEmulator}
           devPlayers={isEmulator ? [...DEV_PLAYERS] : []}
           mockDevPlayers={isEmulator ? [...MOCK_DEV_PLAYERS] : []}
-          onDevSignIn={signInAsDevUser}
+          onDevSignIn={async (email) => {
+            try {
+              await signInAsDevUser(email);
+            } catch (err: unknown) {
+              const msg = err instanceof Error ? err.message : 'Sign-in failed';
+              Alert.alert('Dev sign-in failed', msg);
+            }
+          }}
         />
       )}
     </View>

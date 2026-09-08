@@ -14,7 +14,7 @@ export default function RenegListModal({ visible, userId, onClose }: Props) {
     const [loading, setLoading] = useState(false);
     const [displayName, setDisplayName] = useState<string>('');
     const [fallbackNote, setFallbackNote] = useState<string | null>(null);
-    const [recentSample, setRecentSample] = useState<Array<{ id: string; playerId: string; ts: Date }>>([]);
+    const [recentSample, setRecentSample] = useState<{ id: string; playerId: string; ts: Date }[]>([]);
 
     const dedupeRenegs = (items: Reneg[]) => {
         const seen = new Set<string>();

@@ -48,8 +48,7 @@ export default function JoinTournamentScreen() {
     }, [tournamentId]);
 
     const isMember = !!(user && tournament && isTournamentMember(tournament, user.uid));
-    const isDraft = tournament?.status !== 'active';
-    const canJoin = !!(user && tournament && isDraft && !isMember);
+    const canJoin = !!(user && tournament && !isMember);
 
     const handleJoin = async () => {
         if (!user || !tournamentId) return;
@@ -135,21 +134,6 @@ export default function JoinTournamentScreen() {
         );
     }
 
-    if (!isDraft) {
-        return (
-            <View style={styles.container}>
-                <View style={styles.card}>
-                    <Text style={styles.title}>{tournament.name}</Text>
-                    <Text style={styles.muted}>
-                        This tournament has already started — the roster is locked. Ask an organizer to invite you before start next time.
-                    </Text>
-                    <View style={{ height: 12 }} />
-                    <Button title="Go to Tournaments" onPress={() => router.replace('/(tabs)/tournaments')} />
-                </View>
-            </View>
-        );
-    }
-
     if (user && canUserAccessTournament(tournament, user.uid) && !isMember) {
         // Pending in-app invite — same join action
     }
@@ -160,7 +144,8 @@ export default function JoinTournamentScreen() {
                 <Text style={styles.eyebrow}>Tournament invite</Text>
                 <Text style={styles.title}>{tournament.name}</Text>
                 <Text style={styles.muted}>
-                    {tournament.memberIds.length} player{tournament.memberIds.length === 1 ? '' : 's'} so far · draft
+                    {tournament.memberIds.length} player{tournament.memberIds.length === 1 ? '' : 's'} so far
+                    {tournament.status === 'active' ? ' · active' : ' · draft'}
                 </Text>
                 <Text style={[styles.muted, { marginTop: 8 }]}>
                     Join to see stats, rules, and games with this group.

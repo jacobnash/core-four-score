@@ -1,6 +1,6 @@
-jest.mock('../services/firebase', () => ({ db: {} }));
-
 import { userService } from '../services/userService';
+
+jest.mock('../services/firebase', () => ({ getDb: () => ({}) }));
 
 jest.mock('firebase/firestore', () => {
     const storage: Record<string, any> = {};

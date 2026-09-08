@@ -4,22 +4,24 @@
  */
 
 // Avoid importing the real firebase during Jest runs (ESM package causes transform issues).
-jest.mock('../services/firebase', () => ({
-    auth: { app: { options: { apiKey: 'FAKE_API_KEY', authDomain: 'fake.firebaseapp.com', projectId: 'core-four-score' } } },
-    db: {}
-}));
+import { getAuthInstance, getDb } from '../services/firebase';
 
-import { auth, db } from '../services/firebase';
+jest.mock('../services/firebase', () => ({
+    getAuthInstance: () => ({ app: { options: { apiKey: 'FAKE_API_KEY', authDomain: 'fake.firebaseapp.com', projectId: 'core-four-score' } } }),
+    getDb: () => ({}),
+    connectFirebaseEmulators: jest.fn(),
+    isFirebaseEmulatorConnected: () => true,
+}));
 
 describe('Firebase Connection Tests (mocked)', () => {
     it('Firebase mock should be available', () => {
-        expect(auth).toBeDefined();
-        expect(db).toBeDefined();
+        expect(getAuthInstance()).toBeDefined();
+        expect(getDb()).toBeDefined();
     });
 
     it('Auth mock should have config', () => {
         // @ts-ignore
-        const config = auth.app.options;
+        const config = getAuthInstance().app.options;
         expect(config.apiKey).toBeTruthy();
         expect(config.authDomain).toContain('firebaseapp.com');
         expect(config.projectId).toBe('core-four-score');
@@ -61,11 +63,11 @@ describe('Console Debug Info', () => {
     it('should log current environment', () => {
         console.log('=== ENVIRONMENT DEBUG ===');
         console.log('Platform:', typeof window !== 'undefined' ? 'Web' : 'Native');
-        console.log('Auth initialized:', !!auth);
-        console.log('Firestore initialized:', !!db);
+        console.log('Auth initialized:', !!getAuthInstance());
+        console.log('Firestore initialized:', !!getDb());
 
         // @ts-ignore
-        const config = auth.app.options;
+        const config = getAuthInstance().app.options;
         console.log('Project ID:', config.projectId);
         console.log('Auth Domain:', config.authDomain);
         console.log('========================');

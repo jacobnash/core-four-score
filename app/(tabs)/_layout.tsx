@@ -2,10 +2,12 @@ import { Tabs, useRouter } from 'expo-router';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTournament } from '../../contexts/TournamentContext';
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { ENABLE_CLAYS_SCORING } from '../../constants/featureFlags';
+import { isClaysTournament } from '../../utils/tournamentNavigation';
 
-// Simple emoji icon component for tabs
 function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
   return <Text style={{ fontSize: 24, color }}>{emoji}</Text>;
 }
@@ -13,14 +15,16 @@ function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
 export default function TabLayout() {
   const router = useRouter();
   const { user } = useAuth();
+  const { activeTournament } = useTournament();
+  const claysActive = ENABLE_CLAYS_SCORING && isClaysTournament(activeTournament);
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#FF6700', // brand-orange
-        tabBarInactiveTintColor: '#F5F5DC', // cream
+        tabBarActiveTintColor: '#FF6700',
+        tabBarInactiveTintColor: '#F5F5DC',
         tabBarStyle: {
-          backgroundColor: '#013220', // forest-green
+          backgroundColor: '#013220',
           borderTopColor: '#FF6700',
           borderTopWidth: 2,
           height: 70,
@@ -46,8 +50,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Ope'Land",
-          tabBarIcon: ({ color }) => <TabBarIcon emoji="🏠" color={color} />,
+          title: 'Tournament',
+          tabBarIcon: ({ color }) => <TabBarIcon emoji={claysActive ? '🃏' : '🏠'} color={color} />,
+          href: claysActive ? null : undefined,
         }}
       />
       <Tabs.Screen
@@ -62,7 +67,7 @@ export default function TabLayout() {
         options={{
           title: 'Rules',
           tabBarIcon: ({ color }) => <TabBarIcon emoji="📜" color={color} />,
-          href: user ? undefined : null,
+          href: user && !claysActive ? undefined : null,
         }}
       />
       <Tabs.Screen
@@ -70,6 +75,7 @@ export default function TabLayout() {
         options={{
           title: 'Games',
           tabBarIcon: ({ color }) => <TabBarIcon emoji="🎲" color={color} />,
+          href: claysActive ? null : undefined,
         }}
       />
       <Tabs.Screen
@@ -77,6 +83,14 @@ export default function TabLayout() {
         options={{
           title: 'Tournaments',
           tabBarIcon: ({ color }) => <TabBarIcon emoji="🏆" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="clays"
+        options={{
+          title: 'Clays',
+          tabBarIcon: ({ color }) => <TabBarIcon emoji="🎯" color={color} />,
+          href: claysActive ? undefined : null,
         }}
       />
     </Tabs>

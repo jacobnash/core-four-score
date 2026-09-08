@@ -18,6 +18,8 @@ export interface UserStats {
 }
 
 // Tournament Types
+export type TournamentActivityType = 'euchre' | 'clays';
+
 export interface Tournament {
     id: string;
     // Backwards-compatible string id stored on tournament documents
@@ -28,6 +30,8 @@ export interface Tournament {
     updatedAt: Date;
     // Lifecycle status: draft (pre-start), active (started), archived (not deleted)
     status?: 'draft' | 'active' | 'archived';
+    /** Primary activity for this group — drives home tab (euchre vs clays). */
+    activityType?: TournamentActivityType;
     // Creator uid (best-effort backfill)
     createdBy?: string | null;
     // Optional visibility control
@@ -117,4 +121,48 @@ export interface TournamentRule {
     schemaVersion?: number;
     /** bulk = added at draft setup; proposal = normal vote flow (default). */
     seedMethod?: 'bulk' | 'proposal';
+}
+
+// Clays Types
+export type ClayDiscipline = 'sporting' | 'trap' | 'skeet' | '5stand';
+
+export type ClayPairType = 'single' | 'report' | 'true' | 'following';
+
+export interface ClaysMatch {
+    id: string;
+    tournamentId: string;
+    discipline: ClayDiscipline;
+    expectedTargets: number;
+    status: 'active' | 'complete';
+    startedAt: Date;
+    endedAt?: Date | null;
+    createdBy: string;
+    notes?: string | null;
+}
+
+export interface ClayScoreRecord {
+    id: string;
+    tournamentId: string;
+    matchId: string;
+    presentationNumber: number;
+    shooterId: string;
+    pairType: ClayPairType;
+    discipline: ClayDiscipline;
+    station?: string | null;
+    hits: number;
+    possible: number;
+    birdResults: boolean[];
+    birdLabels?: string[] | null;
+    timestamp: Date;
+    recordedBy: string;
+}
+
+export interface ClaysMemberStats {
+    userId: string;
+    displayName: string;
+    hits: number;
+    possible: number;
+    percentage: number | null;
+    presentationCount: number;
+    lastOutingDate?: Date | null;
 }
