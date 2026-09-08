@@ -35,8 +35,11 @@ let firestoreInstance: Firestore | undefined;
 let authInstance: Auth | undefined;
 let emulatorsConnected = false;
 
-function ensureEmulatorsConnected(): void {
-    if (!USE_FIREBASE_EMULATOR || emulatorsConnected || typeof window === 'undefined') return;
+/** Create the Firestore/Auth instances if needed, then connect them to the
+ * emulator if USE_FIREBASE_EMULATOR is set — instance creation must happen
+ * either way, or production (which never sets that flag) gets no instances. */
+function ensureInitialized(): void {
+    if (typeof window === 'undefined') return;
 
     if (!firestoreInstance) {
         firestoreInstance = getFirestore(app);
@@ -44,6 +47,8 @@ function ensureEmulatorsConnected(): void {
     if (!authInstance) {
         authInstance = Platform.OS === 'web' ? getAuth(app) : initializeAuth(app);
     }
+
+    if (!USE_FIREBASE_EMULATOR || emulatorsConnected) return;
 
     try {
         connectFirestoreEmulator(firestoreInstance, EMULATOR_HOST, FIRESTORE_EMULATOR_PORT);
@@ -75,7 +80,7 @@ export function getDb(): Firestore {
         throw new Error('Firestore is not available during SSR');
     }
     if (!firestoreInstance) {
-        ensureEmulatorsConnected();
+        ensureInitialized();
     }
     return firestoreInstance!;
 }
@@ -85,7 +90,7 @@ export function getAuthInstance(): Auth {
         throw new Error('Auth is not available during SSR');
     }
     if (!authInstance) {
-        ensureEmulatorsConnected();
+        ensureInitialized();
     }
     return authInstance!;
 }
@@ -96,7 +101,7 @@ export function isFirebaseEmulatorConnected(): boolean {
 
 export function connectFirebaseEmulators(): void {
     if (typeof window === 'undefined') return;
-    ensureEmulatorsConnected();
+    ensureInitialized();
 }
 
 export default app;
