@@ -68,7 +68,7 @@ function makeGame(overrides: Partial<Game> = {}): Game {
             { playerIds: [MEMBER_UID], score: 1, isWinner: true },
             { playerIds: [OTHER_UID], score: 0, isWinner: false },
         ],
-        tags: ['upset'],
+        tags: ['Barn Burner'],
         tournamentId: TOURNAMENT_ID,
         ...overrides,
     };
@@ -141,7 +141,7 @@ describe('StatsScreen', () => {
 
         expect(screen.getByText('📊 Overview')).toBeTruthy();
         expect(screen.getByText('Season Standings')).toBeTruthy();
-        expect(screen.getAllByText('upset').length).toBeGreaterThan(0); // tag chip + recent-game tag
+        expect(screen.getAllByText('Barn Burner').length).toBeGreaterThan(0); // tag chip + recent-game tag
         expect(screen.getByText('🕐 Recent Results')).toBeTruthy();
         expect(screen.getByText(/Deer Camp/)).toBeTruthy();
     });
