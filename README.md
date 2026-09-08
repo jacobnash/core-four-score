@@ -164,21 +164,28 @@ eas submit --platform android
 ```
 core-score/
 ├── app/                    # Expo Router screens
-│   ├── (tabs)/            # Tab navigation
-│   │   ├── index.tsx      # Home (Ope'Land)
+│   ├── (tabs)/            # Tab navigation (Home, Games, Rules, Stats, Clays, Tournaments)
+│   ├── (auth)/            # Sign-in flow
+│   ├── tournament/[id].tsx  # Tournament detail
+│   ├── join/[id].tsx      # Invite-link join flow
 │   └── _layout.tsx        # Root layout with AuthProvider
 ├── components/            # Reusable UI components
 │   ├── Button.tsx
 │   ├── LeaderboardCard.tsx
-│   └── PlayerCheckbox.tsx
+│   └── TournamentInvitePanel.tsx
 ├── contexts/              # React Context providers
-│   └── AuthContext.tsx    # Authentication state
-├── services/              # Firebase services
+│   ├── AuthContext.tsx        # Authentication state
+│   └── TournamentContext.tsx  # Active/member/invited tournaments
+├── services/              # Firebase services (one module per Firestore collection)
 │   ├── firebase.ts        # Firebase config
-│   └── firestore.ts       # Firestore CRUD operations
+│   ├── firestore.ts       # Barrel re-export of the service modules below
+│   ├── tournamentService.ts, userService.ts, gameService.ts, renegService.ts
+│   └── claysService.ts, claysMatchService.ts, claysLeaderboardService.ts
+├── utils/                 # Domain rules (membership, visibility, navigation) — screens
+│                          # call these rather than re-deriving access logic themselves
+├── hooks/                 # Custom React hooks (e.g. useTournamentAccess)
 ├── types/                 # TypeScript interfaces
 │   └── index.ts
-├── hooks/                 # Custom React hooks
 ├── global.css             # Tailwind CSS
 ├── tailwind.config.js     # Tailwind configuration
 └── app.json               # Expo configuration
