@@ -32,6 +32,27 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /rules/{ruleId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn();
+      allow delete: if false;
+    }
+
+    match /claysMatches/{matchId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn();
+      allow delete: if false;
+    }
+
+    // clayScores allows delete: the app's "Undo last presentation" feature
+    // (services/claysService.ts deleteLastScoreForMatch) does a real delete here,
+    // unlike every other collection — see the flagged policy conflict with the
+    // README's No-Deletes policy.
+    match /clayScores/{scoreId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn();
+    }
+
     // Everything else: deny by default.
     match /{document=**} {
       allow read, write: if false;
