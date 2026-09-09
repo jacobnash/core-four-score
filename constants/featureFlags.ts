@@ -9,3 +9,8 @@ export const ENABLE_IMPROVED_DATA_VIEWS = true;
 export const ENABLE_CLAYS_SCORING =
     process.env.EXPO_PUBLIC_ENABLE_CLAYS_SCORING === 'true' ||
     (typeof __DEV__ !== 'undefined' && __DEV__);
+
+/** Catan game recording + board randomizer — off in production until ready. */
+export const ENABLE_CATAN_SCORING =
+    process.env.EXPO_PUBLIC_ENABLE_CATAN_SCORING === 'true' ||
+    (typeof __DEV__ !== 'undefined' && __DEV__);

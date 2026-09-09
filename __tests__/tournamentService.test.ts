@@ -16,6 +16,19 @@ jest.mock('firebase/firestore', () => {
             if (ref._collection === 'tournaments' && ref._id === 't1') {
                 return { exists: () => true, id: 't1', data: () => ({ name: 'T1', memberIds: ['u1', 'u2'], createdAt: { toDate: () => new Date() }, updatedAt: { toDate: () => new Date() } }) };
             }
+            if (ref._collection === 'tournaments' && ref._id === 'catan-t1') {
+                return {
+                    exists: () => true,
+                    id: 'catan-t1',
+                    data: () => ({
+                        name: 'Catan Night',
+                        memberIds: ['u1'],
+                        activityType: 'catan',
+                        createdAt: { toDate: () => new Date() },
+                        updatedAt: { toDate: () => new Date() },
+                    }),
+                };
+            }
             return { exists: () => false };
         }),
         Timestamp: { now: () => ({}) },
@@ -45,5 +58,10 @@ describe('tournamentService', () => {
         expect(t.memberIds).toEqual(['mock-dev-alex']);
         expect(t.status).toBe('draft');
         expect(setDoc).toHaveBeenCalled();
+    });
+
+    it('getTournament round-trips a catan activityType instead of collapsing it to euchre', async () => {
+        const t = await tournamentService.getTournament('catan-t1');
+        expect(t?.activityType).toBe('catan');
     });
 });

@@ -27,6 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_ENV: development
+      # __DEV__ is false in this exported bundle, so these flags (which default
+      # to "on in dev only") need an explicit true here or Clays/Catan silently
+      # fall back to the Euchre home screen in production — see the outage where
+      # creating a Clays tournament looked fine but routed to the wrong tab.
+      EXPO_PUBLIC_ENABLE_CLAYS_SCORING: 'true'
+      EXPO_PUBLIC_ENABLE_CATAN_SCORING: 'true'
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node

@@ -29,6 +29,15 @@ describe('tournamentNavigation', () => {
         activityType: 'clays',
     };
 
+    const catanTournament: Tournament = {
+        id: 'friday-catan',
+        name: 'Friday Catan',
+        memberIds: ['u1'],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        activityType: 'catan',
+    };
+
     it('defaults missing activityType to euchre', () => {
         const legacy = { ...euchreTournament, activityType: undefined };
         expect(resolveTournamentActivityType(legacy)).toBe('euchre');
@@ -45,5 +54,10 @@ describe('tournamentNavigation', () => {
 
     it('routes euchre tournaments to tournament home', () => {
         expect(getTournamentHomeRoute(euchreTournament)).toBe('/(tabs)/');
+    });
+
+    it('routes catan tournaments to the catan tab in dev', () => {
+        expect(resolveTournamentActivityType(catanTournament)).toBe('catan');
+        expect(getTournamentHomeRoute(catanTournament)).toBe('/(tabs)/catan');
     });
 });

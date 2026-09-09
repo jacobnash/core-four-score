@@ -6,8 +6,11 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { TournamentProvider } from '../contexts/TournamentContext';
+import { installWebAlertPolyfill } from '../utils/webAlertPolyfill';
 
 import { useColorScheme } from '@/components/useColorScheme';
+
+installWebAlertPolyfill();
 
 export {
   // Catch any errors thrown by the Layout component.

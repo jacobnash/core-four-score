@@ -2,6 +2,8 @@
 export { claysService } from './claysService';
 export { claysMatchService } from './claysMatchService';
 export { claysLeaderboardService } from './claysLeaderboardService';
+export { catanService } from './catanService';
+export { catanLeaderboardService } from './catanLeaderboardService';
 export { gameService } from './gameService';
 export { leaderboardService } from './leaderboardService';
 export { renegService } from './renegService';

@@ -115,7 +115,12 @@ export default function TournamentDetail() {
         <Text style={styles.titleLg}>{tournament.name}</Text>
         <Text style={styles.mutedSmall}>
           {players.length} players
-          · {TOURNAMENT_ACTIVITY_LABELS[tournament.activityType === 'clays' ? 'clays' : 'euchre']}
+          ·{' '}
+          {TOURNAMENT_ACTIVITY_LABELS[
+            tournament.activityType === 'clays' || tournament.activityType === 'catan'
+              ? tournament.activityType
+              : 'euchre'
+          ]}
           {isCoreFourLocked ? ' · Core Four exclusive' : ' · open roster'}
           {isDraft ? ' · draft' : ' · active'}
         </Text>

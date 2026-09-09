@@ -18,7 +18,7 @@ export interface UserStats {
 }
 
 // Tournament Types
-export type TournamentActivityType = 'euchre' | 'clays';
+export type TournamentActivityType = 'euchre' | 'clays' | 'catan';
 
 export interface Tournament {
     id: string;
@@ -165,4 +165,36 @@ export interface ClaysMemberStats {
     percentage: number | null;
     presentationCount: number;
     lastOutingDate?: Date | null;
+}
+
+// Catan Types
+/** base = standard 3-4 player game; extended = 5-6 Player Extension in play. */
+export type CatanExpansion = 'base' | 'extended';
+
+export interface CatanPlayerScore {
+    playerId: string;
+    score: number;
+    isWinner?: boolean;
+}
+
+export interface CatanGame {
+    id: string;
+    tournamentId: string;
+    timestamp: Date;
+    expansion: CatanExpansion;
+    players: CatanPlayerScore[];
+    notes?: string | null;
+    // No-deletes policy: support archival
+    status?: 'active' | 'archived';
+    archivedAt?: Date | null;
+}
+
+export interface CatanMemberStats {
+    userId: string;
+    displayName: string;
+    gamesPlayed: number;
+    wins: number;
+    winPercentage: number;
+    avgScore: number | null;
+    bestScore: number | null;
 }

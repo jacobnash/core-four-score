@@ -5,8 +5,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-import { ENABLE_CLAYS_SCORING } from '../../constants/featureFlags';
-import { isClaysTournament } from '../../utils/tournamentNavigation';
+import { ENABLE_CATAN_SCORING, ENABLE_CLAYS_SCORING } from '../../constants/featureFlags';
+import { isCatanTournament, isClaysTournament } from '../../utils/tournamentNavigation';
 
 function TabBarIcon({ emoji, color }: { emoji: string; color: string }) {
   return <Text style={{ fontSize: 24, color }}>{emoji}</Text>;
@@ -17,6 +17,8 @@ export default function TabLayout() {
   const { user } = useAuth();
   const { activeTournament } = useTournament();
   const claysActive = ENABLE_CLAYS_SCORING && isClaysTournament(activeTournament);
+  const catanActive = ENABLE_CATAN_SCORING && isCatanTournament(activeTournament);
+  const altHomeActive = claysActive || catanActive;
 
   return (
     <Tabs
@@ -51,8 +53,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Tournament',
-          tabBarIcon: ({ color }) => <TabBarIcon emoji={claysActive ? '🃏' : '🏠'} color={color} />,
-          href: claysActive ? null : undefined,
+          tabBarIcon: ({ color }) => <TabBarIcon emoji={altHomeActive ? '🃏' : '🏠'} color={color} />,
+          href: altHomeActive ? null : undefined,
         }}
       />
       <Tabs.Screen
@@ -67,7 +69,7 @@ export default function TabLayout() {
         options={{
           title: 'Rules',
           tabBarIcon: ({ color }) => <TabBarIcon emoji="📜" color={color} />,
-          href: user && !claysActive ? undefined : null,
+          href: user && !altHomeActive ? undefined : null,
         }}
       />
       <Tabs.Screen
@@ -75,7 +77,7 @@ export default function TabLayout() {
         options={{
           title: 'Games',
           tabBarIcon: ({ color }) => <TabBarIcon emoji="🎲" color={color} />,
-          href: claysActive ? null : undefined,
+          href: altHomeActive ? null : undefined,
         }}
       />
       <Tabs.Screen
@@ -91,6 +93,14 @@ export default function TabLayout() {
           title: 'Clays',
           tabBarIcon: ({ color }) => <TabBarIcon emoji="🎯" color={color} />,
           href: claysActive ? undefined : null,
+        }}
+      />
+      <Tabs.Screen
+        name="catan"
+        options={{
+          title: 'Catan',
+          tabBarIcon: ({ color }) => <TabBarIcon emoji="🏝️" color={color} />,
+          href: catanActive ? undefined : null,
         }}
       />
     </Tabs>

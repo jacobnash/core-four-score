@@ -29,8 +29,10 @@ describe('useTournamentAccess', () => {
             isDraft: true,
             isCoreFourLocked: false,
             isClays: false,
+            isCatan: false,
             canShareLink: false,
             showClays: false,
+            showCatan: false,
         });
     });
 
@@ -86,5 +88,24 @@ describe('useTournamentAccess', () => {
         const { result } = renderHook(() => useTournamentAccess(t, MEMBER_UID));
 
         expect(result.current.showClays).toBe(false);
+    });
+
+    it('identifies a catan tournament and enables showCatan for a member', () => {
+        const t = makeTournament({ activityType: 'catan' });
+        const { result } = renderHook(() => useTournamentAccess(t, MEMBER_UID));
+
+        expect(result.current.isCatan).toBe(true);
+        expect(result.current.showCatan).toBe(true);
+    });
+
+    it('never shows catan for the locked legacy tournament even if activityType is catan', () => {
+        const t = makeTournament({
+            id: CORE_FOUR_TOURNAMENT_ID,
+            tournamentId: CORE_FOUR_TOURNAMENT_ID,
+            activityType: 'catan',
+        });
+        const { result } = renderHook(() => useTournamentAccess(t, MEMBER_UID));
+
+        expect(result.current.showCatan).toBe(false);
     });
 });

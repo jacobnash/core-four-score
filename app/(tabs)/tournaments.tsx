@@ -13,7 +13,11 @@ import { Button } from '../../components/Button';
 import { showAlert } from '../../utils/alert';
 import { TournamentInvitePanel } from '../../components/TournamentInvitePanel';
 import { isLegacyCoreFourTournament } from '../../utils/tournamentMembership';
-import { TOURNAMENT_ACTIVITY_LABELS, getTournamentHomeRoute } from '../../utils/tournamentNavigation';
+import {
+    TOURNAMENT_ACTIVITY_EMOJI,
+    TOURNAMENT_ACTIVITY_LABELS,
+    getTournamentHomeRoute,
+} from '../../utils/tournamentNavigation';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTournament } from '../../contexts/TournamentContext';
 import { tournamentService } from '../../services/firestore';
@@ -124,7 +128,7 @@ export default function TournamentsScreen() {
                         />
                         <Text style={{ fontWeight: '700', marginTop: 12 }}>Type</Text>
                         <View style={styles.typeRow}>
-                            {(['euchre', 'clays'] as TournamentActivityType[]).map(type => (
+                            {(['euchre', 'clays', 'catan'] as TournamentActivityType[]).map(type => (
                                 <TouchableOpacity
                                     key={type}
                                     style={[styles.typeChip, activityType === type && styles.typeChipActive]}
@@ -136,8 +140,7 @@ export default function TournamentsScreen() {
                                             activityType === type && styles.typeChipTextActive,
                                         ]}
                                     >
-                                        {type === 'euchre' ? '🃏' : '🎯'}{' '}
-                                        {TOURNAMENT_ACTIVITY_LABELS[type]}
+                                        {TOURNAMENT_ACTIVITY_EMOJI[type]} {TOURNAMENT_ACTIVITY_LABELS[type]}
                                     </Text>
                                 </TouchableOpacity>
                             ))}
@@ -145,7 +148,9 @@ export default function TournamentsScreen() {
                         <Text style={[styles.mutedSmall, { marginTop: 8 }]}>
                             {activityType === 'clays'
                                 ? 'Opens the Clays tab for scoring when selected.'
-                                : 'Opens the Tournament home for euchre games when selected.'}
+                                : activityType === 'catan'
+                                  ? 'Opens the Catan tab for game recording and the board randomizer.'
+                                  : 'Opens the Tournament home for euchre games when selected.'}
                         </Text>
                         {createError ? (
                             <Text style={styles.createError}>{createError}</Text>
@@ -215,7 +220,9 @@ export default function TournamentsScreen() {
                                         <Text style={styles.mutedSmall}>
                                             {item.memberIds.length} players ·{' '}
                                             {TOURNAMENT_ACTIVITY_LABELS[
-                                                item.activityType === 'clays' ? 'clays' : 'euchre'
+                                                item.activityType === 'clays' || item.activityType === 'catan'
+                                                    ? item.activityType
+                                                    : 'euchre'
                                             ]}
                                             {isCoreFour ? ' · Core Four exclusive' : ''}
                                             {preferred ? ' · default' : ''}

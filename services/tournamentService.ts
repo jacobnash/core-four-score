@@ -18,7 +18,10 @@ function mapTournamentDoc(id: string, data: Record<string, unknown>): Tournament
         createdAt: (data.createdAt as { toDate?: () => Date })?.toDate?.() ?? new Date(),
         updatedAt: (data.updatedAt as { toDate?: () => Date })?.toDate?.() ?? new Date(),
         status: (data.status as Tournament['status']) || 'active',
-        activityType: data.activityType === 'clays' ? 'clays' : 'euchre',
+        activityType:
+            data.activityType === 'clays' || data.activityType === 'catan'
+                ? data.activityType
+                : 'euchre',
         createdBy: (data.createdBy as string | null) ?? null,
         visibility: (data.visibility as Tournament['visibility']) || 'private',
         inviteIds: (data.inviteIds as string[]) || [],

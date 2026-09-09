@@ -29,6 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_ENV: development
+      # See firebase-hosting-merge.yml — production needs these explicitly on.
+      EXPO_PUBLIC_ENABLE_CLAYS_SCORING: 'true'
+      EXPO_PUBLIC_ENABLE_CATAN_SCORING: 'true'
     steps:
       - uses: actions/checkout@v4
 
